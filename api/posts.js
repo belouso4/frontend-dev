@@ -2,7 +2,7 @@ export default $axios => ({
 
   async index(page) {
     try {
-      return await $axios.$get('/api/v1/posts?page='+page);
+      return await $axios.$get('/v1/posts?page='+page);
     } catch ( err ){
 
     }
@@ -10,7 +10,7 @@ export default $axios => ({
 
   async show(slug){
     try {
-      return await $axios.$get('/api/v1/post/'+slug);
+      return await $axios.$get('/v1/post/'+slug);
     } catch ( err ){
       console.log(err)
     }
@@ -18,7 +18,7 @@ export default $axios => ({
   },
 
   async like( slug ){
-    return await $axios.$post('/api/v1/post/'+slug+'/like');
+    return await $axios.$post('/v1/post/'+slug+'/like');
   },
 
 })

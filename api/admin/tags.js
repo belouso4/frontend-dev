@@ -2,7 +2,7 @@ export default $axios => ({
 
   async index(page) {
     try {
-      return await $axios.$get('/api/v1/admin/tags?page='+page);
+      return await $axios.$get('/v1/admin/tags?page='+page);
     } catch ( err ){
       console.log(err)
     }
@@ -10,7 +10,7 @@ export default $axios => ({
 
   async create( data ){
     try {
-      return await $axios.$post('/api/v1/admin/tag/create', data);
+      return await $axios.$post('/v1/admin/tag/create', data);
     } catch ( err ){
       console.log(err)
     }
@@ -18,7 +18,7 @@ export default $axios => ({
 
   async update(id, data){
     try {
-      return await $axios.$put('/api/v1/admin/tag/update/'+id, data);
+      return await $axios.$put('/v1/admin/tag/update/'+id, data);
     } catch ( err ){
       console.log(err)
     }
@@ -26,7 +26,7 @@ export default $axios => ({
 
   async delete( data){
     try {
-      return await $axios.$delete('/api/v1/admin/tag/delete/'+data);
+      return await $axios.$delete('/v1/admin/tag/delete/'+data);
     } catch ( err ){
       console.log(err)
     }

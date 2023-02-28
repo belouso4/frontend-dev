@@ -2,7 +2,7 @@ export default $axios => ({
 
   async getComments(post_slug, offset){
     try {
-      return $axios.$get('/api/v1/admin/post/'+post_slug+'/comments', {params: {offset: offset}});
+      return $axios.$get('/v1/admin/post/'+post_slug+'/comments', {params: {offset: offset}});
     } catch ( err ){
       console.log(err)
     }
@@ -10,7 +10,7 @@ export default $axios => ({
 
   async addComment(post_slug, data){
     try {
-      return $axios.$post('/api/v1/admin/post/'+post_slug+'/comment', data);
+      return $axios.$post('/v1/admin/post/'+post_slug+'/comment', data);
     } catch ( err ){
       console.log(err)
     }
@@ -18,7 +18,7 @@ export default $axios => ({
 
   async likeComment(id ){
     try {
-      return $axios.$post('/api/v1/admin/post/comment/'+id+'/like');
+      return $axios.$post('/v1/admin/post/comment/'+id+'/like');
     } catch ( err ){
       console.log(err)
     }
@@ -26,7 +26,7 @@ export default $axios => ({
 
   async deleteComment(id ){
     try {
-      return $axios.$delete('/api/v1/admin/post/comment/'+id+'/delete');
+      return $axios.$delete('/v1/admin/post/comment/'+id+'/delete');
     } catch ( err ){
       console.log(err)
     }

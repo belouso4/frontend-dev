@@ -82,14 +82,14 @@
             },
         },
       created() {
-        this.$axios.get('/api/v1/sanctum/csrf-cookie')
+        this.$axios.get('/v1/sanctum/csrf-cookie')
       },
       methods: {
             register() {
                 if( this.validateRegistration() ){
                   this.loading = true
                   try {
-                    this.$axios.post('/api/v1/register', this.form ).then( response => {
+                    this.$axios.post('/v1/register', this.form ).then( response => {
                         this.$auth.loginWith( 'laravelSanctum', { data: this.form } )
                         this.loading = false
                         this.$router.push({ path: '/' })

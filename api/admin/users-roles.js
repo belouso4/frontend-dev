@@ -2,7 +2,7 @@ export default $axios => ({
 
   async index(page) {
     try {
-      return await $axios.$get('/api/v1/admin/users-roles?page=' + page);
+      return await $axios.$get('/v1/admin/users-roles?page=' + page);
     } catch ( err ){
       console.log(err)
     }
@@ -10,7 +10,7 @@ export default $axios => ({
 
   async roles(role_name) {
     try {
-      return await $axios.$get('/api/v1/admin/users/roles/', {
+      return await $axios.$get('/v1/admin/users/roles/', {
         params: {
           search: role_name
         }
@@ -22,7 +22,7 @@ export default $axios => ({
 
   async filter(roles_name) {
     try {
-      return await $axios.$get('/api/v1/admin/users/roles/', {
+      return await $axios.$get('/v1/admin/users/roles/', {
         params: {
           filter: roles_name
         }
@@ -36,7 +36,7 @@ export default $axios => ({
   // async edit(id){
   //   try {
   //
-  //     return await $axios.$get('/api/v1/admin/user/edit/'+id);
+  //     return await $axios.$get('/v1/admin/user/edit/'+id);
   //   } catch ( err ){
   //     console.log('$axios')
   //   }
@@ -45,7 +45,7 @@ export default $axios => ({
   // async update(id, role){
   //   try {
   //
-  //     return await $axios.$put('/api/v1/admin/user/'+id, {role: role});
+  //     return await $axios.$put('/v1/admin/user/'+id, {role: role});
   //   } catch ( err ){
   //     console.log('$axios')
   //   }

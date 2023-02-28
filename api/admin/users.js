@@ -2,7 +2,7 @@ export default $axios => ({
 
   async index(page) {
     try {
-      return await $axios.$get('/api/v1/admin/users?page='+page);
+      return await $axios.$get('/v1/admin/users?page='+page);
     } catch ( err ){
       console.log(err)
     }
@@ -10,7 +10,7 @@ export default $axios => ({
 
   async create(data){
     try {
-      return await $axios.$post('/api/v1/admin/user', data);
+      return await $axios.$post('/v1/admin/user', data);
     } catch ( err ){
       console.log(err)
     }
@@ -19,7 +19,7 @@ export default $axios => ({
   async edit(id){
     try {
 
-      return await $axios.$get('/api/v1/admin/user/edit/'+id);
+      return await $axios.$get('/v1/admin/user/edit/'+id);
     } catch ( err ){
       console.log(err)
     }
@@ -28,7 +28,7 @@ export default $axios => ({
   async update(id, data){
     try {
 
-      return await $axios.$post('/api/v1/admin/user/'+id, data, {
+      return await $axios.$post('/v1/admin/user/'+id, data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -40,7 +40,7 @@ export default $axios => ({
 
   async delete( id ){
     try {
-      return await $axios.$delete('/api/v1/admin/user/delete/'+id);
+      return await $axios.$delete('/v1/admin/user/delete/'+id);
     } catch ( err ){
       console.log(err)
     }
@@ -48,7 +48,7 @@ export default $axios => ({
 
   async search( query ){
     try {
-      return await $axios.$get('/api/v1/admin/user/search', {
+      return await $axios.$get('/v1/admin/user/search', {
         params: {
           search: query
         }

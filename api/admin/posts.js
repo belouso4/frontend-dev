@@ -2,7 +2,7 @@ export default $axios => ({
 
   async index(page) {
     try {
-      return await $axios.$get('/api/v1/admin/posts?page='+page);
+      return await $axios.$get('/v1/admin/posts?page='+page);
     } catch ( err ){
 
     }
@@ -10,7 +10,7 @@ export default $axios => ({
 
   async edit(slug){
     try {
-      return await $axios.$get('/api/v1/admin/post/'+slug+'/edit');
+      return await $axios.$get('/v1/admin/post/'+slug+'/edit');
     } catch ( err ){
       console.log(err)
     }
@@ -18,7 +18,7 @@ export default $axios => ({
 
   async getTags(query){
     try {
-      return await $axios.$get('/api/v1/admin/tags/search', {
+      return await $axios.$get('/v1/admin/tags/search', {
         params: {
           search: query
         }
@@ -31,7 +31,7 @@ export default $axios => ({
   async create( data ){
     try {
 
-      return await $axios.$post('/api/v1/admin/post/create', data, {
+      return await $axios.$post('/v1/admin/post/create', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -43,7 +43,7 @@ export default $axios => ({
 
   async update( data, slug ){
     try {
-      return await $axios.$post('/api/v1/admin/post/update/'+slug, data, {
+      return await $axios.$post('/v1/admin/post/update/'+slug, data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -57,7 +57,7 @@ export default $axios => ({
 
   async delete( id ){
     try {
-      return await $axios.$delete('/api/v1/admin/post/delete/'+id);
+      return await $axios.$delete('/v1/admin/post/delete/'+id);
     } catch ( err ){
       console.log(err)
     }
@@ -65,7 +65,7 @@ export default $axios => ({
 
   async restore( id ){
     try {
-      return await $axios.$put('/api/v1/admin/post/restore/'+id);
+      return await $axios.$put('/v1/admin/post/restore/'+id);
     } catch ( err ){
       console.log(err)
     }
@@ -73,7 +73,7 @@ export default $axios => ({
 
   async getDeletedPosts(page){
     try {
-      return await $axios.$get('/api/v1/admin/posts/trashed?page='+page);
+      return await $axios.$get('/v1/admin/posts/trashed?page='+page);
     } catch ( err ){
       console.log(err)
     }
@@ -82,7 +82,7 @@ export default $axios => ({
 
   async deleteDeletedPosts( id ){
     try {
-      return $axios.$delete('/api/v1/admin/posts/clear-trashed/'+id);
+      return $axios.$delete('/v1/admin/posts/clear-trashed/'+id);
     } catch ( err ){
       console.log(err)
     }

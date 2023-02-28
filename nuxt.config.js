@@ -72,7 +72,7 @@ export default {
       //   },
       //   endpoints: {
       //     login: {
-      //       url: '/api/v1/login',
+      //       url: '/v1/login',
       //       method: 'post',
       //       withCredentials: true,
       //       headers: {
@@ -80,11 +80,11 @@ export default {
       //       },
       //     },
       //     logout: {
-      //       url: '/api/v1/logout',
+      //       url: '/v1/logout',
       //       method: 'post',
       //     },
       //     user: {
-      //       url: '/api/v1/user',
+      //       url: '/v1/user',
       //       method: 'get'
       //     },
       //   },
@@ -97,16 +97,16 @@ export default {
       //       url: '/login'
       //     },
       //     user: {
-      //       url: '/api/v1/user'
+      //       url: '/v1/user'
       //     },
       //     logout: {
-      //       url: '/api/v1/logout'
+      //       url: '/v1/logout'
       //     }
       //   }
       // }
       'laravelSanctum': {
         provider: 'laravel/sanctum',
-        url: process.env.API_BASE_URL + '/api/v1',
+        url: process.env.API_BASE_URL + '/v1',
         endpoints: {
           login: {
             url: '/login'
