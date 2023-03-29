@@ -42,26 +42,28 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/components.js',
+    '~/plugins/vuelidate.js',
+    '~/plugins/toaster.js',
     '~/plugins/ownhouseAPI.js',
     '~/plugins/axios.js',
     '~/plugins/mixins/validation.js',
     '~/plugins/pagination.js',
-    '~/plugins/can.js',
+    '~/plugins/route',
     { src: '~/plugins/vue-infinite-loading.js', ssr: false},
     { src: '~/plugins/vue-tags-input.js', ssr: false },
     {src:'~/plugins/vue-quill-editor.js',ssr: false},
   ],
-
   axios: {
     baseURL: process.env.API_BASE_URL,
     credentials: true
   },
-
+  loading: false,
   auth: {
     redirect: {
-      login: '/?login=true',
+      login: '/login',
       home: false
     },
+    plugins: ['~/plugins/can.js'],
     strategies: {
       // 'local': {
       //   user: {
@@ -122,7 +124,11 @@ export default {
     }
   },
 
-  serverMiddleware: ['~/server-middleware/swith-spa.js'],
+  serverMiddleware: [{
+    path: '/admin',
+    handler: '~/server-middleware/swith-spa.js'
+  }],
+  // serverMiddleware: ['~/server-middleware/swith-spa.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -136,33 +142,47 @@ export default {
     fallback: false
   },
 
-  router: {
-    linkExactActiveClass: 'active',
-    extendRoutes(routes, resolve) {
-      routes.push({
-        name: "custom",
-        path: "/admin/:pkg(.*)",
-        component: resolve(__dirname, "pages/admin/404.vue"),
-      });
-    },
-  },
+  // router: {
+  //   linkExactActiveClass: 'active',
+  //   extendRoutes(routes, resolve) {
+  //     routes.push({
+  //       name: "custom",
+  //       path: "/admin/:pkg(.*)",
+  //       component: resolve(__dirname, "pages/admin/404k.vue"),
+  //     });
+  //   },
+  // },
 
-  hooks: {
-    render: {
-      errorMiddleware(app) {
-        app.use((error, _req, _res, next) => {
-          if (error) {
-            console.log("Logged in errorMiddleware", error);
-          }
-          next(error);
-        });
-      },
-    },
-  },
+  // hooks: {
+  //   render: {
+  //     errorMiddleware(app) {
+  //       app.use((error, _req, _res, next) => {
+  //         if (error) {
+  //           console.log("Logged in errorMiddleware", error);
+  //         }
+  //
+  //         next(error);
+  //       });
+  //     },
+  //   },
+  // },
 
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    babel: {
+      // envName: server, client, modern
+      presets() {
+        return [
+          [
+            '@nuxt/babel-preset-app',
+            {
+              useBuiltIns: "entry"
+            }
+          ]
+        ]
+      },
+    },
     transpile: [
       'defu',
     ],

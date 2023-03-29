@@ -39,7 +39,7 @@ import PostCard from "../components/PostCard";
 export default {
   name: "posts",
   components: {PostCard},
-  layout: 'App',
+  layout: 'AppMain',
   head: {
     title: 'Последние новости',
     meta: [

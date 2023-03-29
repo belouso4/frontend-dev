@@ -14,7 +14,7 @@
             <a href="film.html">Фильмы</a>
           </li>
         </ul>
-        <nuxt-link v-if="$auth.loggedIn" to="/cabinet" class="cabinet-auth">Личный кабинет</nuxt-link>
+        <nuxt-link v-if="$auth.loggedIn" to="/account" class="cabinet-auth">Личный кабинет</nuxt-link>
         <div v-else class="auth">
           <nuxt-link to="/login">Войти</nuxt-link>
           <nuxt-link to="/register">Зарегистрироваться</nuxt-link>

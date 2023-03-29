@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -13,13 +13,6 @@
             </ol>
           </div>
         </div>
-        <div class="d-flex align-items-center justify-content-between">
-          <nuxt-link to="/admin/posts/delete">
-            Удалённые посты
-          </nuxt-link>
-          <nuxt-link to="/admin/post/add">Добавить новый пост</nuxt-link>
-        </div>
-
       </div><!-- /.container-fluid -->
     </section>
 
@@ -32,11 +25,16 @@
 
 
           <div class="card-tools d-flex align-items-center">
-            <button @click="modals.show = true" class="btn btn-outline-dark btn-sm mr-2">
+            <button v-can="'role.create'" @click="modals.userAdd.show = true" class="btn btn-outline-dark btn-sm mr-2">
               <i class="fa-solid fa-plus"></i> Добавить
             </button>
             <form class="form-search input-group input-group-sm" style="width: 300px;">
-              <input type="text" name="table_search" class="form-control float-right border-dark" placeholder="Поиск...">
+              <input v-model="search"
+                     @keyup="searchRoles()"
+                     type="text"
+                     name="table_search"
+                     class="form-control float-right border-dark"
+                     placeholder="Поиск...">
               <div class="input-group-append">
                 <button type="submit" class="btn btn-default border-dark">
                   <i class="fas fa-search"></i>
@@ -83,14 +81,14 @@
                 </span>
               </td>
               <td class="project-actions">
-                <nuxt-link title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/roles/'+role.id">
+                <nuxt-link v-can="'post.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/roles/'+role.id">
                   <i class="fas fa-pencil-alt">
                   </i>
                 </nuxt-link>
-                <a @click="remove(role.id)" title="Удалить" class="btn btn-outline-dark btn-sm">
+                <button v-can="'role.delete'" @click="confirDeletion(role.id)" :title="role.id === 1 ? '' : 'Удалить'" :class="['btn btn-outline-dark btn-sm', {'disabled': role.id === 1}]">
                   <i class="fas fa-trash">
                   </i>
-                </a>
+                </button>
               </td>
             </tr>
             </tbody>
@@ -111,16 +109,24 @@
 
       <!-- /.card -->
     </section>
-    <create-role-modal :show.sync="modals.show"></create-role-modal>
+    <create-role-modal :show.sync="modals.userAdd.show"></create-role-modal>
+    <warning-modal :action="remove"
+                   :show.sync="modals.warning.show"
+                   :id.sync="modals.warning.id"/>
   </div>
 </template>
 
 <script>
 
 import CreateRoleModal from "../../../components/admin/roles/CreateRoleModal";
+import WarningModal from "../../../components/admin/ui/WarningModal";
 export default {
   name: "posts",
-  components: {CreateRoleModal},
+  middleware: 'permission',
+  meta: {
+    permission: 'role.view'
+  },
+  components: {CreateRoleModal, WarningModal},
   layout: 'Admin',
   head() {
     return {
@@ -138,8 +144,17 @@ export default {
   data() {
     return {
       loading: false,
+      search: '',
+      debounce: false,
       modals: {
-        show: false,
+        userAdd: {
+          show: false,
+        },
+        warning: {
+          show: false,
+          id: null,
+          action: null
+        }
       },
     }
   },
@@ -160,15 +175,42 @@ export default {
         page = 1;
       }
 
-      this.roles = await this.$api.adminRoles.index(page)
+      this.roles = this.search === ''
+        ? await this.$api.adminRoles.index(page)
+        : await this.$api.adminRoles.search({page, search: this.search})
+
       this.loading = false
     },
 
-    async remove(id) {
-      this.loading = true
+    confirDeletion(id) {
+      if(id === 1) return
+      this.modals.warning.show = true
+      this.modals.warning.id = id
+    },
 
+    async remove(id) {
       await this.$api.adminRoles.delete(id)
-      await this.getResults()
+      this.roles = await this.$api.adminRoles.index(1)
+      return true
+    },
+
+    searchRoles() {
+      if(this.search && this.search.length >= 2) {
+        this.loading = true
+        clearTimeout(this.debounce);
+
+        this.debounce = setTimeout(() => {
+          this.$api.adminRoles.search({search: this.search}).then(response => {
+            this.roles = response
+          }).catch(() => {
+            console.warn('Oh. Something went wrong')
+          }).finally(() => {
+            this.loading = false
+          });
+        }, 600);
+      } else {
+        this.getResults(1)
+      }
     },
   }
 

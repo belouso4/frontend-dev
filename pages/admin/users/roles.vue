@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -36,14 +36,16 @@
                     class="tags-input"
                     @tags-changed="update">
                   </vue-tags-input>
-                  <Loader v-if="loading"/>
+                  <Loader v-if="loaderTag"/>
                 </div>
-
               </client-only>
             </div>
             <div class="card-tools d-flex align-items-center ml-auto">
+              <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
+                         to="/admin/users/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
               <form class="form-search input-group input-group-sm">
                 <input v-model="search"
+                       @keyup="searchUsers()"
                        type="text"
                        name="table_search"
                        class="form-control float-right border-dark"
@@ -138,6 +140,9 @@
                   </div>
                 </div>
               </div>
+              <div v-if="loading" class="spinner-load">
+                <img src="/loader.gif">
+              </div>
             </div>
           </div>
         </div>
@@ -154,7 +159,10 @@
 export default {
   name: "roles",
   layout: 'Admin',
-
+  middleware: 'permission',
+  meta: {
+    permission: 'role.view'
+  },
   async asyncData({app, params}) {
     const users = await app.$api.adminUsersRoles.index(1)
     return {users}
@@ -169,6 +177,8 @@ export default {
       autocompleteItems: [],
       debounce: null,
       loading: false,
+      loaderTag: false,
+      search: ''
     }
   },
 
@@ -176,9 +186,11 @@ export default {
     'tag': 'initItems',
     async tags() {
       if (this.tags.length) {
+        // this.loading = true
         let tags = []
         this.tags.forEach(obj => tags.push(obj.text))
-        this.users = await this.$api.adminUsersRoles.filter(tags.join())
+        console.log(tags)
+        // this.users = await this.$api.adminUsersRoles.search(tags.join())
       } else {
         this.getResults()
       }
@@ -196,27 +208,46 @@ export default {
         page = 1;
       }
 
-      this.users = await app.$api.adminUsersRoles.index(page)
+      this.users = await this.$api.adminUsersRoles.index(page)
       this.loading = false
     },
 
+    searchUsers() {
+      if(this.search && this.search.length >= 2) {
+        this.loading = true
+        clearTimeout(this.debounce);
+
+        this.debounce = setTimeout(() => {
+          this.$api.adminUsersRoles.search({search: this.search}).then(response => {
+            console.log(response)
+            this.users = response
+          }).catch(() => {
+            console.warn('Oh. Something went wrong')
+          }).finally(() => {
+            this.loading = false
+          });
+        }, 600);
+
+      } else {
+        if (this.search === '') this.getResults(1)
+      }
+    },
+
     update(newTags) {
-      console.log(this.tags)
       this.autocompleteItems = [];
       this.tags = newTags;
     },
 
     initItems() {
       // if (this.tag.length < 2) return;
-      this.loading = true
+      this.loaderTag = true
       clearTimeout(this.debounce);
       this.debounce = setTimeout(() => {
-        this.$api.adminUsersRoles.roles(this.tag).then(response => {
-          console.log(response)
+        this.$api.adminUsersRoles.search({'filter-list': this.tag}).then(response => {
           this.autocompleteItems = response.map(a => {
             return ({text: a.name, id: a.id});
           });
-          this.loading = false
+          this.loaderTag = false
         }).catch(() => console.warn('Oh. Something went wrong'));
       }, 600);
 

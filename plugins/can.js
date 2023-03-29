@@ -1,19 +1,40 @@
-export default function( { $axios }, inject ){
+// export default function( { $axios, $auth }, inject ){
+//
+//   function can($permission) {
+//     if (typeof $permission === 'string') {
+//       return $auth.user.permission.includes($permission)
+//     } else {
+//       return $permission.every(r=> $auth.user.permission.indexOf(r) >= 0)
+//     }
+//   }
+//
+//   inject('can', can);
+// }
+
+export default function( { $axios, $auth }, inject ){
+
+  Vue.directive('can', {
+    inserted: (el, binding, vNode) => {
+      const hasPermission = can(binding.value)
+
+      if (!hasPermission) el.remove();
+    }
+  })
 
   function can($permission) {
-    let user = {
-      role: 'admin',
-      access: true,
-      permission: [
-        'view-post',
-        'created-post',
-        'updated-post',
-        'destroy-post',
-      ]
+    if (typeof $permission === 'string') {
+      return $auth.user.permission.includes($permission)
+    } else {
+      return $permission.every(r=> $auth.user.permission.indexOf(r) >= 0)
     }
-
-    return user.permission.includes($permission)
   }
 
   inject('can', can);
 }
+
+
+import Vue from 'vue'
+
+
+
+

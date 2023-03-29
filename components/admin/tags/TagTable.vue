@@ -2,7 +2,22 @@
   <div class="col-md-7">
     <div class="card">
       <div class="card-header">
-        Все теги
+        <h3 class="card-title">Таблица с тегами</h3>
+        <div class="card-tools d-flex align-items-center">
+          <form class="form-search input-group input-group-sm">
+            <input v-model="search"
+                   @keyup="searchTags()"
+                   type="text"
+                   name="table_search"
+                   class="form-control float-right border-dark"
+                   placeholder="Поиск...">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-default border-dark">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
       <div class="card-body table-responsive p-0" >
         <table class="table table-head-fixed text-nowrap tags-table">
@@ -71,7 +86,8 @@ export default {
       cache: '',
       currentUi: null,
       status: null,
-      currentTagUpdate: null
+      currentTagUpdate: null,
+      search: ''
     }
   },
 
@@ -87,11 +103,17 @@ export default {
   },
 
   methods: {
-     async getTags(page) {
+      getTags(page) {
       if (typeof page === 'undefined') {
         page = 1;
       }
-      return await this.$store.dispatch('tags/fetchTags', page)
+      if (this.search === '') return this.$store
+        .dispatch('tags/fetchTags', page)
+
+        this.$store.dispatch('tags/searchTags', {
+          page: page,
+          search: this.search,
+        })
     },
 
     disabledTarget(e) {
@@ -186,6 +208,26 @@ export default {
 
       return true;
     },
+
+    searchTags() {
+      if(this.search && this.search.length >= 2) {
+          clearTimeout(this.debounce);
+
+          this.debounce = setTimeout(() => {
+            this.$store.dispatch('tags/searchTags', {
+              page: 1,
+              search: this.search,
+            }).then(response => {
+              console.log(response)
+            }).catch(() => {
+              console.warn('Oh. Something went wrong')
+            }).finally(() => {
+            });
+          }, 600);
+      } else {
+        if (this.search === "") this.getTags()
+      }
+    }
   }
 }
 </script>

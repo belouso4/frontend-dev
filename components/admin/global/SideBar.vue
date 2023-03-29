@@ -24,14 +24,14 @@
           >
         </div>
         <div class="info">
-          <a href="#" class="d-block">{{ $auth.user.name }}</a>
+          <nuxt-link to="/admin/profile" class="d-block">{{ $auth.user.name }}</nuxt-link>
         </div>
       </div>
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul
-          class="nav nav-pills nav-sidebar flex-column"
+          class="nav nav-pills nav-sidebar flex-column nav-legacy"
           data-widget="treeview"
           role="menu"
           data-accordion="false"
@@ -55,7 +55,7 @@
               </p>
             </a>
           </li>
-          <li class="nav-item has-treeview">
+          <li v-can="'post.view'" class="nav-item has-treeview">
             <a @click.prevent="openMenu($event)" href="#" class="nav-link">
               <i class="nav-icon fas fa-copy" />
               <p>
@@ -70,7 +70,7 @@
                   <p>Все посты</p>
                 </nuxt-link>
               </li>
-              <li class="nav-item">
+              <li v-can="'post.create'" class="nav-item">
                 <nuxt-link to="/admin/posts/add" class="nav-link">
                   <i class="far fa-circle nav-icon" />
                   <p>Добавить пост</p>
@@ -79,7 +79,7 @@
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li v-can="'tag.view'" class="nav-item" >
             <nuxt-link to="/admin/tags" class="nav-link">
               <i class="nav-icon fas fa-th" />
               <p>
@@ -88,7 +88,7 @@
             </nuxt-link>
           </li>
 
-          <li class="nav-item has-treeview">
+          <li v-can="'user.view'" class="nav-item has-treeview" >
             <a @click.prevent="openMenu($event)" href="#" class="nav-link">
               <i class="nav-icon fa-solid fa-users"></i>
               <p>
@@ -105,7 +105,7 @@
                   </p>
                 </nuxt-link>
               </li>
-              <li class="nav-item">
+              <li v-can="'role.view'" class="nav-item">
                 <nuxt-link to="/admin/users/roles" class="nav-link">
                   <i class="far fa-circle nav-icon" />
                   <p>Пользователи с ролями</p>
@@ -114,12 +114,29 @@
             </ul>
           </li>
 
-
-          <li class="nav-item">
+          <li v-can="'role.view'" class="nav-item">
             <nuxt-link to="/admin/roles" class="nav-link">
               <i class="nav-icon fa-solid fa-user-shield"></i>
               <p>
                 Роли & Разрешения
+              </p>
+            </nuxt-link>
+          </li>
+
+          <li class="nav-item">
+            <nuxt-link to="/admin/email" class="nav-link">
+              <i class="nav-icon far fa-envelope"></i>
+              <p>
+                Email
+              </p>
+            </nuxt-link>
+          </li>
+
+          <li class="nav-item">
+            <nuxt-link to="/admin/email/compose" class="nav-link">
+              <i class="nav-icon far fa-envelope"></i>
+              <p>
+                Email compose
               </p>
             </nuxt-link>
           </li>
@@ -234,6 +251,9 @@
       data: () => ({
         active: false
       }),
+      created() {
+        // console.log('+++++',this.$can('post.view'))
+      },
       methods: {
         openMenu(e) {
           let sidebar = document.querySelectorAll('ul[role="menu"] li')
@@ -308,7 +328,8 @@ aside {
 }
 
 .user-panel img {
-  height: 100%;
+  height: 2.1rem;
+  object-fit: cover;
 }
 
 </style>

@@ -20,17 +20,21 @@
       <button class="btn-all-collection">
         Коллекции <i class="fa-solid fa-angle-up"></i>
       </button>
+
       <div class="permissions-table_body">
         <div v-for="permission in permissions" class="permissions-table_body__row">
           <span class="name">{{permission.group_name}}</span>
           <span v-for="(value, key) in permission.actions"
-                @click="updatePermission(key, permission.group_slug)" class="v-icon elem-permission">
+                @click="updatePermission(key, permission.group_slug)"
+                :class="[{'disabled': $route.params.id == 1 && ((13 <= key) && (key <= 16))},'v-icon elem-permission']">
+
             <img v-if="key === currentLoad" src="/loader.gif" alt="">
             <i v-else-if="examination(value, permission.group_slug)" class="fa-solid fa-check"></i>
             <i v-else class="fa-solid fa-ban"></i>
           </span>
         </div>
       </div>
+
       <div class="permissions-table_footer">
         Сбросьте системные разрешения на:
         <span @click="setMinimumPermissions()">Минимальный доступ к приложению</span> / <span @click="setDefaultPermissions()">Рекомендуемые значения по умолчанию</span>
@@ -62,6 +66,8 @@ export default {
   },
   methods: {
     async updatePermission(id, slug) {
+      //it is forbidden to change the role with id 1 and permissions under id c 13-16
+      if(this.$route.params.id == 1 && (13 <= id) && (id <= 16)) return
       this.currentLoad = id
 
       await this.$api.adminRoles.permissionUpdate(this.$route.params.id, {id, slug})
@@ -86,11 +92,13 @@ export default {
     },
 
     setDefaultPermissions() {
+      if (this.$route.params.id == 1) return this.$toaster.warning('Изменять разрешения для главной роли запрещено')
       this.$emit("update:show", true);
       this.$emit("update:action", this.defaultPermissions);
     },
 
     setMinimumPermissions() {
+      if (this.$route.params.id == 1) return this.$toaster.warning('Изменять разрешения для главной роли запрещено')
       this.$emit("update:show", true);
       this.$emit("update:action", this.minimumPermissions);
     },

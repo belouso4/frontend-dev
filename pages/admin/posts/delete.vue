@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -14,7 +14,7 @@
             </ol>
           </div>
         </div>
-        <nuxt-link to="/admin/post/add" style="font: 22px;" class="add-post">Добавить новый пост</nuxt-link>
+        <nuxt-link to="/admin/posts/add" style="font: 22px;" class="add-post">Добавить новый пост</nuxt-link>
       </div>
     </section>
 
@@ -112,7 +112,10 @@ import { mapGetters } from "vuex";
 export default {
   name: "delete",
   layout: 'Admin',
-
+  middleware: 'permission',
+  meta: {
+    permission: "post.delete"
+  },
   data() {
     return {
       BASE_URL: process.env.API_BASE_URL,

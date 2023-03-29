@@ -8,7 +8,7 @@
          v-show="show"
          @mousedown.self="closeModal">
       <div class="modal-dialog" :class="[size,marginLg]">
-        <div class="modal-content">
+        <div :class="['modal-content', bg]">
           <slot></slot>
         </div>
       </div>
@@ -28,6 +28,10 @@ export default {
     marginLg: {
       type: String,
       defaults: ''
+    },
+    bg: {
+      type: String,
+      defaults: ''
     }
   },
   data() {
@@ -39,6 +43,7 @@ export default {
     show(val) {
       let documentClasses = document.body.classList,
           scroll = this.calcScroll()
+
       if (val) {
 
         documentClasses.add("modal-open");
@@ -79,14 +84,14 @@ export default {
 
     checkScrollBar() {
       if(-[1,]){
-        if (document.body.offsetHeight > window.innerHeight) {
+        if (document.body.offsetHeight > window.innerHeight + 1) {
           return true
         } else {
           return false
         }
 
       } else {
-        if (document.body.offsetHeight > document.documentElement.clientHeight) {
+        if (document.body.offsetHeight < document.documentElement.clientHeight) {
           return true
         }
         else {
@@ -115,7 +120,8 @@ export default {
 
 .modal-open .custom-model {
   overflow-x: hidden;
-  overflow-y: auto;
+  /*overflow-y: auto;*/
+  overflow-y: hidden;
 }
 
 .custom-model.fade .modal-dialog {

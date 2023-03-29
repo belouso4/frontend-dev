@@ -32,9 +32,9 @@
         </aside>
         <div class="wrapper-post">
           <h1>{{ post.title }}</h1>
-          <img height="560" :src="BASE_URL + '/storage/posts/' + post.img" alt="">
+          <img height="560" :src="BASE_URL + '/posts/' + post.img" alt="">
           <p v-if="post.excerpt != 'null'">{{ post.excerpt }}</p>
-          <p class="news-item-area_desc" v-html="post.desc"></p>
+          <div class="news-item-area_desc" v-html="post.desc"></div>
           <Comments :comments="comments"/>
         </div>
       </div>
@@ -52,8 +52,7 @@ import Comments from "../../components/Comments";
 export default {
   name: 'addPost',
   components: {Comments},
-  layout: 'App',
-
+  layout: 'AppMain',
   head() {
     return {
       title: this.post.meta_title ?? this.post.title,
@@ -76,27 +75,20 @@ export default {
     return {
       post: {},
       comments: {},
-      BASE_URL: process.env.API_BASE_URL,
+      BASE_URL: process.env.API_BASE_URL_IMG,
     }
   },
 
   async asyncData({app, params,error}) {
-    try {
       const [post, comments] = await Promise.all([
         app.$api.posts.show(params.slug),
         app.$api.comments.index(params.slug, 0)
       ]);
       return {post, comments}
-    } catch ( e ){
-      error()
-
-      // error(404, '');
-    }
-
   },
 
   created() {
-    console.log('rr', this.comments)
+    // console.log('rr', this.comments)
   }
 
 }

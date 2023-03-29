@@ -108,8 +108,8 @@
 import zxcvbn from 'zxcvbn'
 
     export default {
-      layout: 'App',
-      middleware: ['auth'],
+      layout: 'AppMain',
+      middleware: ['auth', 'verified'],
       data(){
         return {
           imgShow: 'avatar.png',
@@ -179,7 +179,7 @@ import zxcvbn from 'zxcvbn'
         },
 
         async sendForm() {
-          if(this.validateProfileUpdates()) {
+          if(true) {
             let formData = new FormData();
 
             Object.entries(this.form).forEach(val => {

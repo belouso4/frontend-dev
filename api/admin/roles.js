@@ -7,6 +7,7 @@ export default $axios => ({
     }
   },
 
+
   async create(name) {
     try {
       return await $axios.$post('/v1/admin/role', name);
@@ -83,5 +84,17 @@ export default $axios => ({
   //   } catch (err) {
   //   }
   // },
+
+  async search( query ){
+    try {
+      return await $axios.$get('/v1/admin/roles/search', {
+        params: {
+          ...query
+        }
+      });
+    } catch ( err ){
+      console.log(err)
+    }
+  },
 
 })

@@ -34,7 +34,8 @@
 
             }
         },
-        computed: {
+
+      computed: {
             showFooter(){
                 let pages = [
                 ];

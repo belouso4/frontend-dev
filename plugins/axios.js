@@ -1,31 +1,85 @@
-export default function({app, route, $axios, redirect, store}) {
+export default function({app, route, $axios, redirect, store, error: nuxtError}) {
   // handle api errors
 
-  $axios.onError((error) => {
-    // console.log(app.context.from.path)
-    console.log('plugins axios handling error')
-    const url = app.context.from.path.split('/')
+  $axios.onError(error => {
+   console.log(error.message)
     const code = parseInt(error.response && error.response.status)
-
-    // not found - show page
+    console.log('plugins axios handling error')
+    // const url = app.context.from.path.split('/')
+    const url = route.path.split('/')
     // console.log(url[1],code,app.context.from.path)
-    // console.log(error.response)
-    // console.log('error',error.response.data.errors)
-    if (code === 404) {
-      if(url[1] === 'admin') {
-        redirect('/admin/404');
-      } else {
-        redirect('/404')
+
+
+    if (process.server) {
+      if (code === 404) {
+        nuxtError({
+          statusCode: error.response.status,
+          message: 'Такой страницы не существует',
+        });
+
+        return Promise.resolve(false);
+      }
+
+
+      if (code === 500) {
+        nuxtError({
+          statusCode: error.response.status,
+          message: error.message,
+        });
+
+        return Promise.resolve(false);
       }
     }
 
-    if (code === 500) {
-      console.log('500')
+
+    if (process.client && url[1] === 'admin') {
+      // if (code === 404 || code === 500) {
+      //   redirect('/admin/404');
+      // }
+
+
+      if (code === 404) {
+        nuxtError({
+          statusCode: error.response.status,
+          message: 'Такой страницы не существует',
+        });
+
+        return Promise.resolve(false);
+      }
+
+      if (code === 500) {
+        nuxtError({
+          statusCode: error.response.status,
+          message: error.message,
+        });
+
+        return Promise.resolve(false);
+      }
+
+      if (code === 422) {
+        console.log(error.response.data.errors)
+        for (const [key, value] of Object.entries(error.response.data.errors)) {
+          app.$toaster.error(value[0])
+        }
+      }
     }
 
-    if (error.response.status === 500) {
-      console.log('500')
-    }
+
+    // if (code === 404) {
+    //   if(url[1] === 'admin') {
+    //     redirect('/admin/404');
+    //   } else {
+    //
+    //   }
+    // }
+
+
+    // if (code === 403) {
+    //   console.log(error)
+    //   app.$toaster.error(error.message)
+    // }
+
+
 
     if (code === 422) {
       store.dispatch('validation/setErrors', error.response.status)
@@ -39,7 +93,8 @@ export default function({app, route, $axios, redirect, store}) {
     return Promise.reject(error)
   })
 
-  $axios.onRequest(() => {
+  $axios.onRequest((config) => {
+    config.progress = false;
     store.dispatch('validation/clearErrors')
   })
 

@@ -32,4 +32,16 @@ export default $axios => ({
     }
   },
 
+  async search( query ){
+    try {
+      return await $axios.$get('/v1/admin/tags/search', {
+        params: {
+          ...query
+        }
+      });
+    } catch ( err ){
+      console.log(err)
+    }
+  },
+
 })

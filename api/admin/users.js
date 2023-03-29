@@ -19,7 +19,7 @@ export default $axios => ({
   async edit(id){
     try {
 
-      return await $axios.$get('/v1/admin/user/edit/'+id);
+      return await $axios.$get('/v1/admin/user/edit/'+id, { progress: false });
     } catch ( err ){
       console.log(err)
     }
@@ -29,6 +29,7 @@ export default $axios => ({
     try {
 
       return await $axios.$post('/v1/admin/user/'+id, data, {
+        progress: false,
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -50,7 +51,7 @@ export default $axios => ({
     try {
       return await $axios.$get('/v1/admin/user/search', {
         params: {
-          search: query
+          ...query
         }
       });
     } catch ( err ){

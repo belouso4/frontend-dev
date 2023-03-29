@@ -12,10 +12,10 @@
       <div v-for="comment in comments.comments" class="comment">
         <div class="main-comment">
           <div class="avatar">
-            <img :src="BASE_URL + comment.user.avatar" alt="">
+            <img :src="comment.user.avatar" alt="">
           </div>
           <div class="comment-header">
-            {{ comment.user.name }} • {{ comment.created_at | formatDate('DD.MM.YYYY') }}
+            {{ comment.user.name }} • {{ comment.created_at }}
           </div>
           <p class="comment-body">
             {{ comment.body }}
@@ -38,10 +38,10 @@
           <div v-if="repliesShow.length > 0 && repliesShow.indexOf(comment.id) !== -1"
                v-for="reply in comment.replies" class="comment">
             <div class="avatar">
-              <img :src="BASE_URL + comment.user.avatar" alt="">
+              <img :src="comment.user.avatar" alt="">
             </div>
             <div class="comment-header">
-              {{ reply.user.name }} • {{ reply.created_at | formatDate('DD.MM.YYYY') }}
+              {{ reply.user.name }} • {{ reply.created_at }}
               <!--              Sebastian hilton • Feb 26-->
             </div>
             <p class="comment-body">
@@ -92,7 +92,6 @@ export default {
   props: ['comments'],
 
   data: () => ({
-    BASE_URL: process.env.API_BASE_URL + '/storage/',
     body: '',
     showComments: false,
     replyingTo: {},

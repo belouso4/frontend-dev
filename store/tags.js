@@ -13,6 +13,16 @@ export const actions = {
     commit('setLoading', false)
     return tags
   },
+
+  async searchTags({commit}, query) {
+    commit('setLoading')
+
+    const tags = await this.$api.adminTags.search(query)
+
+    commit('setTags', tags)
+    commit('setLoading', false)
+    return tags
+  },
 }
 
 export const mutations = {

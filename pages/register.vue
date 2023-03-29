@@ -45,7 +45,7 @@
 
     export default {
         middleware: 'guest',
-        layout: 'App',
+        layout: 'AppMain',
         data(){
             return {
               loading: false,

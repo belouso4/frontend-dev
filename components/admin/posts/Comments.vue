@@ -14,7 +14,7 @@
             <img :src="comment.user.avatar" alt="">
           </div>
           <div class="comment-header">
-            {{ comment.user.name }} • {{ comment.created_at | formatDate('DD.MM.YYYY') }}
+            {{ comment.user.name }} • {{ comment.created_at }}
             <span @click="deleteComment(comment.id)"><i class="fas fa-trash"></i></span>
           </div>
           <p class="comment-body">
@@ -24,9 +24,9 @@
             <p @click="setReplyingTo(comment)">
               <i class="fa-solid fa-reply"></i>
             </p>
-            <p v-if="comment.replies.length" @click="repliesSetShow(comment.id)">
+            <p v-if="comment.replies?.length" @click="repliesSetShow(comment.id)">
               <i class="fa-solid fa-comment"></i>
-              <span>{{ comment.replies.length }}</span>
+              <span>{{ comment.replies?.length }}</span>
             </p>
             <p @click.prevent="like(comment)" :class="[{ active: comment.user_like_count }, 'like']">
               <i class="far fa-heart"></i>
@@ -41,7 +41,7 @@
               <img :src="comment.user.avatar" alt="">
             </div>
             <div class="comment-header">
-              {{ reply.user.name }} • {{ reply.created_at | formatDate('DD.MM.YYYY') }}
+              {{ reply.user.name }} • {{ reply.created_at }}
               <span @click="deleteComment(reply.id)"><i class="fas fa-trash"></i></span>
               <!--              Sebastian hilton • Feb 26-->
             </div>
@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <template v-if="comments.comments_count !== comments.comments.length">
+      <template v-if="comments.comments_count !== comments.comments?.length">
         <div v-if="!loading && comments.comments_count"
              @click="loadComments(comments.comments.length)"
              class="comment-load">
@@ -104,7 +104,6 @@ export default {
 
   methods: {
     async sendComment(e) {
-      if (!this.$auth.loggedIn) this.$router.push({path: '/login'})
       if (this.body != '') {
         e.target.querySelector('textarea').setAttribute('disabled', '')
         const data = {

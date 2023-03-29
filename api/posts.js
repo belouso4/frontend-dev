@@ -4,15 +4,16 @@ export default $axios => ({
     try {
       return await $axios.$get('/v1/posts?page='+page);
     } catch ( err ){
-
+      console.log(err)
     }
   },
 
   async show(slug){
     try {
       return await $axios.$get('/v1/post/'+slug);
-    } catch ( err ){
-      console.log(err)
+    } catch ( {response} ){
+      // throw response
+      // console.log(err)
     }
 
   },

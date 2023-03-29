@@ -1,5 +1,6 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
+
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -7,25 +8,22 @@
             <h1>Каталог пользователей</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item active">Каталог пользователей</li>
-            </ol>
+            <Breadcrumbs :title="'Каталог пользователей'" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
     </section>
 
     <section class="content">
-
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">Таблица с пользователями</h3>
           <div class="card-tools d-flex align-items-center">
-            <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
+            <nuxt-link v-can="'user.create'" class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
                        to="/admin/users/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
             <form class="form-search input-group input-group-sm">
               <input v-model="search"
+                     @keyup="searchUsers()"
                      type="text"
                      name="table_search"
                      class="form-control float-right border-dark"
@@ -80,10 +78,10 @@
                 <!--                  </span>-->
                 <!--              </td>-->
                 <td class="project-actions">
-                  <nuxt-link title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/users/'+user.id">
+                  <nuxt-link v-can="'user.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/users/'+user.id">
                     <i class="fa-solid fa-user-pen"></i>
                   </nuxt-link>
-                  <a title="Удалить" @click.prevent="remove(user.id)" class="btn btn-outline-dark btn-sm" href="#">
+                  <a v-can="'user.delete'" title="Удалить" @click.prevent="remove(user.id)" class="btn btn-outline-dark btn-sm" href="#">
                     <i class="fas fa-trash">
                     </i>
                   </a>
@@ -113,10 +111,16 @@
 </template>
 
 <script>
-
+ import Breadcrumbs from "../../../components/admin/ui/Breadcrumbs";
 export default {
+  components: {Breadcrumbs},
   name: "posts",
   layout: 'Admin',
+  middleware: 'permission',
+  meta: {
+    permission: 'user.view'
+  },
+
   head() {
     return {
       title: 'Каталог пользователей',
@@ -147,14 +151,36 @@ export default {
     return {users}
   },
 
-  watch: {
-    search() {
-      if(this.search) {
-        if (this.search.length >= 2) {
+  computed: {
+
+      // filteredList() {
+      //   return this.postList.filter(post => {
+      //     return post.title.toLowerCase().includes(this.search.toLowerCase())
+      //   })
+      // }
+
+  },
+
+  methods: {
+    async getResults(page = 1) {
+      this.loading = true
+
+      // this.$router.push({path: '/admin/users', query: {page: page}})
+
+      this.users = this.search === ''
+        ? await this.$api.adminUsers.index(page)
+        : await this.$api.adminUsers.search({page, search: this.search})
+
+      this.loading = false
+    },
+
+    searchUsers() {
+      if(this.search && this.search.length >= 2) {
           this.loading = true
           clearTimeout(this.debounce);
+
           this.debounce = setTimeout(() => {
-            this.$api.adminUsers.search(this.search).then(response => {
+            this.$api.adminUsers.search({search: this.search}).then(response => {
               this.users = response
             }).catch(() => {
               console.warn('Oh. Something went wrong')
@@ -162,32 +188,9 @@ export default {
               this.loading = false
             });
           }, 600);
-        }
       } else {
         this.getResults(1)
       }
-    }
-  },
-
-  computed: {
-    computed: {
-      // filteredList() {
-      //   return this.postList.filter(post => {
-      //     return post.title.toLowerCase().includes(this.search.toLowerCase())
-      //   })
-      // }
-    }
-  },
-
-  methods: {
-    async getResults(page) {
-      this.loading = true
-      if (typeof page === 'undefined') {
-        page = 1;
-      }
-
-      this.users = await this.$api.adminUsers.index(page)
-      this.loading = false
     },
 
     async remove(id) {
@@ -206,6 +209,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
 </style>

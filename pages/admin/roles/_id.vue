@@ -1,10 +1,10 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Создание нового поста</h1>
+            <h1 class="m-0">Редактирование роли</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -97,6 +97,10 @@ import UserAddModal from "../../../components/admin/roles/UserAddModal";
 import {mapGetters} from "vuex";
 export default {
   name: 'addPost',
+  middleware: 'permission',
+  meta: {
+    permission: 'role.edit'
+  },
   components: {
     UserAddModal,
     UsersListModal,
@@ -132,7 +136,7 @@ export default {
   },
 
   created() {
-    console.log(this.form,this.permissions)
+
   },
 
   data() {
@@ -415,6 +419,14 @@ ul.select-tags {
 .permissions-table_body .elem-permission:hover{
   background: #ededed;
   transition: background 0.3s ease;
+}
+
+.permissions-table_body .elem-permission.disabled{
+  opacity: .5;
+  cursor: default;
+}
+.permissions-table_body .elem-permission.disabled:hover{
+  background: transparent;
 }
 
 .permissions-table_body .permissions-table_body__row{

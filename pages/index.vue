@@ -214,7 +214,7 @@
 <script>
 export default {
   name: 'index',
-  layout: 'App',
+  layout: 'AppMain',
   head() {
     return {
       title: 'Список всех постов',
@@ -229,11 +229,11 @@ export default {
     }
   },
   created() {
-    console.log(this.$auth.$state.user)
+    console.log(this.$auth.user)
   }
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

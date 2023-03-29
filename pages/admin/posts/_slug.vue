@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
 
     <section class="content-header">
       <div class="container-fluid">
@@ -146,6 +146,10 @@ import Metadata from "../../../components/admin/posts/Metadata";
 export default {
   name: 'addPost',
   components: {Metadata, Comments, TextEditor},
+  middleware: 'permission',
+  meta: {
+    permission: 'post.edit'
+  },
   layout: 'Admin',
   head() {
     return {

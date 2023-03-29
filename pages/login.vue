@@ -17,7 +17,11 @@
           <p v-if="!validations.password.valid" class="error-msg">{{ validations.password.message }}</p>
           <p v-if="!validations.invalidLogin.valid" class="error-msg">{{ validations.invalidLogin.message }}</p>
         </label>
-        <button>Войти</button>
+        <div class="form-auth_footer d-flex">
+          <nuxt-link to="/forgot-password">Забыли пароль?</nuxt-link>
+          <button>Войти</button>
+        </div>
+
       </form>
     </div>
   </section>
@@ -26,7 +30,7 @@
 <script>
     export default {
         middleware: 'guest',
-        layout: 'App',
+        layout: 'AppMain',
         data(){
             return {
                 form: {
@@ -51,7 +55,10 @@
                 errorMessage: ''
             }
         },
-        methods: {
+      created() {
+        console.log(process.env.API_BASE_URL)
+      },
+      methods: {
             validateLogin(){
 
                 if( this.form.email == ''
@@ -98,6 +105,9 @@
     }
 </script>
 
-<style scoped>
-
+<style>
+ .form-auth_footer a {
+   display: block;
+   cursor: pointer;
+ }
 </style>

@@ -11,20 +11,9 @@ export default $axios => ({
   async edit(slug){
     try {
       return await $axios.$get('/v1/admin/post/'+slug+'/edit');
-    } catch ( err ){
-      console.log(err)
-    }
-  },
-
-  async getTags(query){
-    try {
-      return await $axios.$get('/v1/admin/tags/search', {
-        params: {
-          search: query
-        }
-      });
-    } catch ( err ){
-      console.log(err)
+    } catch ( {response} ){
+      // console.log('Это ошибка',response)
+      // throw response
     }
   },
 
@@ -87,6 +76,18 @@ export default $axios => ({
       console.log(err)
     }
 
+  },
+
+  async search( query ){
+    try {
+      return await $axios.$get('/v1/admin/posts/search', {
+        params: {
+          ...query
+        }
+      });
+    } catch ( err ){
+      console.log(err)
+    }
   },
 
 })

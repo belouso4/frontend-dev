@@ -20,21 +20,26 @@
     </ul>
 
     <!-- SEARCH FORM -->
-    <form class="form-inline ml-3">
-      <div class="input-group input-group-sm">
-        <input
-          class="form-control form-control-navbar"
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-        >
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fas fa-search" />
-          </button>
-        </div>
-      </div>
-    </form>
+<!--    <form class="form-inline ml-3" style="cursor: pointer" @submit.prevent @click="$store.commit('ui/setSearchModal')">-->
+<!--      <div class="input-group input-group-sm">-->
+<!--        <input-->
+<!--          style="cursor: pointer"-->
+<!--          class="form-control form-control-navbar"-->
+<!--          placeholder="Search"-->
+<!--          aria-label="Search"-->
+<!--        >-->
+<!--        <div class="input-group-append">-->
+<!--          <button  class="btn btn-navbar" type="submit">-->
+<!--            <i class="fas fa-search" />-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </form>-->
+    <!-- SEARCH FORM -->
+    <button class="btn btn-block btn-default ml-3 btn-search" @click="$store.commit('ui/setSearchModal')">
+      <div>Search</div>
+      <span><i class="fas fa-search" /></span>
+    </button>
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
@@ -175,7 +180,7 @@
       data() {
         return {
           isStripeLoaded: false,
-          fullHeight: null
+          fullHeight: null,
         }
       },
       methods: {
@@ -242,5 +247,11 @@
 </script>
 
 <style scoped>
-
+.btn-search {
+  max-width: 200px;
+  width: 100%;
+  text-align: unset;
+  display: flex;
+  justify-content: space-between;
+}
 </style>

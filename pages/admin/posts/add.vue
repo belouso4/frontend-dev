@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -28,19 +28,20 @@
               <!-- form start -->
 
                 <div class="card-body">
-                  <div class="form-group">
-                    <label for="header-text">Заголовок*</label>
-                    <input v-model="form.title" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
-                    <p class="error-text" v-if="!validations.title.valid">{{validations.title.message}}</p>
-                  </div>
-                  <div class="form-group">
-                    <label>Описание*</label>
+
+                    <form-group :validator="$v.form.title" label="Заголовок">
+                      <input v-model="form.title" type="text"
+                             :class="['form-control', {'is-invalid': $v.form.title.$error}]"
+                             id="header-text"
+                             placeholder="Введите заголовок">
+                    </form-group>
+
+                  <form-group :validator="$v.form.desc" label="Описание">
                     <client-only>
                       <text-editor v-model="form.desc"/>
                     </client-only>
+                  </form-group>
 
-                    <p class="error-text" v-if="!validations.desc.valid">{{validations.desc.message}}</p>
-                  </div>
                   <div class="form-group">
                     <label for="except-textarea">Небольшое описание</label>
                     <textarea v-model="form.excerpt" type="text" class="form-control" id="except-textarea" placeholder="Введите небольшое описание"></textarea>
@@ -49,12 +50,6 @@
                     <li class="nav-item" @click="tabShow = 'Metadata'">
                       <a class="nav-link" :class="[{active: tabShow === 'Metadata'}]">MetaData</a>
                     </li>
-                    <li class="nav-item" @click="tabShow = 'Comments'">
-                      <a class="nav-link" :class="[{active: tabShow === 'Comments'}]">
-                        Comments
-                        <i v-if="loadingComments" class="fas fa-3x fa-sync-alt fa-spin"></i>
-                      </a>
-                    </li>
                   </ul>
                   <div class="tab-content" id="custom-content-below-tabContent">
                     <transition mode="out-in" name="tabs">
@@ -62,9 +57,6 @@
                                 :meta-title.sync="form.meta_title"
                                 :meta-desc.sync="form.meta_desc"
                                 :meta-keywords.sync="form.keywords"/>
-                      <Comments v-else-if="tabShow === 'Comments'"
-                                :comments.sync="comments"
-                                :loading-comments.sync="loadingComments"/>
                     </transition>
                   </div>
                 </div>
@@ -93,15 +85,14 @@
                       <label class="form-check-label" for="publicCheck1">Публичный</label>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <!-- <label for="customFile">Custom File</label> -->
-                    <label>Изображение для превью*</label>
+
+                  <form-group :validator="$v.form.img" attribute="Изображение" label="Изображение для превью">
                     <div class="custom-file">
                       <input @change="onFileChange" type="file" placeholder="Довавьте изображение" class="custom-file-input" id="customFile">
                       <label class="custom-file-label" for="customFile">Довавьте изображение...</label>
-                      <p class="error-text" v-if="!validations.img.valid">{{validations.img.message}}</p>
                     </div>
-                  </div>
+                  </form-group>
+
                   <div class="form-group img">
                     <img v-if="imgShow ? true : false" :src="imgShow" alt="">
                   </div>
@@ -111,11 +102,10 @@
                       <vue-tags-input
                         v-model="tag"
                         :tags="form.tags"
-                        :allow-edit-tags="true"
                         :add-only-from-autocomplete="true"
-                        :autocomplete-items="items"
+                        :autocomplete-items="autocompleteItems"
                         class="tags-input"
-                        @tags-changed="newTags => form.tags = newTags"
+                        @tags-changed="update"
                       >
                       </vue-tags-input>
                     </client-only>
@@ -144,13 +134,23 @@
 
 <script>
 import TextEditor from "../../../components/admin/posts/TextEditor";
-import Comments from "../../../components/admin/posts/Comments";
 import Metadata from "../../../components/admin/posts/Metadata";
+import { required, minLength, between, helpers } from 'vuelidate/lib/validators'
+
+let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+const fileImg = (value) => !helpers.req(value) || allowedExtension.indexOf(value.type) > -1
+const filSize = (value) => !helpers.req(value) || (value.size / 1024 / 1024) < 1
 
 export default {
-  name: 'addPost',
-  components: {Comments, TextEditor, Metadata},
   layout: 'Admin',
+  name: 'addPost',
+  components: {TextEditor, Metadata},
+  middleware: 'permission',
+  meta: {
+    permission: 'post.create',
+  },
+
   head() {
     return {
       title: 'Создание нового поста',
@@ -163,14 +163,14 @@ export default {
       ],
     }
   },
+
   data() {
     return {
       tabShow: 'Metadata',
-      loadingComments: false,
       showAnimate: true,
-
+      autocompleteItems: [],
+      debounce: false,
       tag: '',
-      selectTags: {},
       send: false,
       form:{
         title: '',
@@ -184,38 +184,30 @@ export default {
         meta_desc: ''
       },
       imgShow: false,
-      validations: {
+    }
+  },
+  validations() {
+    return {
+      form: {
         title: {
-          valid: true,
-          message: ''
+          required,
+          minLength: minLength(4)
         },
         desc: {
-          valid: true,
-          message: ''
+          required,
+          minLength: minLength(4)
         },
         img: {
-          valid: true,
-          message: ''
-        },
-      },
+          required,
+          fileImg,
+          filSize
+        }
+      }
+
     }
   },
 
   watch:{
-    'form.title':  {
-      handler: function (after, before) {
-        this.validations.title.valid = true
-      },
-      deep: true
-    },
-
-    'form.desc':  {
-      handler: function (after, before) {
-        this.validations.desc.valid = true
-      },
-      deep: true
-    },
-
     'form.img': {
       handler: function (after, before) {
         if (this.form.img !== '') {
@@ -223,30 +215,37 @@ export default {
         }
       },
       deep: true
-    }
-  },
-
-  async fetch() {
-    this.selectTags = await this.$api.adminPosts.getTags()
-  },
-
-  computed: {
-    items() {
-      if(Object.keys(this.selectTags).length > 0) {
-        return this.selectTags.filter(a => {
-          return a.tag.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-        }).map(a => ({text: a.tag, id: a.id}));
-      }
     },
+    'tag': 'initItems',
   },
 
   methods: {
+    update(newTags) {
+      this.autocompleteItems = [];
+      this.form.tags = newTags;
+    },
+
+    initItems() {
+      if (this.tag.length < 2) return;
+      clearTimeout(this.debounce);
+
+      this.debounce = setTimeout(() => {
+        this.$api.adminTags.search({search: this.tag}).then(({data}) => {
+          this.autocompleteItems = data.filter(a => {
+            return a.tag.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+          }).map(a => ({text: a.tag, id: a.id}));
+        })
+      }, 600)
+
+    },
+
     async sendBtn() {
-      if (this.validation()) {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
         await this.$api.adminPosts.create(this.formData(this.form)).then((slug) => {
           this.send = true
           this.$router.push({path: `/admin/posts/${slug}`})
-          this.clearForm()
+          // this.clearForm()
         })
 
       }
@@ -282,66 +281,6 @@ export default {
       return formData
     },
 
-    validation() {
-      let validNewPostForm = true;
-      let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-
-      if( this.form.title == '' ){
-        validNewPostForm = false;
-
-        this.validations.title.valid = false;
-        this.validations.title.message = 'Введите заголовок'
-      }else{
-        if( this.form.title.length < 3 ){
-          validNewPostForm = false;
-
-          this.validations.title.valid = false;
-          this.validations.title.message = 'Заголовок не может быть меньше 5 символов'
-        }else{
-          this.validations.title.valid = true;
-          this.validations.title.message = '';
-        }
-      }
-
-      if( this.form.desc == '' ){
-        validNewPostForm = false;
-
-        this.validations.desc.valid = false;
-        this.validations.desc.message = 'Введите описание'
-      }else{
-        if( this.form.desc.length < 3 ){
-          validNewPostForm = false;
-
-          this.validations.desc.valid = false;
-          this.validations.desc.message = 'Описание не может быть меньше 3 символов'
-
-        }else{
-          this.validations.desc.valid = true;
-          this.validations.desc.message = '';
-        }
-      }
-
-      if( this.form.img == ''){
-        validNewPostForm = false;
-
-        this.validations.img.valid = false;
-        this.validations.img.message = 'Добавьте изображение'
-      }else{
-        if( allowedExtension.indexOf(this.form.img.type) >-1 ){
-          this.validations.img.valid = true;
-          this.validations.img.message = '';
-
-        }else{
-          validNewPostForm = false;
-
-          this.validations.img.valid = false;
-          this.validations.img.message = 'Поддерживаемые типы файлов - jpeg, jpg, png, gif'
-        }
-      }
-
-      return validNewPostForm;
-    },
-
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
@@ -370,20 +309,6 @@ export default {
       this.imgShow            = false;
       this.tag                = '';
       this.keywords           = '';
-      this.validations = {
-        title: {
-          valid: true,
-          text: ''
-        },
-        desc: {
-          valid: true,
-          text: ''
-        },
-        img: {
-          valid: true,
-          text: ''
-        },
-      };
     },
   },
 
@@ -412,11 +337,6 @@ export default {
   border: none;
   outline: none;
   font-size: 16px;
-}
-
-.error-text {
-  color: red;
-  margin-top: 4px;
 }
 
 ul.select-tags {
@@ -490,6 +410,22 @@ ul.select-tags {
 
 .nav-tabs a {
   cursor: pointer;
+}
+
+
+.form-group.error > div.form-error {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 80%;
+  color: #dc3545;
+}
+
+.form-group.error .custom-file-label {
+  border-color: #dc3545;
+  background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(9.95em + 0.375rem) calc(0.75em + 0.375rem);
 }
 
 </style>

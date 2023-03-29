@@ -36,6 +36,7 @@
             </button>
             <form class="form-search input-group input-group-sm" style="width: 300px;">
               <input v-model="search"
+                     @keyup="searchUsers()"
                      type="text"
                      name="table_search"
                      class="form-control float-right border-dark"
@@ -140,27 +141,6 @@ export default {
         this.usersAdded = deleted_user
       }
     },
-
-    search() {
-      if(this.search) {
-        if (this.search.length >= 3) {
-          this.loading = true
-          clearTimeout(this.debounce);
-
-          this.debounce = setTimeout(() => {
-            this.$api.adminUsers.search(this.search).then(response => {
-              this.users = response
-            }).catch(() => {
-              console.warn('Oh. Something went wrong')
-            }).finally(() => {
-              this.loading = false
-            });
-          }, 600);
-        }
-      } else {
-        this.getUsers(1)
-      }
-    }
   },
 
   methods: {
@@ -174,14 +154,37 @@ export default {
       this.checkbox = []
     },
 
+    searchUsers() {
+      if(this.search) {
+        if (this.search.length >= 3) {
+          this.loading = true
+          clearTimeout(this.debounce);
+
+          this.debounce = setTimeout(() => {
+            this.$api.adminUsers.search({search: this.search}).then(response => {
+              this.users = response
+            }).catch(() => {
+              console.warn('Oh. Something went wrong')
+            }).finally(() => {
+              this.loading = false
+            });
+          }, 600);
+        }
+      } else {
+        this.getUsers(1)
+      }
+    },
+
     async getUsers(page) {
       this.loading = true
       if (typeof page === 'undefined') {
         page = 1;
       }
 
-      let users = await this.$api.adminUsers.index(page)
-      this.users = users
+      this.users = this.search === ''
+        ? await this.$api.adminUsers.index(page)
+        : await this.$api.adminUsers.search({page, search: this.search})
+
       this.loading = false
     },
 

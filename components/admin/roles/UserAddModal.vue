@@ -97,7 +97,7 @@ export default {
   },
   data() {
     return {
-      imgShow: process.env.API_BASE_URL + '/storage/avatar.png',
+      imgShow: process.env.API_BASE_URL_IMG + '/avatar.png',
       form: {
         name: '',
         email: '',
@@ -141,7 +141,7 @@ export default {
 
     clearForm() {
       this.form = { ...this.formCopy };
-      this.imgShow = process.env.API_BASE_URL + '/storage/avatar.png'
+      this.imgShow = process.env.API_BASE_URL_IMG + '/avatar.png'
     }
   },
 }

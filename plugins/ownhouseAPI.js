@@ -8,6 +8,8 @@ import AdminPostCommentsAPI from "../api/admin/comments.js";
 import AdminUsersAPI from "../api/admin/users.js";
 import AdminRolesAPI from "../api/admin/roles.js";
 import AdminUsersRolesAPI from "../api/admin/users-roles.js";
+import AdminGeneralAPI from "../api/admin/general.js";
+import AdminMailAPI from "../api/admin/mail.js";
 
 export default function( { $axios }, inject ){
 
@@ -24,6 +26,8 @@ export default function( { $axios }, inject ){
     adminUsers: AdminUsersAPI( $axios ),
     adminRoles: AdminRolesAPI( $axios ),
     adminUsersRoles: AdminUsersRolesAPI( $axios ),
+    adminGeneral: AdminGeneralAPI( $axios ),
+    adminMail: AdminMailAPI( $axios ),
   }
 
   inject('api', api);

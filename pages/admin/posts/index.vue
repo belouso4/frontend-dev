@@ -1,5 +1,5 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -13,13 +13,6 @@
             </ol>
           </div>
         </div>
-        <div class="d-flex align-items-center justify-content-between">
-          <nuxt-link to="/admin/posts/delete" style="font: 22px;">
-            Удалённые посты
-          </nuxt-link>
-          <nuxt-link to="/admin/posts/add">Добавить новый пост</nuxt-link>
-        </div>
-
       </div><!-- /.container-fluid -->
     </section>
 
@@ -27,6 +20,26 @@
 
       <!-- Default box -->
       <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Таблица с постами</h3>
+          <div class="card-tools d-flex align-items-center">
+            <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
+                       to="/admin/posts/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
+            <form class="form-search input-group input-group-sm">
+              <input v-model="search"
+                     @keyup="searchPosts()"
+                     type="text"
+                     name="table_search"
+                     class="form-control float-right border-dark"
+                     placeholder="Поиск...">
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-default border-dark">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
 
         <div class="card-body p-0">
           <table  class="table projects">
@@ -76,11 +89,11 @@
                   <nuxt-link title="Посмотреть" class="btn btn-outline-dark btn-sm" :to="'/post/'+post.slug">
                     <i class="fa-solid fa-eye"></i>
                   </nuxt-link>
-                  <nuxt-link title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/posts/'+post.slug">
+                  <nuxt-link v-can="'post.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/posts/'+post.slug">
                     <i class="fas fa-pencil-alt">
                     </i>
                   </nuxt-link>
-                  <a title="Удалить" @click.prevent="delPost(post.id)" class="btn btn-outline-dark btn-sm" href="#">
+                  <a v-can="'post.delete'" title="Удалить" @click.prevent="delPost(post.id)" class="btn btn-outline-dark btn-sm" href="#">
                     <i class="fas fa-trash">
                     </i>
                   </a>
@@ -94,14 +107,14 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer note-float d-flex align-items-center justify-content-between">
-          <div>
+          <div v-can="'post.delete'">
             <button v-if="checkbox.length" @click="deleteAllPost()"  class="btn btn-outline-dark">
               <i class="fas fa-trash"></i>
             </button>
             <button @click="showCheckbox = !showCheckbox" class="btn btn-default">Выбрать</button>
           </div>
           <pagination :data="posts" @pagination-change-page="getResults"></pagination>
-          <div>
+          <div v-can="'post.delete'">
             <nuxt-link to="/admin/posts/delete">
               Удаленные посты <i class="fas fa-trash ml-1"></i>
             </nuxt-link>
@@ -123,6 +136,10 @@
 export default {
   name: "posts",
   layout: 'Admin',
+  middleware: 'permission',
+  meta: {
+    permission: "post.view"
+  },
 
   head() {
     return {
@@ -142,7 +159,9 @@ export default {
       BASE_URL: process.env.API_BASE_URL,
       showCheckbox: false,
       checkbox: [],
-      loading: false
+      loading: false,
+      search: '',
+      debounce: false
     }
   },
 
@@ -162,7 +181,10 @@ export default {
         page = 1;
       }
 
-      this.posts = await this.$api.adminPosts.index(page)
+      this.posts = this.search === ''
+        ? await this.$api.adminPosts.index(page)
+        : await this.$api.adminPosts.search({page, search: this.search})
+
       this.loading = false
     },
 
@@ -179,6 +201,28 @@ export default {
     deleteAllPost() {
       if (this.checkbox.length <= 0) return false
       this.delPost(this.checkbox.join(','))
+    },
+
+    searchPosts() {
+      if(this.search && this.search.length >= 2) {
+        if (this.search.length >= 2) {
+          clearTimeout(this.debounce);
+
+          this.debounce = setTimeout(() => {
+            this.loading = true
+            this.$api.adminPosts.search({search: this.search}).then(response => {
+              console.log(response)
+              this.posts = response
+            }).catch(() => {
+              console.warn('Oh. Something went wrong')
+            }).finally(() => {
+              this.loading = false
+            });
+          }, 600);
+        }
+      } else {
+        if (this.search === "") this.getResults(1)
+      }
     },
 
     status(status) {

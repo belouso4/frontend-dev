@@ -1,6 +1,6 @@
 <template>
   <div class="news-item">
-    <img :src="BASE_URL + '/storage/posts/' + post.img" alt="">
+    <img :src="post.img" alt="">
     <div class="news-item-area">
       <nuxt-link :to="'/post/'+post.slug">
         <h3 class="news-item-area_title">
@@ -34,7 +34,7 @@ export default {
   props: ['post'],
   data() {
     return {
-      BASE_URL: process.env.API_BASE_URL,
+      BASE_URL: process.env.API_BASE_URL_IMG,
     }
   },
   methods:{

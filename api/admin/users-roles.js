@@ -8,11 +8,12 @@ export default $axios => ({
     }
   },
 
-  async roles(role_name) {
+  async search(params) {
     try {
-      return await $axios.$get('/v1/admin/users/roles/', {
+      console.log(params)
+      return await $axios.$get('/v1/admin/users/roles', {
         params: {
-          search: role_name
+          ...params
         }
       });
     } catch ( err ){
@@ -20,17 +21,17 @@ export default $axios => ({
     }
   },
 
-  async filter(roles_name) {
-    try {
-      return await $axios.$get('/v1/admin/users/roles/', {
-        params: {
-          filter: roles_name
-        }
-      });
-    } catch ( err ){
-      console.log(err)
-    }
-  },
+  // async filter(roles_name) {
+  //   try {
+  //     return await $axios.$get('/v1/admin/users/roles/', {
+  //       params: {
+  //         filter: roles_name
+  //       }
+  //     });
+  //   } catch ( err ){
+  //     console.log(err)
+  //   }
+  // },
 
 
   // async edit(id){

@@ -1,17 +1,20 @@
 <template>
-  <div class="content-wrapper">
+  <div class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Создание нового поста</h1>
           </div><!-- /.col -->
+<!--          <div class="col-sm-6">-->
+<!--            <ol class="breadcrumb float-sm-right">-->
+<!--              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>-->
+<!--              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>-->
+<!--              <li class="breadcrumb-item active">Создание нового поста</li>-->
+<!--            </ol>-->
+<!--          </div>&lt;!&ndash; /.col &ndash;&gt;-->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>
-              <li class="breadcrumb-item active">Создание нового поста</li>
-            </ol>
+            <Breadcrumbs :title="'Создание нового поста'" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -86,7 +89,7 @@
                   <label for="meta-keywords">Роль</label>
                   <select v-model="form.role_id" class="custom-select">
                     <option value="">--Выбрать роль--</option>
-                    <option v-for="role in roles" :value="role.id">
+                    <option v-for="(role, index) in roles" :key="index" :value="role.id">
                       {{role.name}}
                     </option>
                   </select>
@@ -113,8 +116,14 @@
 </template>
 
 <script>
+import Breadcrumbs from "../../../components/admin/ui/Breadcrumbs";
 export default {
+  components: {Breadcrumbs},
+  name: 'wfwefwefef',
   layout: 'Admin',
+  meta: {
+    permission: 'user.create'
+  },
   head() {
     return {
       title: 'Создание нового поста',
@@ -130,13 +139,13 @@ export default {
 
   async asyncData({app, params, env, error}) {
     const roles = await app.$api.adminRoles.index();
-    return {roles}
+    return {roles:roles.data}
   },
 
   data() {
     return {
       // BASE_URL: process.env.API_BASE_URL,
-      imgShow: process.env.API_BASE_URL + '/storage/avatar.png',
+      imgShow: process.env.API_BASE_URL_IMG + '/avatar.png',
       form: {
         name: '',
         email: '',
@@ -162,10 +171,16 @@ export default {
 
     }
   },
+  created() {
+
+  },
+
 
   methods: {
+
+
     sendBtn() {
-      console.log(this.form)
+
       this.$api.adminUsers.create(this.formData(this.form)).then(res => {
         this.$router.push({
               path: '/admin/users/'+res.id
