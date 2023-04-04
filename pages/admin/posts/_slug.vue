@@ -5,14 +5,10 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Создание нового поста</h1>
+            <h1 class="m-0">{{ title }}</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>
-              <li class="breadcrumb-item active">Создание нового поста</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Посты', title]" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -24,24 +20,26 @@
           <div class="col-md-8">
             <div class="card card-primary">
               <div class="card-body">
-                <div class="form-group">
-                  <label for="header-text">Заголовок*</label>
-                  <input v-model="form.title" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
-                  <p class="error-text" v-if="!validations.title.valid">{{validations.title.message}}</p>
-                </div>
+                <form-group :validator="$v.form.title" label="Заголовок">
+                  <input v-model="form.title"
+                         type="text"
+                         :class="['form-control', {'is-invalid': $v.form.title.$error}]"
+                         id="header-text" placeholder="Введите заголовок">
+                </form-group>
 
-                <div class="form-group">
-                  <label>Описание*</label>
+                <form-group :validator="$v.form.desc" label="Описание">
                   <client-only>
                     <text-editor v-model="form.desc"/>
                   </client-only>
-                  <p class="error-text" v-if="!validations.desc.valid">{{validations.desc.message}}</p>
-                </div>
+                </form-group>
 
-                <div class="form-group">
-                  <label for="except-textarea">Небольшое описание</label>
-                  <textarea v-model="form.excerpt" type="text" class="form-control" id="except-textarea" placeholder="Введите небольшое описание"></textarea>
-                </div>
+                <form-group label="Небольшое описание">
+                  <textarea v-model="form.excerpt" @input="textAreaAdjust($event.target)"
+                            type="text"
+                            class="form-control textarea-resize"
+                            id="except-textarea"
+                            placeholder="Введите небольшое описание"></textarea>
+                </form-group>
 
                 <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
                   <li class="nav-item" @click="tabShow = 'Metadata'">
@@ -92,20 +90,15 @@
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <!-- <label for="customFile">Custom File</label> -->
-                  <label>Изображение для превью*</label>
+                <form-group :validator="$v.form.img" label="Изображение для превью">
                   <div class="custom-file">
-                    <input @change="onFileChange" type="file" placeholder="Довавьте изображение"
-                           class="custom-file-input"
-                           id="customFile">
+                    <input @change="onFileChange" type="file" placeholder="Довавьте изображение" class="custom-file-input" id="customFile">
                     <label class="custom-file-label" for="customFile">Довавьте изображение...</label>
-                    <p class="error-text" v-if="!validations.img.valid">{{validations.img.message}}</p>
                   </div>
-                </div>
+                </form-group>
 
                 <div class="form-group img">
-                  <img v-if="imgShow ? true : false" :src="imgShow" alt="">
+                  <img :src="imgShow" alt="">
                 </div>
                 <div class="form-group tags-controller">
                   <label  class="label-tags">Добавить тег</label><p></p>
@@ -128,7 +121,10 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                <button @click="sendBtn" type="submit" class="btn btn-primary float-right">Сохранить</button>
+                <button @click="sendBtn" type="submit" :disabled="loading" class="btn btn-primary float-right btn-with-loader">
+                  <span v-if="!loading">Сохранить</span>
+                  <Loader width="20px" v-else/>
+                </button>
               </div>
             </div>
           </div>
@@ -142,6 +138,19 @@
 import TextEditor from "../../../components/admin/posts/TextEditor";
 import Comments from "../../../components/admin/posts/Comments";
 import Metadata from "../../../components/admin/posts/Metadata";
+import {helpers, maxLength, minLength, required} from "vuelidate/lib/validators";
+
+let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+const fileImg = (value) => {
+  if (typeof value === 'string') return true
+  return !helpers.req(value) || allowedExtension.indexOf(value.type) > -1
+}
+
+const filSize = (value) => {
+  if (typeof value === 'string') return true
+  return !helpers.req(value) || (value.size / 1024 / 1024) < 1
+}
 
 export default {
   name: 'addPost',
@@ -151,6 +160,7 @@ export default {
     permission: 'post.edit'
   },
   layout: 'Admin',
+
   head() {
     return {
       title: 'Создание нового поста',
@@ -164,27 +174,24 @@ export default {
     }
   },
 
-  created() {
-    console.log(this.form, this.comments)
-  },
-
-  async asyncData({app, params, env, error}) {
-    // try {
+  async asyncData({$api, params}) {
       const [post, comments] = await Promise.all([
-        app.$api.adminPosts.edit(params.slug),
-        app.$api.adminPostComments.getComments(params.slug, 0)
+        $api.adminPosts.edit(params.slug),
+        $api.adminPostComments.getComments(params.slug, 0)
       ])
-      const imgShow = post.img
+
       post.tags = post.tags ? post.tags.map(a => ({text: a.tag, id: a.id})) : []
-      post.img = ''
       post.keywords = post.meta_keywords
         ? post.meta_keywords.split(',').map(a => ({text: a}))
         : []
-      return {form:post, imgShow, comments}
-    // }catch (err) {
-    //   error({ statusCode: 404, message: 'Post not found' })
-    // }
 
+      return {
+        form:post,
+        title: post.title,
+        imgShow: post.img,
+        comments,
+        copy: {...post}
+      }
   },
 
   data() {
@@ -195,78 +202,63 @@ export default {
       tag: '',
       keywords: [],
       selectTags: '',
-      send: false,
       autocompleteItems: [],
       debounce: null,
       imgShow: '',
-      validations: {
+      loading: false,
+    }
+  },
+
+  validations() {
+    return {
+      form: {
         title: {
-          valid: true,
-          message: ''
+          required,
+          minLength: minLength(4),
+          maxLength: maxLength(255)
         },
         desc: {
-          valid: true,
-          message: ''
+          required,
+          minLength: minLength(4)
         },
+
         img: {
-          valid: true,
-          message: ''
-        },
-      },
+          required,
+          fileImg,
+          filSize
+        }
+      }
     }
   },
 
   watch:{
-    'form.title':  {
-      handler: function (after, before) {
-        this.validations.title.valid = true
-      },
-      deep: true
-    },
-    'form.desc':  {
-      handler: function (after, before) {
-        this.validations.desc.valid = true
-      },
-      deep: true
-    },
-    tag() {
-      this.initItems()
-    }
-    // slug() {
-    //   this.$router.push({path: `/admin/post/${this.slug}`})
-    // },
-    // 'form.img': {
-    //   handler: function (after, before) {
-    //     console.log(this.form.img)
-    //     if (this.form.img !== '') {
-    //       this.imgShow = true
-    //     }
-    //   },
-    //   deep: true
-    // }
+    'tag': 'initItems',
   },
-
-  // computed: {
-  //   items() {
-  //     if (this.tag.length < 2) return;
-  //     if(Object.keys(this.selectTags).length > 0) {
-  //       return this.selectTags.filter(a => {
-  //         return a.tag.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-  //       }).map(a => ({text: a.tag, id: a.id}));
-  //     }
-  //   },
-  // },
 
   methods: {
     async sendBtn() {
-      if (this.validation()) {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
+        this.loading = true
+
+        try {
           const data = [this.formData(this.form), this.$route.params.slug]
-          await this.$api.adminPosts.update(...data).then((slug) => {
-            this.send = true
-            this.$router.push({
-              path: '/admin/posts/'+slug
-            })
-          })
+          const slug = await this.$api.adminPosts.update(...data)
+
+          if (slug === this.$route.params.slug) {
+            this.$v.$reset()
+            this.$toaster.success('Данные успешно сохраннены!')
+            this.loading = false
+
+            return await this.$nuxt.refresh()
+          }
+          await this.$router.push({path: '/admin/posts/'+slug})
+
+          this.$v.$reset()
+          this.$toaster.success('Данные успешно сохраннены!')
+        } catch (err) {console.log(err)}
+
+        this.loading = false
       }
     },
 
@@ -326,62 +318,6 @@ export default {
        }, 600);
     },
 
-    validation() {
-      let validNewPostForm = true;
-      let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-
-      if( this.form.title == '' ){
-        validNewPostForm = false;
-        this.validations.title.valid = false;
-        this.validations.title.message = 'Введите заголовок'
-      }else{
-        if( this.form.title.length < 3 ){
-          validNewPostForm = false;
-          this.validations.title.valid = false;
-          this.validations.title.message = 'Заголовок не может быть меньше 5 символов'
-        }else{
-          this.validations.title.valid = true;
-          this.validations.title.message = '';
-        }
-      }
-
-      if( this.form.desc == '' ){
-        validNewPostForm = false;
-        this.validations.desc.valid = false;
-        this.validations.desc.message = 'Введите описание'
-      }else{
-        if( this.form.desc.length < 3 ){
-          validNewPostForm = false;
-          this.validations.desc.valid = false;
-          this.validations.desc.message = 'Описание не может быть меньше 3 символов'
-
-        }else{
-          this.validations.desc.valid = true;
-          this.validations.desc.message = '';
-        }
-      }
-      // if(this.form.img == ''){
-      //   validNewPostForm = false;
-      //   this.validations.img.valid = false;
-      //   this.validations.img.message = 'Добавьте изображение'
-      // }else{
-      //   // let condition = allowedExtension.indexOf(this.form.img.type) >-1
-      //   // condition = typeof this.form.img == 'string' ? true : condition
-      //   console.log(allowedExtension.indexOf(this.form.img.type) >-1)
-      //   if( typeof this.form.img == null || allowedExtension.indexOf(this.form.img.type) >-1){
-      //     this.validations.img.valid = true;
-      //     this.validations.img.message = '';
-      //
-      //   }else{
-      //     validNewPostForm = false;
-      //     this.validations.img.valid = false;
-      //     this.validations.img.message = 'Поддерживаемые типы файлов - jpeg, jpg, png, gif'
-      //   }
-      // }
-
-      return validNewPostForm;
-    },
-
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
@@ -389,13 +325,30 @@ export default {
 
       let reader = new FileReader();
       let vm = this;
+
       reader.onload = (e) => {
         vm.imgShow = e.target.result;
       };
+
       reader.readAsDataURL(files[0]);
       this.form.img = files[0]
     },
+    textAreaAdjust(el) {
+      el.style.height = (el.scrollHeight > el.clientHeight)
+        ? (25+ el.scrollHeight)+"px"
+        : "100px";
+    },
   },
+  beforeRouteLeave (to, from , next) {
+    console.log(this.form.desc ,'===', this.copy.desc)
+    if ((this.form.title !== this.copy.title || this.form.desc !== this.copy.desc || this.form.img !== this.copy.img) && to.name !== 'admin-posts-slug') {
+      if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
+        next()
+      } else {
+        next(false)
+      }
+    } else next()
+  }
 }
 </script>
 
@@ -475,20 +428,6 @@ ul.select-tags {
   cursor: pointer;
 }
 
-
-
-
-/*.tab-pane.fade {*/
-/*  transition: -webkit-transform .3s ease-out;*/
-/*  transition: transform .3s ease-out;*/
-/*  transition: transform .3s ease-out,-webkit-transform .3s ease-out;*/
-/*}*/
-
-/*.custom-model.show .modal-dialog {*/
-/*  -webkit-transform: none;*/
-/*  transform: none;*/
-/*}*/
-
 .tabs-enter-active, .tabs-leave-active {
   transition: opacity .15s;
 }
@@ -500,5 +439,7 @@ ul.select-tags {
 .nav-tabs a {
   cursor: pointer;
 }
+
+
 
 </style>

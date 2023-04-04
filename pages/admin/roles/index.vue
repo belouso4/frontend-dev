@@ -7,10 +7,7 @@
             <h1>Список всех постов</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item active">Посты</li>
-            </ol>
+            <AdminUiBreadcrumbs name="Роли" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -28,7 +25,7 @@
             <button v-can="'role.create'" @click="modals.userAdd.show = true" class="btn btn-outline-dark btn-sm mr-2">
               <i class="fa-solid fa-plus"></i> Добавить
             </button>
-            <form class="form-search input-group input-group-sm" style="width: 300px;">
+            <form @submit.prevent="searchRoles()" class="form-search input-group input-group-sm" style="width: 300px;">
               <input v-model="search"
                      @keyup="searchRoles()"
                      type="text"

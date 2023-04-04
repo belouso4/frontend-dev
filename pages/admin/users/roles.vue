@@ -7,10 +7,7 @@
             <h1>Каталог пользователей</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item active">Каталог пользователей</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Пользователи', 'Роли']" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -43,7 +40,7 @@
             <div class="card-tools d-flex align-items-center ml-auto">
               <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
                          to="/admin/users/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
-              <form class="form-search input-group input-group-sm">
+              <form @submit.prevent="searchUsers()" class="form-search input-group input-group-sm">
                 <input v-model="search"
                        @keyup="searchUsers()"
                        type="text"

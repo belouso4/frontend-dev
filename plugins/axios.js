@@ -2,9 +2,9 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
   // handle api errors
 
   $axios.onError(error => {
-   console.log(error.message)
+   console.log('--error.message--: ',error.response)
     const code = parseInt(error.response && error.response.status)
-    console.log('plugins axios handling error')
+    console.log(error.message)
     // const url = app.context.from.path.split('/')
     const url = route.path.split('/')
     // console.log(url[1],code,app.context.from.path)
@@ -27,7 +27,7 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
           message: error.message,
         });
 
-        return Promise.resolve(false);
+        return Promise.resolve(true);
       }
     }
 
@@ -52,15 +52,13 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
           statusCode: error.response.status,
           message: error.message,
         });
-
-        return Promise.resolve(false);
       }
 
       if (code === 422) {
-        console.log(error.response.data.errors)
         for (const [key, value] of Object.entries(error.response.data.errors)) {
           app.$toaster.error(value[0])
         }
+        // return Promise.resolve(false);
       }
     }
 
@@ -86,8 +84,9 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
     }
 
     // logout the user if the session expired
-    if (app.$auth.loggedIn && [401, 419].includes(code)) {
+    if (app.$auth.loggedIn && [401, 419].includes(code) || error.response.data.ban === 1) {
       logout()
+      return Promise.resolve(false);
     }
     // throw other errors
     return Promise.reject(error)

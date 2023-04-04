@@ -4,23 +4,10 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Создание нового поста</h1>
+            <h1 class="m-0">{{ title }}</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-<!--              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>-->
-<!--              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>-->
-<!--              <li class="breadcrumb-item active">Создание нового поста</li>-->
-              <li v-for="brc in $store.state.breadcrumbs.breadcrumbs" :class="['breadcrumb-item', {'active': !(!!brc.to)}]">
-                <nuxt-link v-if="!!brc.to" :to="brc.to.path">
-                  <i v-if="brc.to.path === '/admin'" class="fa-solid fa-house"></i>
-                  <span v-else>{{ brc.text }}</span>
-                </nuxt-link>
-                <span v-else>{{ brc.text }}</span>
-              </li>
-<!--              <li class="breadcrumb-item"><nuxt-link to="/admin/posts"></nuxt-link></li>-->
-<!--              <li class="breadcrumb-item active">Создание нового поста</li>-->
-            </ol>
+            <AdminUiBreadcrumbs :name="['Пользователи', title]" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -31,8 +18,8 @@
           <div class="col-12 col-sm-6 d-flex align-items-stretch flex-column">
             <div class="card bg-light d-flex flex-fill">
               <div class="card-header text-muted border-bottom-0 d-flex justify-content-between">
-                Digital Strategist
-                <p v-if="getTime()" class="ml-auto">{{ getTime() }}</p>
+                {{ form.role ? form.role : 'Пользователь'}}
+                <p v-if="getTime()" class="ml-auto mb-0">{{ getTime() }}</p>
               </div>
               <div class="card-body pt-0">
                 <div class="row">
@@ -43,8 +30,8 @@
                          class="img-circle avatar">
                   </div>
                   <div class="col-7 flex-column d-flex justify-content-center">
-                    <h2 class="lead"><b>{{ form.name }}</b></h2>
-                    <p class="text-muted text-sm"><b>Email: </b> {{ form.email }} </p>
+                    <h2 class="lead"><b>{{ title }}</b></h2>
+                    <p class="text-muted text-sm"><b>Email: </b> {{ email }} </p>
                   </div>
                 </div>
               </div>
@@ -56,26 +43,18 @@
           <div class="col-md-6 d-flex">
             <div class="card card-primary flex-fill">
               <div class="card-body">
-                <div class="form-group">
-                  <label for="header-text">Имя & Фамилия</label>
+                <form-group :validator="$v.form.name" label="Имя & Фамилия">
                   <input v-model="form.name" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
-<!--                    <p class="error-text" v-if="!validations.title.valid">{{validations.title.message}}</p>-->
-                </div>
-                <div class="form-group">
-                  <label for="Email">Электронная почта</label>
+                </form-group>
+                <form-group :validator="$v.form.email" label="Электронная почта">
                   <input v-model="form.email" type="text" class="form-control" id="Email" placeholder="Введите Email">
-<!--                    <p class="error-text" v-if="!validations.title.valid">{{validations.title.message}}</p>-->
-                </div>
-                <div class="form-group">
-                  <label for="password">Введите новый пароль</label>
+                </form-group>
+                <form-group :validator="$v.form.password" label="Введите пароль">
                   <input v-model="form.password" type="password" class="form-control" id="password" placeholder="Введите Пароль">
-<!--                    <p class="error-text" v-if="!validations.title.valid">{{validations.title.message}}</p>-->
-                </div>
-                <div class="form-group">
-                  <label for="confirm_password">Подтвердите Пароль</label>
+                </form-group>
+                <form-group :validator="$v.form.confirm_password" label="Подтвердите Пароль">
                   <input v-model="form.confirm_password" type="password" class="form-control" id="confirm_password" placeholder="Введите пароль еще раз">
-<!--                    <p class="error-text" v-if="!validations.title.valid">{{validations.title.message}}</p>-->
-                </div>
+                </form-group>
               </div>
             </div>
           </div>
@@ -83,14 +62,13 @@
           <div class="col-md-6 d-flex">
             <div class="card card-primary flex-fill">
               <div class="card-body">
-                <div class="form-group">
+                <form-group :validator="$v.form.avatar" label="Аватар">
                   <label>Аватар</label>
                   <div class="custom-file">
                     <input @change="onFileChange" type="file" placeholder="Довавьте изображение" class="custom-file-input" id="customFile">
                     <label class="custom-file-label" for="customFile">Добавьте изображение...</label>
-<!--                      <p class="error-text" v-if="!validations.img.valid">{{validations.img.message}}</p>-->
                   </div>
-                </div>
+                </form-group>
                 <div class="form-group">
                   <label for="meta-keywords">Роль</label>
                   <select v-model="form.role_id" class="custom-select">
@@ -112,7 +90,10 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                <button @click="sendBtn" type="submit" class="btn btn-primary float-right">Сохранить</button>
+                <button @click="sendBtn()" class="btn btn-primary float-right btn-with-loader">
+                  <span v-if="!loading">Сохранить</span>
+                  <Loader width="20px" v-else/>
+                </button>
               </div>
             </div>
           </div>
@@ -124,10 +105,21 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import {required, minLength, maxLength, helpers, email, sameAs} from 'vuelidate/lib/validators'
+
+let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+const fileImg = (value) => {
+  if (typeof value === 'string') return true
+  return !helpers.req(value) || allowedExtension.indexOf(value.type) > -1
+}
+
+const filSize = (value) => {
+  if (typeof value === 'string') return true
+  return !helpers.req(value) || (value.size / 1024 / 1024) < 1
+}
 
 export default {
-  name: 'addPost',
   layout: 'Admin',
   middleware: 'permission',
   meta: {
@@ -147,42 +139,31 @@ export default {
     }
   },
 
-  created() {
-    this.setBreadcrumbs([
-      { text: 'Own-house', to: { path: '/admin' }},
-      { text: 'Users', to: { path: '/admin/users' }},
-      { text: ':user' } // placeholder
-    ]);
-
-
-    this.replaceBreadcrumb({
-      find: ':user',
-      replace: { text: this.form.name }
-    });
-  },
-
-  async asyncData({app, params}) {
+  async asyncData({$api, params}) {
     const [user,roles] = await Promise.all([
-      app.$api.adminUsers.edit(params.id),
-      app.$api.adminRoles.index(),
+      $api.adminUsers.edit(params.id),
+      $api.adminRoles.index(),
     ])
 
     user.role_id = user.role.id ?? ''
 
     return {
       form:user,
+      title: user.name,
       roles,
       imgShow: user.avatar,
       banned_until: user.banned_until,
-      banned: user.status
+      banned: user.status,
+      copy: {...user},
+      email: user.email
     }
   },
 
   data() {
     return {
       BASE_URL: process.env.API_BASE_URL,
-      send: '',
       status: '',
+      loading: false,
       options: [
         {
           date: this.getDate('week'),
@@ -197,32 +178,39 @@ export default {
           text: 'Заблокирован на месяц'
         },
       ],
-      validations: {
-        title: {
-          valid: true,
-          message: ''
+    }
+  },
+
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+          minLength: minLength(2),
+          maxLength: maxLength(255)
         },
-        desc: {
-          valid: true,
-          message: ''
+        email: {
+          required,
+          email,
+          maxLength: maxLength(255)
         },
-        img: {
-          valid: true,
-          message: ''
+        password: {
+          minLength: minLength(6),
+          maxLength: maxLength(255)
         },
-      },
+        confirm_password: {
+          sameAsPassword: sameAs('password')
+        },
+        avatar: {
+          fileImg,
+          filSize
+        }
+      }
+
     }
   },
 
   methods: {
-    ...mapMutations('breadcrumbs', {
-      setBreadcrumbs: 'set',
-      pushBreadcrumb: 'push',
-      popBreadcrumb: 'pop',
-      replaceBreadcrumb: 'replace',
-      emptyBreadcrumbs: 'empty'
-    }),
-
     getDate(name, number = null) {
       let date = new Date(),
         setDate;
@@ -261,17 +249,29 @@ export default {
       if (mm < 10) {
         mm = '0' + mm
       }
-      return yyyy + '/' + mm + '/' + dd;
+      return dd + '/' + mm + '/' + yyyy;
     },
 
     async sendBtn() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+
       const data = [
         this.$route.params.id,
         this.formData(this.form)
       ]
 
-      await this.$api.adminUsers.update(...data)
-      await this.$nuxt.refresh()
+      try {
+        this.loading = true
+
+        await this.$api.adminUsers.update(...data)
+        await this.$nuxt.refresh()
+
+        this.$v.$reset()
+        this.$toaster.success('Данные успешно сохраннены!')
+      } catch (err) {console.log(err)}
+
+      this.loading = false
     },
 
     formData(data) {
@@ -288,61 +288,6 @@ export default {
       return formData
     },
 
-    // validation() {
-    //   let validNewPostForm = true;
-    //   let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    //
-    //   if( this.form.title == '' ){
-    //     validNewPostForm = false;
-    //     this.validations.title.valid = false;
-    //     this.validations.title.message = 'Введите заголовок'
-    //   }else{
-    //     if( this.form.title.length < 3 ){
-    //       validNewPostForm = false;
-    //       this.validations.title.valid = false;
-    //       this.validations.title.message = 'Заголовок не может быть меньше 5 символов'
-    //     }else{
-    //       this.validations.title.valid = true;
-    //       this.validations.title.message = '';
-    //     }
-    //   }
-    //
-    //   if( this.form.desc == '' ){
-    //     validNewPostForm = false;
-    //     this.validations.desc.valid = false;
-    //     this.validations.desc.message = 'Введите описание'
-    //   }else{
-    //     if( this.form.desc.length < 3 ){
-    //       validNewPostForm = false;
-    //       this.validations.desc.valid = false;
-    //       this.validations.desc.message = 'Описание не может быть меньше 3 символов'
-    //
-    //     }else{
-    //       this.validations.desc.valid = true;
-    //       this.validations.desc.message = '';
-    //     }
-    //   }
-    //   if(this.form.img == ''){
-    //     validNewPostForm = false;
-    //     this.validations.img.valid = false;
-    //     this.validations.img.message = 'Добавьте изображение'
-    //   }else{
-    //     let condition = allowedExtension.indexOf(this.form.img.type) >-1
-    //     condition = typeof this.form.img == 'string' ? true : condition
-    //     if( condition ){
-    //       this.validations.img.valid = true;
-    //       this.validations.img.message = '';
-    //
-    //     }else{
-    //       validNewPostForm = false;
-    //       this.validations.img.valid = false;
-    //       this.validations.img.message = 'Поддерживаемые типы файлов - jpeg, jpg, png, gif'
-    //     }
-    //   }
-    //
-    //   return validNewPostForm;
-    // },
-
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
@@ -356,7 +301,23 @@ export default {
       reader.readAsDataURL(files[0]);
       this.form.avatar = files[0]
     },
+
   },
+
+  beforeRouteLeave (to, from , next) {
+    console.log(this.form.desc ,'===', this.copy.desc)
+    if ((this.form.name !== this.copy.name
+        || this.form.email !== this.copy.email
+        || this.form.avatar !== this.copy.avatar)
+      && to.name !== 'admin-posts-id') {
+
+      if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
+        next()
+      } else {
+        next(false)
+      }
+    } else next()
+  }
 }
 </script>
 

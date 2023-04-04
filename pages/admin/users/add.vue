@@ -4,17 +4,10 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Создание нового поста</h1>
+            <h1 class="m-0">Создание нового пользователя</h1>
           </div><!-- /.col -->
-<!--          <div class="col-sm-6">-->
-<!--            <ol class="breadcrumb float-sm-right">-->
-<!--              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>-->
-<!--              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>-->
-<!--              <li class="breadcrumb-item active">Создание нового поста</li>-->
-<!--            </ol>-->
-<!--          </div>&lt;!&ndash; /.col &ndash;&gt;-->
           <div class="col-sm-6">
-            <Breadcrumbs :title="'Создание нового поста'" />
+            <AdminUiBreadcrumbs :name="['Пользователи', 'Создание пользователя']" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -25,7 +18,7 @@
           <div class="col-12 col-sm-6 d-flex align-items-stretch flex-column">
             <div class="card bg-light d-flex flex-fill">
               <div class="card-header text-muted border-bottom-0">
-                Digital Strategist
+                Пользователь
               </div>
               <div class="card-body pt-0">
                 <div class="row">
@@ -37,8 +30,8 @@
                          class="img-circle avatar">
                   </div>
                   <div class="col-7 flex-column d-flex justify-content-center">
-                    <h2 class="lead"><b>Nicole Pearson</b></h2>
-                    <p class="text-muted text-sm"><b>Email: </b> fsfsewefw@mail.ru </p>
+                    <h2 class="lead"><b>Имя Фамиля</b></h2>
+                    <p class="text-muted text-sm"><b>Email: </b> email@gmail.com </p>
                   </div>
                 </div>
               </div>
@@ -50,23 +43,18 @@
           <div class="col-md-6 d-flex">
             <div class="card card-primary flex-fill">
               <div class="card-body">
-                <div class="form-group">
-                  <label for="header-text">Имя & Фамилия</label>
+                <form-group :validator="$v.form.name" label="Имя & Фамилия">
                   <input v-model="form.name" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
-                </div>
-                <div class="form-group">
-                  <label for="Email">Электронная почта</label>
+                </form-group>
+                <form-group :validator="$v.form.email" label="Электронная почта">
                   <input v-model="form.email" type="text" class="form-control" id="Email" placeholder="Введите Email">
-                </div>
-                <div class="form-group">
-                  <label for="password">Введите пароль</label>
+                </form-group>
+                <form-group :validator="$v.form.password" label="Введите пароль">
                   <input v-model="form.password" type="password" class="form-control" id="password" placeholder="Введите Пароль">
-                </div>
-                <div class="form-group">
-                  <label for="confirm_password">Подтвердите Пароль</label>
+                </form-group>
+                <form-group :validator="$v.form.confirm_password" label="Подтвердите Пароль" attribute="для подтверждения пароля">
                   <input v-model="form.confirm_password" type="password" class="form-control" id="confirm_password" placeholder="Введите пароль еще раз">
-
-                </div>
+                </form-group>
               </div>
             </div>
           </div>
@@ -74,8 +62,8 @@
           <div class="col-md-6 d-flex">
             <div class="card card-primary flex-fill">
               <div class="card-body">
-                <div class="form-group">
-                  <label>Аватар</label>
+
+                <form-group :validator="$v.form.avatar" label="Аватар">
                   <div class="custom-file">
                     <input @change="onFileChange"
                            type="file"
@@ -84,7 +72,8 @@
                            id="customFile">
                     <label class="custom-file-label" for="customFile">Добавьте изображение...</label>
                   </div>
-                </div>
+                </form-group>
+
                 <div class="form-group">
                   <label for="meta-keywords">Роль</label>
                   <select v-model="form.role_id" class="custom-select">
@@ -94,18 +83,14 @@
                     </option>
                   </select>
                 </div>
-                <div class="form-group">
-                  <label>Статус ? не реализованный функционал ?</label>
-                  <select class="custom-select">
-                    <option>Активен</option>
-                    <option>Заблокирован</option>
-                    <option>Черновик</option>
-                  </select>
-                </div>
+
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                <button @click="sendBtn" type="submit" class="btn btn-primary float-right">Сохранить</button>
+                <button @click="sendBtn" type="submit" :disabled="loading" class="btn btn-primary float-right btn-with-loader">
+                  <span v-if="!loading">Сохранить</span>
+                  <Loader width="20px" v-else/>
+                </button>
               </div>
             </div>
           </div>
@@ -116,10 +101,14 @@
 </template>
 
 <script>
-import Breadcrumbs from "../../../components/admin/ui/Breadcrumbs";
+import { required, minLength, maxLength, helpers, email, sameAs} from 'vuelidate/lib/validators'
+
+let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+const fileImg = (value) => !helpers.req(value) || allowedExtension.indexOf(value.type) > -1
+const filSize = (value) => !helpers.req(value) || (value.size / 1024 / 1024) < 1
+
 export default {
-  components: {Breadcrumbs},
-  name: 'wfwefwefef',
   layout: 'Admin',
   meta: {
     permission: 'user.create'
@@ -137,15 +126,15 @@ export default {
     }
   },
 
-  async asyncData({app, params, env, error}) {
-    const roles = await app.$api.adminRoles.index();
-    return {roles:roles.data}
+  async asyncData({$api}) {
+    const roles = (await $api.adminRoles.index()).data;
+    return {roles}
   },
 
   data() {
     return {
-      // BASE_URL: process.env.API_BASE_URL,
       imgShow: process.env.API_BASE_URL_IMG + '/avatar.png',
+      loading: false,
       form: {
         name: '',
         email: '',
@@ -153,48 +142,58 @@ export default {
         password: '',
         confirm_password: '',
         role_id: '',
-        validations: {
-          name: {
-            valid: true,
-            message: ''
-          },
-          email: {
-            valid: true,
-            message: ''
-          },
-          password: {
-            valid: true,
-            message: ''
-          },
+      }
+    }
+  },
+
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+          minLength: minLength(2),
+          maxLength: maxLength(255)
         },
+        email: {
+          required,
+          email,
+          maxLength: maxLength(255)
+        },
+        password: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(255)
+        },
+        confirm_password: {
+          sameAsPassword: sameAs('password')
+        },
+        avatar: {
+          fileImg,
+          filSize
+        }
       }
 
     }
   },
-  created() {
-
-  },
-
 
   methods: {
+    async sendBtn() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
 
+      try {
+        this.loading = true
 
-    sendBtn() {
-
-      this.$api.adminUsers.create(this.formData(this.form)).then(res => {
-        this.$router.push({
-              path: '/admin/users/'+res.id
+        const user = await this.$api.adminUsers.create(this.formData(this.form))
+        await this.$router.push({
+          path: '/admin/users/'+user.id
         })
-      })
-      // if (this.validation()) {
-      // const data = [this.formData(this.form), this.$route.params.slug]
-      // await this.$api.adminPosts.update(...data).then((post) => {
-      //   this.send = true
-      //   this.$router.push({
-      //     path: '/admin/post/'+post.slug
-      //   })
-      // })
-      // }
+
+        this.$v.$reset()
+        this.$toaster.success('Данные успешно сохраннены!')
+      } catch (err) {console.log(err)}
+
+      this.loading = false
     },
 
     formData(data) {
@@ -208,6 +207,9 @@ export default {
 
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
+      if (this.$v.form.avatar.$invalid)
+        return;
+
       if (!files.length)
         return;
 
@@ -216,9 +218,19 @@ export default {
       reader.onload = (e) => {
         vm.imgShow = e.target.result;
       };
+
       reader.readAsDataURL(files[0]);
       this.form.avatar = files[0]
     },
+  },
+  beforeRouteLeave (to, from , next) {
+    if ((this.form.name !== '' || this.form.email !== '' || this.form.avatar !== '') && to.name !== 'admin-users-id') {
+      if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
+        next()
+      } else {
+        next(false)
+      }
+    } else next()
   }
 }
 </script>

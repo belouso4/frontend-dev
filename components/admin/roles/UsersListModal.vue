@@ -11,30 +11,13 @@
         </button>
       </div>
       <div class="modal-body">
-<!--        <div class="d-flex justify-content-between mb-3">-->
-<!--          <button class="btn btn-outline-dark btn-sm mr-2">-->
-<!--            <i class="fa-solid fa-user-plus"></i> Добавить-->
-<!--          </button>-->
-<!--          <form class="form-search input-group input-group-sm" style="width: 300px;">-->
-<!--            <input v-model="search"-->
-<!--                   type="text"-->
-<!--                   name="table_search"-->
-<!--                   class="form-control float-right border-dark"-->
-<!--                   placeholder="Поиск...">-->
-<!--            <div class="input-group-append">-->
-<!--              <button type="submit" class="btn btn-default border-dark">-->
-<!--                <i class="fas fa-search"></i>-->
-<!--              </button>-->
-<!--            </div>-->
-<!--          </form>-->
-<!--        </div>-->
 
         <div class="card">
           <div class="d-flex justify-content-between" style="padding: 1rem 1.5rem;">
             <button @click="createUser()" class="btn btn-outline-dark btn-sm mr-2">
               <i class="fa-solid fa-user-plus"></i> Добавить
             </button>
-            <form class="form-search input-group input-group-sm" style="width: 300px;">
+            <form @submit.prevent="searchUsers()" class="form-search input-group input-group-sm" style="width: 300px;">
               <input v-model="search"
                      @keyup="searchUsers()"
                      type="text"
@@ -42,7 +25,7 @@
                      class="form-control float-right border-dark"
                      placeholder="Поиск...">
               <div class="input-group-append">
-                <button type="submit" class="btn btn-default border-dark">
+                <button class="btn btn-default border-dark">
                   <i class="fas fa-search"></i>
                 </button>
               </div>
@@ -87,9 +70,6 @@
                 </td>
               </tr>
               </tbody>
-<!--              <div v-if="loading" class="spinner-load">&ndash;&gt;-->
-<!--                <img src="/loader.gif">-->
-<!--              </div>-->
             </table>
           </div>
         </div>
@@ -97,7 +77,7 @@
       <div class="modal-footer justify-content-between">
         <button @click="closeModal()" class="btn btn-outline-light">Отмена</button>
         <pagination :data="users" @pagination-change-page="getUsers"></pagination>
-        <button @click="add()" class="btn btn-outline-light">
+        <button @click="add()" class="btn btn-outline-dark">
           <span>Добавить</span>
         </button>
       </div>

@@ -7,11 +7,7 @@
             <h1 class="m-0">Создание нового поста</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>
-              <li class="breadcrumb-item active">Создание нового поста</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Посты', 'Создание нового поста']" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -21,12 +17,6 @@
         <div class="row">
           <div class="col-md-8">
             <div class="card card-primary">
-<!--                <div class="card-header">-->
-<!--                  <h3 class="card-title">Quick Example</h3>-->
-<!--                </div>-->
-              <!-- /.card-header -->
-              <!-- form start -->
-
                 <div class="card-body">
 
                     <form-group :validator="$v.form.title" label="Заголовок">
@@ -42,10 +32,12 @@
                     </client-only>
                   </form-group>
 
-                  <div class="form-group">
-                    <label for="except-textarea">Небольшое описание</label>
-                    <textarea v-model="form.excerpt" type="text" class="form-control" id="except-textarea" placeholder="Введите небольшое описание"></textarea>
-                  </div>
+                  <form-group :validator="$v.form.excerpt" label="Небольшое описание">
+                    <textarea v-model="form.excerpt" @input="textAreaAdjust($event.target)"
+                              type="text" class="form-control textarea-resize"
+                              id="except-textarea" placeholder="Введите небольшое описание"></textarea>
+                  </form-group>
+
                   <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
                     <li class="nav-item" @click="tabShow = 'Metadata'">
                       <a class="nav-link" :class="[{active: tabShow === 'Metadata'}]">MetaData</a>
@@ -60,17 +52,10 @@
                     </transition>
                   </div>
                 </div>
-                <!-- /.card-body -->
             </div>
           </div>
           <div class="col-md-4">
             <div class="card card-primary">
-<!--                <div class="card-header">-->
-<!--                  <h3 class="card-title">Quick Example</h3>-->
-<!--                </div>-->
-              <!-- /.card-header -->
-              <!-- form start -->
-
 
                 <div class="card-body">
                   <div class="form-group">
@@ -93,14 +78,16 @@
                     </div>
                   </form-group>
 
+
                   <div class="form-group img">
-                    <img v-if="imgShow ? true : false" :src="imgShow" alt="">
+                    <img v-if="!!imgShow" :src="imgShow" alt="">
                   </div>
                   <div class="form-group tags-controller">
                     <label  class="label-tags">Добавить тег</label><p></p>
                     <client-only>
                       <vue-tags-input
                         v-model="tag"
+                        placeholder="Добавить тег"
                         :tags="form.tags"
                         :add-only-from-autocomplete="true"
                         :autocomplete-items="autocompleteItems"
@@ -111,15 +98,14 @@
                     </client-only>
 
                   </div>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                  </div>
                 </div>
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button @click="sendBtn" type="submit" class="btn btn-primary float-right">Сохранить</button>
+                  <button @click="sendBtn($event)" type="submit" class="btn btn-primary float-right btn-with-loader">
+                    <span v-if="!loading">Сохранить</span>
+                    <Loader width="20px" v-else/>
+                  </button>
                 </div>
 
             </div>
@@ -135,7 +121,7 @@
 <script>
 import TextEditor from "../../../components/admin/posts/TextEditor";
 import Metadata from "../../../components/admin/posts/Metadata";
-import { required, minLength, between, helpers } from 'vuelidate/lib/validators'
+import { required, minLength, maxLength, helpers } from 'vuelidate/lib/validators'
 
 let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
@@ -171,7 +157,7 @@ export default {
       autocompleteItems: [],
       debounce: false,
       tag: '',
-      send: false,
+      loading: false,
       form:{
         title: '',
         desc: '',
@@ -186,16 +172,22 @@ export default {
       imgShow: false,
     }
   },
+
   validations() {
     return {
       form: {
         title: {
           required,
-          minLength: minLength(4)
+          minLength: minLength(4),
+          maxLength: maxLength(255)
         },
         desc: {
           required,
           minLength: minLength(4)
+        },
+        excerpt: {
+          minLength: minLength(4),
+          maxLength: maxLength(255),
         },
         img: {
           required,
@@ -208,18 +200,28 @@ export default {
   },
 
   watch:{
-    'form.img': {
-      handler: function (after, before) {
-        if (this.form.img !== '') {
-          this.imgShow = true
-        }
-      },
-      deep: true
-    },
     'tag': 'initItems',
   },
 
   methods: {
+    async sendBtn(e) {
+      this.$v.$touch()
+
+      if (!this.$v.$invalid) {
+        try {
+          this.loading = true
+
+          const slug = await this.$api.adminPosts.create(this.formData(this.form))
+          await this.$router.push({path: `/admin/posts/${slug}`})
+
+          this.$v.$reset()
+          this.$toaster.success('Данные успешно сохраннены!')
+        } catch (err) {}
+
+        this.loading = false
+      }
+    },
+
     update(newTags) {
       this.autocompleteItems = [];
       this.form.tags = newTags;
@@ -236,19 +238,6 @@ export default {
           }).map(a => ({text: a.tag, id: a.id}));
         })
       }, 600)
-
-    },
-
-    async sendBtn() {
-      this.$v.$touch()
-      if (!this.$v.$invalid) {
-        await this.$api.adminPosts.create(this.formData(this.form)).then((slug) => {
-          this.send = true
-          this.$router.push({path: `/admin/posts/${slug}`})
-          // this.clearForm()
-        })
-
-      }
     },
 
     formData(data) {
@@ -268,7 +257,7 @@ export default {
       Object.entries(data).forEach(val => {
         switch(val[0]) {
           case 'keywords':
-            formData.append(val[0], keywords.join(','))
+            formData.append('meta_keywords', keywords.join(','))
             break
           case 'tags':
             tags.forEach(id => formData.append(val[0]+'[]', id))
@@ -278,6 +267,7 @@ export default {
             break
         }
       })
+
       return formData
     },
 
@@ -288,44 +278,31 @@ export default {
 
       let reader = new FileReader();
       let vm = this;
+
       reader.onload = (e) => {
         vm.imgShow = e.target.result;
       };
+
       reader.readAsDataURL(files[0]);
       this.form.img = files[0]
-
     },
 
-    clearForm(){
-      this.form.title         = '';
-      this.form.desc          = '';
-      this.form.excerpt       = '';
-      this.form.status         = '1';
-      this.form.img           = '';
-      this.form.tags          = [];
-      this.form.keywords      = [];
-      this.form.meta_title    = '';
-      this.form.meta_desc     = '';
-      this.imgShow            = false;
-      this.tag                = '';
-      this.keywords           = '';
+    textAreaAdjust(el) {
+      el.style.height = (el.scrollHeight > el.clientHeight)
+          ? (25+ el.scrollHeight)+"px"
+          : "100px";
     },
   },
 
-  // beforeRouteLeave (to, from , next) {
-  //   // const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-  //
-  //   if (this.send && (this.form.title != '' || this.form.desc != '' || this.form.img != '')) {
-  //     if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
-  //       next()
-  //     } else {
-  //       next(false)
-  //     }
-  //   } else {
-  //     next()
-  //   }
-  //
-  // }
+  beforeRouteLeave (to, from , next) {
+    if ((this.form.title !== '' || this.form.desc !== '' || this.form.img !== '') && to.name !== 'admin-posts-slug') {
+      if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
+        next()
+      } else {
+        next(false)
+      }
+    } else next()
+  }
 }
 </script>
 
@@ -412,20 +389,5 @@ ul.select-tags {
   cursor: pointer;
 }
 
-
-.form-group.error > div.form-error {
-  width: 100%;
-  margin-top: 0.25rem;
-  font-size: 80%;
-  color: #dc3545;
-}
-
-.form-group.error .custom-file-label {
-  border-color: #dc3545;
-  background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right calc(0.375em + 0.1875rem) center;
-  background-size: calc(9.95em + 0.375rem) calc(0.75em + 0.375rem);
-}
 
 </style>

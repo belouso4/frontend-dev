@@ -20,7 +20,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button @click="closeModal()" class="btn btn-outline-light">Отмена</button>
-        <button @click="confirmModal()" class="btn btn-outline-light">
+        <button @click="confirmModal()" class="btn btn-outline-dark">
           <span>Создать</span>
         </button>
       </div>

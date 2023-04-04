@@ -3,14 +3,7 @@
     <div class="container">
       <div class="main-header">
         <h1> Личный кабинет | verify_url</h1>
-        <ul class="breadcrumbs">
-          <li>
-            <a href="">OwnHouse</a>
-          </li>
-          <li>
-            <p>Личны кабинет</p>
-          </li>
-        </ul>
+        <Breadcrumbs/>
       </div>
       <div class="flex-position">
         <aside>
@@ -68,6 +61,7 @@
 
 <script>
 import zxcvbn from 'zxcvbn'
+import {mapMutations} from "vuex";
 
 export default {
   layout: 'AppMain',
@@ -109,7 +103,17 @@ export default {
       await this.$auth.logout();
     },
 
+    ...mapMutations('breadcrumbs', {
+      setBreadcrumbs: 'set',
+    }),
+  },
 
+  created() {
+    this.setBreadcrumbs([
+      { text: 'Главная', to: { path: '/' }},
+      { text: 'Личны кабинет', to: { path: '/account' }},
+      { text: 'verify' } // placeholder
+    ]);
   },
 
   mounted(){

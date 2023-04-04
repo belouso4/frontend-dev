@@ -4,7 +4,7 @@
       <div class="card-header">
         <h3 class="card-title">Таблица с тегами</h3>
         <div class="card-tools d-flex align-items-center">
-          <form class="form-search input-group input-group-sm">
+          <form @submit.prevent="searchTags()" class="form-search input-group input-group-sm">
             <input v-model="search"
                    @keyup="searchTags()"
                    type="text"
@@ -91,10 +91,6 @@ export default {
     }
   },
 
-  created() {
-    console.log(this.tags)
-  },
-
   computed: {
     ...mapGetters({
       tags: 'tags/getTags',
@@ -103,17 +99,14 @@ export default {
   },
 
   methods: {
-      getTags(page) {
-      if (typeof page === 'undefined') {
-        page = 1;
-      }
+      getTags(page = 1) {
       if (this.search === '') return this.$store
         .dispatch('tags/fetchTags', page)
 
-        this.$store.dispatch('tags/searchTags', {
-          page: page,
-          search: this.search,
-        })
+      this.$store.dispatch('tags/searchTags', {
+        page: page,
+        search: this.search,
+      })
     },
 
     disabledTarget(e) {
@@ -212,6 +205,7 @@ export default {
     searchTags() {
       if(this.search && this.search.length >= 2) {
           clearTimeout(this.debounce);
+          this.$store.commit('tags/setLoading')
 
           this.debounce = setTimeout(() => {
             this.$store.dispatch('tags/searchTags', {

@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="$route.path.indexOf('/admin/') > -1" class="tab-content">
+  <div v-if="$route.path.indexOf('/admin') > -1" class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -47,9 +47,9 @@
       name: "error",
       // layout: 'App',
       props: ['error'],
-      layout: (context) => context.route.path.indexOf('/admin/') > -1 ? 'Admin' : 'App',
+      layout: (context) => context.route.path.indexOf('/admin') > -1 ? 'Admin' : 'AppMain',
       created() {
-
+console.log(this.$route.path.indexOf('/admin') > -1)
       }
 
     }

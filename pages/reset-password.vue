@@ -2,29 +2,26 @@
   <section class="main-section auth-section">
     <div class="container">
       <form action="" class="form-auth" @submit.prevent="resetPassword()">
-        <h1>Авторизация</h1>
-        <label for="">
-          Email
+        <h1>Сброс пароля</h1>
+        <form-group :validator="$v.form.email" label="Email">
           <input id="login-email" v-model="form.email" type="text" placeholder="Введите email">
-        </label>
-
-        <label for="">
-          Пароль
+        </form-group>
+        <form-group :validator="$v.form.password" label="Пароль">
           <div>
             <input class="eye" v-model="form.password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль">
             <i @click="showPass = !showPass" :class="[showPass ? 'fas fa-eye' : 'fas fa-eye-slash' ]"></i>
           </div>
           <Meter :value="passwordStrength"></Meter>
-        </label>
-        <label for="">
-          Повторите пароль
-          <div>
-            <input class="eye" v-model="form.confirm_password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль повторно">
-          </div>
-        </label>
+        </form-group>
+        <form-group :validator="$v.form.confirm_password" label="Повторите пароль">
+          <input class="eye" v-model="form.confirm_password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль повторно">
+        </form-group>
 
         <div class="form-auth_footer d-flex">
-          <button>Отправить инструкции по сбросу</button>
+          <button type="submit">
+            <span v-if="!loading">Изменить данные</span>
+            <Loader width="20px" v-else/>
+          </button>
         </div>
 
       </form>
@@ -34,6 +31,7 @@
 
 <script>
 import zxcvbn from "zxcvbn";
+import {email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
 
 export default {
   middleware: 'guest',
@@ -41,12 +39,34 @@ export default {
   data(){
     return {
       showPass: false,
+      loading: false,
       form: {
         email: '',
         password: '',
         confirm_password: '',
         token: this.$route.query.token
       },
+    }
+  },
+
+  validations() {
+    return {
+      form: {
+        email: {
+          required,
+          email,
+          maxLength: maxLength(255)
+        },
+        password: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(255)
+        },
+        confirm_password: {
+          sameAsPassword: sameAs('password')
+        },
+      }
+
     }
   },
 
@@ -58,13 +78,18 @@ export default {
 
   methods: {
     async resetPassword() {
-      console.log('-----')
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+      this.loading = true
+
       try {
         await this.$axios.post('/v1/reset-password', this.form)
-        this.$router.push({path: '/login'})
-      } catch (err) {
+        await this.$router.push({path: '/login'})
 
-      }
+        this.$v.$reset()
+      } catch (err) {console.log(err)}
+
+      this.loading = false
     },
 
   }

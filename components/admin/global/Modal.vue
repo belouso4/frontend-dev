@@ -124,6 +124,12 @@ export default {
   overflow-y: hidden;
 }
 
+.custom-model .modal-content .modal-body {
+  overflow: auto;
+  max-height: 621px;
+  height: 100%;
+}
+
 .custom-model.fade .modal-dialog {
   transition: -webkit-transform .3s ease-out;
   transition: transform .3s ease-out;

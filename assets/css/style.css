@@ -829,6 +829,36 @@ i.fa-eye-slash.fas {
 }
 
 
+/*additions*/
+
+.align-items-center {
+  align-items: center;
+}
+
+.form-auth_footer a {
+  display: block;
+  cursor: pointer;
+}
+
+.form-auth_footer button {
+  transition: all 1s ease-in, all 1s ease-in;
+  height: 35px;
+  max-width: 150px;
+  width: 100%;
+  min-width: max-content;
+}
+
+.form-group.error input {
+  border-color: #dc3545;
+}
+
+.form-group.error .form-error {
+  font-size: 80%;
+  margin-top: 0.25rem;
+  color: #dc3545;
+}
+
+
 
 
 

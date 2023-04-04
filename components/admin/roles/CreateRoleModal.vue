@@ -11,14 +11,13 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="form-group">
-          <label for="header-text">Название Роли</label>
-          <input v-model="form.name" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
-        </div>
+        <form-group :validator="$v.form.name" label="Название Роли">
+          <input v-model="form.name" type="text" class="form-control" id="header-name" placeholder="Введите заголовок">
+        </form-group>
       </div>
       <div class="modal-footer justify-content-between">
         <button @click="closeModal()" class="btn btn-outline-light">Отмена</button>
-        <button @click="createRole()" class="btn btn-outline-light">
+        <button @click="createRole()" class="btn btn-outline-dark">
           <span>Создать</span>
         </button>
       </div>
@@ -28,6 +27,8 @@
 
 <script>
 import Modal from "../global/Modal";
+import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+
 export default {
   name: "CreateRoleModal",
   components: {Modal},
@@ -42,25 +43,41 @@ export default {
       loading: false
     }
   },
+
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+          minLength: minLength(3),
+          maxLength: maxLength(255)
+        },
+      }
+    }
+  },
+
   methods: {
     async createRole() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
       this.loading = true
 
-      let role = await this.$api.adminRoles.create(this.form)
-      console.log(role)
-      // this.loading = false
+      try {
+        let role = await this.$api.adminRoles.create(this.form)
+        this.$router.push({
+          path: '/admin/roles/'+role.id
+        })
+        this.closeModal()
 
-      this.$router.push({
-        path: '/admin/roles/'+role.id
-      })
-      this.closeModal()
-    },
-    sendToRolePage() {
+      } catch (err){console.log(err)}
 
+      this.loading = false
     },
+
     closeModal() {
       this.$emit("update:show", false)
       this.form.name = ''
+      this.$v.$reset()
     },
   },
 }

@@ -8,74 +8,83 @@
         </div>
         <div class="card-body">
 
-          <div class="form-group">
-            <label for="tag-name">Название тега*</label>
+          <form-group :validator="$v.tag" label="Название тега" attribute=" ">
             <input v-model="tag" type="text" class="form-control" id="tag-name" placeholder="Введите тег">
-            <p v-if="!validations.tag.valid" class="error-text">{{ validations.tag.message }}</p>
-          </div>
-          <div class="form-group">
-            <label for="tag-slug">url</label>
-            <input v-model="slug" type="text" class="form-control" id="tag-slug" placeholder="Введите url для тега">
-            <p class="error-text"></p>
-          </div>
+          </form-group>
+
+          <form-group :validator="$v.slug" label="slug">
+            <input v-model="slug" type="text" class="form-control" id="tag-slug" placeholder="Введите url slug тега">
+          </form-group>
 
         </div>
+
         <div class="card-footer">
-          <button type="submit" class="btn btn-primary float-right">Сохранить</button>
+          <button type="submit" class="btn btn-primary float-right btn-with-loader">
+            <span v-if="!loading || !loadBtn">Сохранить</span>
+            <Loader width="20px" v-else/>
+          </button>
         </div>
+
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import {maxLength, minLength, required} from "vuelidate/lib/validators";
+import {mapGetters} from "vuex";
+
 export default {
   name: "CreateTag",
+
   data() {
     return {
       tag: '',
       slug: '',
-      validations: {
-        tag: {
-          valid: true,
-          message: ''
-        },
-      },
+      loadBtn: false,
     }
   },
+
+  validations() {
+    return {
+      tag: {
+        required,
+        minLength: minLength(2),
+        maxLength: maxLength(50)
+      },
+      slug: {
+        maxLength: maxLength(50)
+      }
+    }
+  },
+
+  computed: {
+    ...mapGetters({
+      loading: 'tags/loading'
+    })
+  },
+
   methods: {
     async create(e) {
-      if(this.validation()) {
+      this.$v.$touch()
+      if(!this.$v.$invalid) {
         // if (this.loading) {
         //   e.target.disabled=disabled
         // }
-        await this.$api.adminTags.create({tag: this.tag, slug: this.slug})
-        await this.$store.dispatch('tags/fetchTags', 1)
-        this.tag = ''
-        this.slug = ''
-      }
-    },
-    validation() {
-      let validNewSlugForm = true;
+        try {
+          this.$store.commit('tags/setLoading', true)
+          this.loadBtn = true
+          await this.$api.adminTags.create({tag: this.tag, slug: this.slug})
+          await this.$store.dispatch('tags/fetchTags', 1)
 
-      if( this.tag === '' ){
-        validNewSlugForm = false;
-
-        this.validations.tag.valid = false;
-        this.validations.tag.message = 'Введите тег'
-      }else{
-        if (this.tag.length > 50) {
-          validNewSlugForm = false;
-
-          this.validations.tag.valid = false;
-          this.validations.tag.message = 'Длина тега должна быть меньше 50 символов'
-        } else {
-          this.validations.tag.valid = true;
-          this.validations.tag.message = '';
+          this.$v.$reset()
+          this.loadBtn = false
+          this.tag = ''
+          this.slug = ''
+        } catch (err) {
+          this.$store.commit('tags/setLoading', false)
         }
       }
-
-      return validNewSlugForm;
     },
   }
 }

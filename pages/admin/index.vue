@@ -7,9 +7,7 @@
             <h1 class="m-0">Dashboard</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item active"><i class="fa-solid fa-house"></i></li>
-            </ol>
+            <AdminUiBreadcrumbs/>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -25,9 +23,13 @@
 </template>
 
 <script>
+
 export default {
   name: "admin",
-  layout: 'Admin'
+  layout: 'Admin',
+  created() {
+
+  }
 }
 </script>
 

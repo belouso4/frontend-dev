@@ -19,9 +19,10 @@
       </textarea>
     </div>
     <div class="form-group">
-      <label for="meta-keywords">Ключевые слова</label>
+      <label for="meta-keywords">Ключевые слова (Ввод + Enter)</label>
       <client-only>
         <vue-tags-input
+          placeholder="важные, ключевые, слова"
           v-model="keywords"
           :tags="metaKeywords"
           class="tags-input"

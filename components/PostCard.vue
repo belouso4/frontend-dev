@@ -2,13 +2,13 @@
   <div class="news-item">
     <img :src="post.img" alt="">
     <div class="news-item-area">
-      <nuxt-link :to="'/post/'+post.slug">
+      <nuxt-link :to="'/posts/'+post.slug">
         <h3 class="news-item-area_title">
           {{ post.title }}
         </h3>
       </nuxt-link>
       <p class="news-item-area_desc">
-        {{post.excerpt != null ? post.excerpt : post.desc}}
+        {{post.excerpt}}
       </p>
       <div class="tags">
         <a v-if="post.tags.length" v-for="tag in post.tags">{{ tag.tag }}</a>

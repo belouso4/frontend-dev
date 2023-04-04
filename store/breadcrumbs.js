@@ -30,9 +30,11 @@ export const mutations = {
       return breadcrumb.text === payload.find;
     });
 
+
     if (index) {
       state.breadcrumbs.splice(index, 1, payload.replace);
     }
+    console.log(state)
   },
   empty(state) {
     state.breadcrumbs = [];

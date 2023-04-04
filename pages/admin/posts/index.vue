@@ -7,10 +7,7 @@
             <h1>Список всех постов</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item active">Посты</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Посты']" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -25,7 +22,7 @@
           <div class="card-tools d-flex align-items-center">
             <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
                        to="/admin/posts/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
-            <form class="form-search input-group input-group-sm">
+            <form @submit.prevent="searchPosts()" class="form-search input-group input-group-sm">
               <input v-model="search"
                      @keyup="searchPosts()"
                      type="text"
@@ -86,12 +83,12 @@
                   </span>
                 </td>
                 <td class="project-actions">
-                  <nuxt-link title="Посмотреть" class="btn btn-outline-dark btn-sm" :to="'/post/'+post.slug">
-                    <i class="fa-solid fa-eye"></i>
-                  </nuxt-link>
                   <nuxt-link v-can="'post.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/posts/'+post.slug">
                     <i class="fas fa-pencil-alt">
                     </i>
+                  </nuxt-link>
+                  <nuxt-link title="Посмотреть" class="btn btn-outline-dark btn-sm" :to="'/posts/'+post.slug">
+                    <i class="fa-solid fa-eye"></i>
                   </nuxt-link>
                   <a v-can="'post.delete'" title="Удалить" @click.prevent="delPost(post.id)" class="btn btn-outline-dark btn-sm" href="#">
                     <i class="fas fa-trash">
@@ -203,13 +200,13 @@ export default {
       this.delPost(this.checkbox.join(','))
     },
 
-    searchPosts() {
+    async searchPosts() {
       if(this.search && this.search.length >= 2) {
         if (this.search.length >= 2) {
           clearTimeout(this.debounce);
+          this.loading = true
 
-          this.debounce = setTimeout(() => {
-            this.loading = true
+          this.debounce = setTimeout( () => {
             this.$api.adminPosts.search({search: this.search}).then(response => {
               console.log(response)
               this.posts = response
@@ -358,4 +355,5 @@ form.form-search input:-ms-input-placeholder { /* Internet Explorer 10-11 */
 form.form-search input::-ms-input-placeholder { /* Microsoft Edge */
   color: #343a40;
 }
+
 </style>

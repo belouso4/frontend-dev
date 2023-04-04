@@ -7,12 +7,6 @@
           <li>
             <nuxt-link to="/posts">Посты</nuxt-link>
           </li>
-          <li>
-            <a href="music-page.html">Музыка</a>
-          </li>
-          <li>
-            <a href="film.html">Фильмы</a>
-          </li>
         </ul>
         <nuxt-link v-if="$auth.loggedIn" to="/account" class="cabinet-auth">Личный кабинет</nuxt-link>
         <div v-else class="auth">

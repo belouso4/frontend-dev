@@ -8,10 +8,7 @@
             <h1>Compose</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Compose</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['написать']" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -104,52 +101,42 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <div class="form-group">
-                  <input v-model="to" class="form-control" placeholder="To:">
-                </div>
-                <div class="form-group">
-                  <input v-model="subject" class="form-control" placeholder="Subject:">
-                </div>
-                <div class="form-group">
-                    <textarea id="compose-textarea" class="form-control" style="height: 300px">
-                      <h1><u>Heading Of Message</u></h1>
-                      <h4>Subheading</h4>
-                      <p>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain
-                        was born and I will give you a complete account of the system, and expound the actual teachings
-                        of the great explorer of the truth, the master-builder of human happiness. No one rejects,
-                        dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know
-                        how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again
-                        is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain,
-                        but because occasionally circumstances occur in which toil and pain can procure him some great
-                        pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise,
-                        except to obtain some advantage from it? But who has any right to find fault with a man who
-                        chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that
-                        produces no resultant pleasure? On the other hand, we denounce with righteous indignation and
-                        dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so
-                        blinded by desire, that they cannot foresee</p>
-                      <ul>
-                        <li>List item one</li>
-                        <li>List item two</li>
-                        <li>List item three</li>
-                        <li>List item four</li>
-                      </ul>
-                      <p>Thank you,</p>
-                      <p>John Doe</p>
-                    </textarea>
-                </div>
-                <div class="form-group">
+                <form-group :validator="$v.form.to">
+                  <input v-model="form.to" class="form-control" placeholder="To:">
+                </form-group>
+                <form-group :validator="$v.form.subject">
+                  <input v-model="form.subject" class="form-control" placeholder="Subject:">
+                </form-group>
+                <form-group :validator="$v.form.message">
+                  <text-editor v-model="form.message" />
+<!--                    <textarea  id="compose-textarea" class="form-control" style="height: 300px">-->
+
+<!--                    </textarea>-->
+
+                </form-group>
+                <form-group :validator="$v.form.attachment">
                   <div class="btn btn-default btn-file">
                     <i class="fas fa-paperclip"></i> Attachment
-                    <input type="file" name="attachment">
+                    <input @change="onFileChange" type="file" name="attachment" multiple>
                   </div>
-                  <p class="help-block">Max. 32MB</p>
-                </div>
+<!--                  <p class="help-block">Max. 32MB</p>-->
+                </form-group>
+                <ul v-if="form.attachment.length" class="m-0">
+                  <li v-for="file in form.attachment">
+                    <i class="fas fa-paperclip"></i>
+                    {{ file.name }} --- {{ (file.size / 1024 / 1024).toFixed(2) + "MB" }}
+                  </li>
+                </ul>
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
                 <div class="float-right">
                   <button type="button" class="btn btn-default"><i class="fas fa-pencil-alt"></i> Draft</button>
-                  <button @click="sendMessage()" type="submit" class="btn btn-primary"><i class="far fa-envelope"></i> Send</button>
+                  <button @click="sendMessage()" type="submit" :disabled="loading" class="btn btn-primary btn-with-loader">
+                    <i class="far fa-envelope"></i>
+                    <span v-if="!loading">Отправить</span>
+                    <Loader width="20px" v-else/>
+                  </button>
                 </div>
                 <button type="reset" class="btn btn-default"><i class="fas fa-times"></i> Discard</button>
               </div>
@@ -167,50 +154,116 @@
 </template>
 
 <script>
+import { required, minLength, maxLength, helpers, email} from 'vuelidate/lib/validators'
+import textEditor from "../../../components/admin/mail/TextEditor";
+
+const filSize = (files) => {
+  let size = true
+
+  for (var i = 0; i < files.length; i++) {
+    if ((files[i].size / 1024 / 1024) > 1) {
+      return size = false
+    }
+  }
+
+  return size
+}
+
 export default {
   name: "compose",
+  components: {textEditor},
+
   layout: 'Admin',
   data() {
     return {
-      to: 'kirill.bielousov15151515@gmail.com',
-      subject: 'Slack уходит из РФ. Чем заменить?',
-      message: "<h1><u>Heading Of Message</u></h1>\n" +
-        "                    <h4>Subheading</h4>\n" +
-        "                    <p>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain\n" +
-        "                      was born and I will give you a complete account of the system, and expound the actual teachings\n" +
-        "                      of the great explorer of the truth, the master-builder of human happiness. No one rejects,\n" +
-        "                      dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know\n" +
-        "                      how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again\n" +
-        "                      is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain,\n" +
-        "                      but because occasionally circumstances occur in which toil and pain can procure him some great\n" +
-        "                      pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise,\n" +
-        "                      except to obtain some advantage from it? But who has any right to find fault with a man who\n" +
-        "                      chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that\n" +
-        "                      produces no resultant pleasure? On the other hand, we denounce with righteous indignation and\n" +
-        "                      dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so\n" +
-        "                      blinded by desire, that they cannot foresee</p>\n" +
-        "                    <ul>\n" +
-        "                      <li>List item one</li>\n" +
-        "                      <li>List item two</li>\n" +
-        "                      <li>List item three</li>\n" +
-        "                      <li>List item four</li>\n" +
-        "                    </ul>\n" +
-        "                    <p>Thank you,</p>\n" +
-        "                    <p>John Doe</p>"
+      files: null,
+      loading: false,
+      form: {
+        to: 'kirill.bielousov15151515@gmail.com',
+        subject: 'Slack уходит из РФ. Чем заменить?',
+        message: 'ergegerg',
+        attachment: '',
+      }
     }
   },
-  methods: {
-    sendMessage() {
-      let data = {
-        to: this.to,
-        subject: this.subject,
-        message: this.message,
-      }
 
-      this.$api.adminMail.send(data)
-        .then(res => {
-          console.log(res)
-        })
+  validations() {
+    return {
+      form: {
+        to: {
+          required,
+          minLength: minLength(3),
+          maxLength: maxLength(255),
+          email
+        },
+        subject: {
+          required,
+          maxLength: maxLength(255)
+        },
+        message: {
+          required,
+          minLength: minLength(6),
+          // maxLength: maxLength(5000)
+        },
+        attachment: {
+          filSize
+        },
+      }
+    }
+  },
+
+  methods: {
+    async sendMessage() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+
+      try {
+        this.loading = true
+
+        let email = await this.$api.adminMail.send(this.formData(this.form))
+        console.log(email)
+        await this.$nuxt.refresh()
+
+        this.$v.$reset()
+        this.$toaster.success('Письмо успешно отправлено!')
+      } catch (err) {console.log(err)}
+
+      this.loading = false
+    },
+
+    formData(data) {
+      let formData = new FormData();
+
+      Object.entries(data).forEach(val => {
+        if (typeof val[1] === 'object') {
+          for (var i = 0; i < val[1].length; i++) {
+            formData.append(val[0]+'[]', val[1][i])
+          }
+
+        } else {
+          formData.append(val[0], val[1])
+        }
+      })
+      return formData
+    },
+
+    onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      console.log(files)
+      // if (this.$v.form.avatar.$invalid)
+      //   return;
+
+      if (!files.length)
+        return;
+
+      // let reader = new FileReader();
+      // let vm = this;
+      // reader.onload = (e) => {
+      //   vm.files = e.target.result;
+      // };
+      //
+      // reader.readAsDataURL(files[0]);
+      this.form.attachment = files
     },
   }
 }

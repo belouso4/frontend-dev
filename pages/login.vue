@@ -17,9 +17,12 @@
           <p v-if="!validations.password.valid" class="error-msg">{{ validations.password.message }}</p>
           <p v-if="!validations.invalidLogin.valid" class="error-msg">{{ validations.invalidLogin.message }}</p>
         </label>
-        <div class="form-auth_footer d-flex">
+        <div class="form-auth_footer d-flex align-items-center">
           <nuxt-link to="/forgot-password">Забыли пароль?</nuxt-link>
-          <button>Войти</button>
+          <button>
+            <span v-if="!loading">Войти</span>
+            <Loader style="display: inline-block;" v-else width="20px"/>
+          </button>
         </div>
 
       </form>
@@ -37,6 +40,7 @@
                     email: '',
                     password: ''
                 },
+                loading: false,
                 validations: {
                     email: {
                         valid: true,
@@ -55,9 +59,7 @@
                 errorMessage: ''
             }
         },
-      created() {
-        console.log(process.env.API_BASE_URL)
-      },
+
       methods: {
             validateLogin(){
 
@@ -83,6 +85,7 @@
             },
             async login(){
                 if( this.validateLogin() ){
+                  this.loading = true
                   try {
                     await this.$auth.loginWith( 'laravelSanctum', {
                       data: {
@@ -99,6 +102,7 @@
                     this.validations.email.valid = true;
                     this.validations.password.valid = true;
                   }
+                  this.loading = false
                 }
             },
         }
@@ -106,8 +110,20 @@
 </script>
 
 <style>
+.align-items-center {
+  align-items: center;
+}
  .form-auth_footer a {
    display: block;
    cursor: pointer;
  }
+
+ .form-auth_footer button {
+   transition: width 1s ease-in, height 1s ease-in;
+   height: 35px;
+   max-width: 150px;
+   width: 100%;
+   min-width: max-content;
+ }
+
 </style>

@@ -7,10 +7,7 @@
             <h1 class="m-0">Теги</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item active">Теги</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Теги']" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -27,9 +24,9 @@
 </template>
 
 <script>
-
 import CreateTag from "../../components/admin/tags/CreateTag";
 import TagTable from "../../components/admin/tags/TagTable";
+
 export default {
   name: 'tags',
   components: {TagTable, CreateTag},

@@ -1,24 +1,15 @@
 export default $axios => ({
 
   async index(page) {
-    try {
       return await $axios.$get('/v1/admin/users-roles?page=' + page);
-    } catch ( err ){
-      console.log(err)
-    }
   },
 
   async search(params) {
-    try {
-      console.log(params)
       return await $axios.$get('/v1/admin/users/roles', {
         params: {
           ...params
         }
       });
-    } catch ( err ){
-      console.log(err)
-    }
   },
 
   // async filter(roles_name) {

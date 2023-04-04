@@ -54,6 +54,7 @@ export default {
       },
     ],
     link: [
+      // { rel:"stylesheet", type:"text/css", href: require('~/assets/css/admin-panel-style.css') },
       { rel:"stylesheet", type:"text/css", href: '/AdminLTE/css/toastr.min.css' },
       { rel:"stylesheet", type:"text/css", href: '/AdminLTE/css/adminlte.min.css' },
       { rel:"stylesheet", type:"text/css", href:'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback' },
@@ -187,7 +188,7 @@ export default {
 </script>
 
 <style scoped>
-@import '~/assets/css/admin-panel-style.css';
+/*@import '~/assets/css/admin-panel-style.css';*/
 
 section.content, section.content-header {
   margin-top: 0
@@ -229,7 +230,7 @@ section.content, section.content-header {
 
 </style>
 <style>
-
+@import "~/assets/css/admin-panel-style.css";
 /*.layout-navbar-fixed .main-header {*/
 /*  left: 0;*/
 /*  position: fixed;*/
@@ -249,15 +250,7 @@ section.content, section.content-header {
 /*  overflow: auto;*/
 /*}*/
 
-.content-wrapper .tab-content {
-  overflow: auto;
-  padding: 0 0.5rem;
-}
 
-.content-wrapper.iframe-mode {
-  display: flex;
-  flex-direction: column;
-}
 
 .form-group.img {
   padding: 8px 24px;

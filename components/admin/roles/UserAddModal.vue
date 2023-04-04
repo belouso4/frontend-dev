@@ -16,7 +16,7 @@
           <div class="col-12 d-flex align-items-stretch flex-column">
             <div class="card bg-light d-flex flex-fill">
               <div class="card-header text-muted border-bottom-0">
-                Digital Strategist
+                Пользователь
               </div>
               <div class="card-body pt-0">
                 <div class="row">
@@ -28,8 +28,8 @@
                          class="img-circle avatar img-circle-size">
                   </div>
                   <div class="col-7 flex-column d-flex justify-content-center">
-                    <h2 class="lead"><b>Nicole Pearson</b></h2>
-                    <p class="text-muted text-sm"><b>Email: </b> fsfsewefw@mail.ru </p>
+                    <h2 class="lead"><b>Имя Фамиля</b></h2>
+                    <p class="text-muted text-sm"><b>Email: </b> email@gmail.com </p>
                   </div>
                 </div>
               </div>
@@ -40,8 +40,7 @@
           <div class="col-md-12 d-flex">
             <div class="card card-primary flex-fill">
               <div class="card-body">
-                <div class="form-group">
-                  <label>Аватар</label>
+                <form-group :validator="$v.form.avatar" label="Аватар">
                   <div class="custom-file">
                     <input @change="onFileChange"
                            type="file"
@@ -50,27 +49,19 @@
                            id="customFile">
                     <label class="custom-file-label" for="customFile">Добавьте изображение...</label>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label>Статус ? не реализованный функционал ?</label>
-                  <select class="custom-select">
-                    <option>Активен</option>
-                    <option>Заблокирован</option>
-                    <option>Черновик</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Имя & Фамилия</label>
-                  <input v-model="form.name" type="text" class="form-control" placeholder="Введите заголовок">
-                </div>
-                <div class="form-group">
-                  <label for="Email">Электронная почта</label>
+                </form-group>
+                <form-group :validator="$v.form.name" label="Имя & Фамилия">
+                  <input v-model="form.name" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
+                </form-group>
+                <form-group :validator="$v.form.email" label="Электронная почта">
                   <input v-model="form.email" type="text" class="form-control" id="Email" placeholder="Введите Email">
-                </div>
-                <div class="form-group">
-                  <label for="password">Введите пароль</label>
+                </form-group>
+                <form-group :validator="$v.form.password" label="Введите пароль">
                   <input v-model="form.password" type="password" class="form-control" id="password" placeholder="Введите Пароль">
-                </div>
+                </form-group>
+                <form-group :validator="$v.form.confirm_password" label="Подтвердите Пароль" attribute="для подтверждения пароля">
+                  <input v-model="form.confirm_password" type="password" class="form-control" id="confirm_password" placeholder="Введите пароль еще раз">
+                </form-group>
               </div>
             </div>
           </div>
@@ -79,7 +70,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button @click="closeModal()" class="btn btn-outline-light">Отмена</button>
-        <button @click="createUser()" class="btn btn-outline-light">
+        <button @click="createUser()" class="btn btn-outline-dark">
           <span>Создать</span>
         </button>
       </div>
@@ -89,6 +80,13 @@
 
 <script>
 import Modal from "../global/Modal";
+import { required, minLength, maxLength, helpers, email, sameAs} from 'vuelidate/lib/validators'
+
+let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+const fileImg = (value) => !helpers.req(value) || allowedExtension.indexOf(value.type) > -1
+const filSize = (value) => !helpers.req(value) || (value.size / 1024 / 1024) < 1
+
 export default {
   name: "UserAddModal",
   components: {Modal},
@@ -109,15 +107,50 @@ export default {
       formCopy: {}
     }
   },
+
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+          minLength: minLength(2),
+          maxLength: maxLength(255)
+        },
+        email: {
+          required,
+          email,
+          maxLength: maxLength(255)
+        },
+        password: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(255)
+        },
+        confirm_password: {
+          sameAsPassword: sameAs('password')
+        },
+        avatar: {
+          fileImg,
+          filSize
+        }
+      }
+
+    }
+  },
+
   mounted() {
     this.formCopy = { ...this.form };
   },
+
   methods: {
-
      createUser() {
-       this.$emit('create-user', this.form)
-       this.closeModal()
+       this.$v.$touch()
+       if (this.$v.$invalid) return
 
+       this.$emit('create-user', this.form)
+       this.$v.$reset()
+       this.$toaster.info('Данные сохраннены локально!')
+       this.closeModal()
     },
 
     closeModal() {

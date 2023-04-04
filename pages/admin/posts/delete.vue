@@ -7,11 +7,7 @@
             <h1>Удаленные посты</h1>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>
-              <li class="breadcrumb-item active">Удаленные посты</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Посты', 'Удаленные посты']" />
           </div>
         </div>
         <nuxt-link to="/admin/posts/add" style="font: 22px;" class="add-post">Добавить новый пост</nuxt-link>

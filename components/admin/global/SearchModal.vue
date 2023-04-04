@@ -6,7 +6,7 @@
     <template>
       <div class="modal-body">
 
-        <form @submit.prevent class="w-100 mb-3">
+        <form @submit.prevent="searchData()" class="w-100 mb-3">
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">

@@ -3,11 +3,7 @@
     <div class="container">
       <div class="main-header">
         <h1>Последние новости</h1>
-        <ul class="breadcrumbs">
-          <li class="breadcrumb-item"><nuxt-link to="/"><i class="fa-solid fa-house"></i></nuxt-link></li>
-          <li class="breadcrumb-item active">Новости</li>
-
-        </ul>
+        <Breadcrumbs/>
       </div>
       <div class="flex-position">
         <aside>
@@ -34,11 +30,10 @@
 </template>
 
 <script>
-import PostCard from "../components/PostCard";
+import { mapMutations } from 'vuex';
 
 export default {
   name: "posts",
-  components: {PostCard},
   layout: 'AppMain',
   head: {
     title: 'Последние новости',
@@ -59,26 +54,33 @@ export default {
   },
 
   created() {
-    console.log(this.posts)
+    this.setBreadcrumbs([
+      { text: 'Главная', to: { path: '/' }},
+      { text: 'Новости'},
+    ]);
   },
 
-  async asyncData({app}) {
+  async asyncData({ $api }) {
     let page = 1
-    const posts = await app.$api.posts.index(1)
+    const posts = await $api.posts.index(1)
     return {posts, page}
   },
 
   methods: {
+    ...mapMutations('breadcrumbs', {
+      setBreadcrumbs: 'set',
+    }),
+
     infiniteScroll($state) {
       setTimeout(async () => {
         this.page++; // next page
 
         const posts = await this.$api.posts.index(this.page)
 
-        posts.data.unshift(...this.posts.data)
-        this.posts = posts
+        index.data.unshift(...this.posts.data)
+        this.posts = index
 
-        if(posts.data.length > 1 && posts.to) {
+        if(index.data.length > 1 && index.to) {
           $state.loaded();
         } else {
           $state.complete()
@@ -86,6 +88,8 @@ export default {
       }, 500);
     },
   },
+
+
 
   // beforeRouteLeave (to, from , next) {
   //   const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
@@ -107,7 +111,7 @@ export default {
 
 .news-item img {
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: left;
 }
 </style>

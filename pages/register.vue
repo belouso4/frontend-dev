@@ -30,10 +30,13 @@
           </div>
           <p class="error-msg">{{ validations.confirm_password.message }}</p>
         </label>
-        <button>
-          <span v-if="!loading">Зарегистрироваться</span>
-          <Loader v-else />
-        </button>
+        <div class="form-auth_footer d-flex align-items-center">
+          <nuxt-link to="/forgot-password">Уже есть аккаунт?</nuxt-link>
+          <button>
+            <span v-if="!loading">Зарегистрироваться</span>
+            <Loader style="display: inline-block;" v-else width="20px"/>
+          </button>
+        </div>
       </form>
     </div>
   </section>
@@ -85,19 +88,20 @@
         this.$axios.get('/v1/sanctum/csrf-cookie')
       },
       methods: {
-            register() {
+            async register() {
                 if( this.validateRegistration() ){
                   this.loading = true
                   try {
-                    this.$axios.post('/v1/register', this.form ).then( response => {
+                    await this.$axios.post('/v1/register', this.form ).then( response => {
                         this.$auth.loginWith( 'laravelSanctum', { data: this.form } )
                         this.loading = false
                         this.$router.push({ path: '/' })
                     })
                   } catch (err) {
                     console.log(err)
-                    this.loading = false
+
                   }
+                  this.loading = false
                 }
             },
 
@@ -149,16 +153,5 @@
 </script>
 
 <style scoped>
-
-.form-auth > button {
-  width: 190px;
-  height: 33px;
-}
-
-.form-auth > button img {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
-}
 
 </style>

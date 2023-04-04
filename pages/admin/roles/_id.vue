@@ -4,14 +4,10 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Редактирование роли</h1>
+            <h1 class="m-0">Редактирование роли: {{title}}</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><nuxt-link to="/admin"><i class="fa-solid fa-house"></i></nuxt-link></li>
-              <li class="breadcrumb-item"><nuxt-link to="/admin/posts">Посты</nuxt-link></li>
-              <li class="breadcrumb-item active">Создание нового поста</li>
-            </ol>
+            <AdminUiBreadcrumbs :name="['Роли', title]" />
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div>
@@ -25,21 +21,19 @@
               <div class="card card-primary flex-fill">
                 <div class="card-body">
 
-                  <div class="form-group">
-                    <label for="header-text">Название роли</label>
-                    <input v-model="form.name" type="text" class="form-control" id="header-text" placeholder="Введите заголовок">
-<!--                    <p class="error-text" v-if="!validations.name.valid">{{validations.name.message}}</p>-->
-                  </div>
-                  <div class="form-group">
-                    <label>Описание</label>
-                    <textarea type="text" v-model="form.desc" class="form-control"
-                              id="except-textarea" placeholder="Введите небольшое описание">
+                  <form-group :validator="$v.form.name" label="Название роли">
+                    <input v-model.trim="form.name" type="text" class="form-control" id="header-name" placeholder="Введите заголовок">
+                  </form-group>
 
+                  <form-group :validator="$v.form.desc" label="Описание">
+                    <textarea @input="textAreaAdjust($event.target)" type="text" v-model.trim="form.desc" class="form-control textarea-resize"
+                              id="except-textarea" placeholder="Введите небольшое описание">
                     </textarea>
-                  </div>
+                  </form-group>
+
                   <div class="form-group">
                     <label for="users-roles">Пользователи в роли</label>
-                    <ul class="users-roles">
+                    <ul v-if="users.length" class="users-roles">
                       <li v-for="user in users" :class="[{'delete':checkDeleting(user.id)},'d-flex']">
                         <p>{{user.name}}</p>
                         <button @click="deleteUser(user.id, user.added)">
@@ -49,12 +43,14 @@
                         </button>
                       </li>
                     </ul>
-                    <div class="form-group mt-3">
-                      <button class="btn btn-outline-dark mr-2" @click="modals.userAdd.show = true">Создать нового</button>
-                      <button class="btn btn-outline-dark" @click="modals.usersList.show = true">Добавить существующего</button>
-                    </div>
+                    <p v-else>Нет пользователей</p>
+
                   </div>
                 </div>
+                <div class="card-footer"><div class="form-group mt-3">
+                  <button class="btn btn-outline-dark mr-2" @click="modals.userAdd.show = true">Создать нового пользователя</button>
+                  <button class="btn btn-outline-dark" @click="modals.usersList.show = true">Добавить существующего</button>
+                </div></div>
               </div>
             </div>
 
@@ -70,7 +66,10 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
-                  <button @click="sendBtn" type="submit" class="btn btn-dark float-right">Сохранить</button>
+                  <button @click="sendBtn" type="submit" class="btn btn-primary float-right btn-with-loader">
+                    <span v-if="!loading">Сохранить</span>
+                    <Loader width="20px" v-else/>
+                  </button>
                 </div>
               </div>
             </div>
@@ -95,6 +94,8 @@ import WarningModal from "../../../components/admin/roles/WarningModal";
 import UsersListModal from "../../../components/admin/roles/UsersListModal";
 import UserAddModal from "../../../components/admin/roles/UserAddModal";
 import {mapGetters} from "vuex";
+import {maxLength, minLength, required} from "vuelidate/lib/validators";
+
 export default {
   name: 'addPost',
   middleware: 'permission',
@@ -108,9 +109,9 @@ export default {
     WarningModal
   },
   layout: 'Admin',
-  key(route) {
-    return route.fullPath
-  },
+  // key(route) {
+  //   return route.fullPath
+  // },
   head() {
     return {
       title: 'Создание нового поста',
@@ -129,20 +130,23 @@ export default {
       app.$api.adminRoles.edit(params.id),
       app.$api.adminRoles.permissions()
     ])
+    const users = role.users
     store.commit('role/setUsers', role.users)
     delete role.users
 
-    return {form:role, permissions}
-  },
-
-  created() {
-
+    return {
+      form:role,
+      permissions,
+      title: role.name,
+      copyRole: {...role},
+      copyUsers: [...users]
+    }
   },
 
   data() {
     return {
       BASE_URL: process.env.API_BASE_URL,
-      send: false,
+      loading: false,
       deletedUsers: [],
       new_user: [],
       modals: {
@@ -162,13 +166,19 @@ export default {
     }
   },
 
-  watch:{
-    // 'form.name':  {
-    //   handler: function (after, before) {
-    //     this.validations.name.valid = true
-    //   },
-    //   deep: true
-    // },
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+          minLength: minLength(4),
+          maxLength: maxLength(255)
+        },
+        desc: {
+          maxLength: maxLength(255)
+        },
+      }
+    }
   },
 
   computed: {
@@ -182,44 +192,55 @@ export default {
 
   methods: {
     async sendBtn() {
-      if (this.validation()) {
-        let users = []
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+      this.loading = true
+      try {
+        let users = this.otherFormatData()
 
-        this.users.forEach(user => {
-          if(user.id) users.push(user.id)
-        })
+        await this.$api.adminRoles.update(this.$route.params.id, this.formData(users))
+        await this.$nuxt.refresh()
 
-        this.deletedUsers.forEach(id => {
-          let index = users.indexOf(id);
-          if (index !== -1) users.splice(index,1)
-        })
+        this.$v.$reset()
+        this.$toaster.success('Данные успешно сохраннены!')
+      } catch (err) { console.log(err)}
+      this.loading = false
+    },
 
-        let data = {
-          name: this.form.name,
-          desc: this.form.desc,
-          users
-        }
-        //
-        if(this.new_user.length) {
-          data.new_user = this.new_user
-          data.new_user.forEach(val => {
-            if(val.avatar === '') delete val.avatar
-            delete val.added
-          })
-        }
+    otherFormatData() {
+      let users = []
 
-        console.log(data)
-        let roles = await this.$api.adminRoles.update(this.$route.params.id, this.formData(data))
-        console.log(roles)
-        this.$router.push({path: '/admin/roles'})
+      this.users.forEach(user => {
+        if(user.id) users.push(user.id)
+      })
+
+      this.deletedUsers.forEach(id => {
+        let index = users.indexOf(id);
+        if (index !== -1) users.splice(index,1)
+      })
+
+      let data = {
+        name: this.form.name,
+        desc: this.form.desc,
+        users
       }
+
+      if(this.new_user.length) {
+        data.new_user = this.new_user
+        data.new_user.forEach(val => {
+          if(val.avatar === '') delete val.avatar
+          delete val.added
+        })
+      }
+      console.log('data', data)
+
+      return data
     },
 
     formData(data) {
       let formData = new FormData();
 
       Object.entries(data).forEach(val => {
-        if(val[1] !== '') {
           if(Array.isArray(val[1]) && val[1].length && val[0] !== 'users') {
             for (let i = 0; i < val[1].length; i++) {
               for (let key of Object.keys(val[1][i])) {
@@ -234,7 +255,7 @@ export default {
           }else {
             formData.append(val[0], val[1])
           }
-        }
+
       })
       formData.append('_method', 'PUT');
 
@@ -268,21 +289,32 @@ export default {
       }
     },
 
-    validation() {
-      let validNewPostForm = true;
-
-      if( this.form.name == '' ){
-        validNewPostForm = false;
-        // this.validations.name.valid = false;
-        // this.validations.name.message = 'Введите название'
-      }else{
-        // this.validations.name.valid = true;
-        // this.validations.name.message = '';
-      }
-
-      return validNewPostForm;
+    textAreaAdjust(el) {
+      // el.style.height = "1px";
+      // el.style.height = (25+el.scrollHeight)+"px";
+      el.style.height =
+        (el.scrollHeight > el.clientHeight)
+          ? (25+ el.scrollHeight)+"px"
+          : "100px";
     },
+
   },
+
+  beforeRouteLeave (to, from , next) {
+    console.log(this.users ,'===', this.copyUsers)
+    console.log(this.form ,'===', this.copyRole)
+    if ((this.form.name !== this.copyRole.name
+      || this.form.desc !== this.copyRole.desc
+      || this.users.length !== this.copyUsers.length)
+      && to.name !== 'admin-posts-slug') {
+
+      if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
+        next()
+      } else {
+        next(false)
+      }
+    } else next()
+  }
   // beforeDestroy() {
   //   this.$store.commit('role/setUsers', [])
   // }

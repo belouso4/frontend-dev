@@ -8,7 +8,7 @@
             <h1>Каталог пользователей</h1>
           </div>
           <div class="col-sm-6">
-            <Breadcrumbs :title="'Каталог пользователей'" />
+            <AdminUiBreadcrumbs :name="'Пользователи'" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -21,7 +21,7 @@
           <div class="card-tools d-flex align-items-center">
             <nuxt-link v-can="'user.create'" class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
                        to="/admin/users/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
-            <form class="form-search input-group input-group-sm">
+            <form @submit.prevent="searchUsers()" class="form-search input-group input-group-sm">
               <input v-model="search"
                      @keyup="searchUsers()"
                      type="text"
@@ -40,19 +40,16 @@
           <table  class="table projects">
             <thead>
             <tr>
-              <th style="width: 1%">
+              <th style="width: 25%">
                 id
               </th>
-              <th style="width: 20%">
+              <th style="width: 25%">
                 Имя
               </th>
-              <th style="width: 30%">
+              <th style="width: 25%">
                 Email
               </th>
-<!--              <th style="width: 8%">-->
-<!--                Status-->
-<!--              </th>-->
-              <th style="width: 20%">
+              <th style="width: 25%">
                 Действия
               </th>
             </tr>
@@ -72,11 +69,6 @@
                     {{ user.email }}
                   </a>
                 </td>
-                <!--              <td class="project-state">-->
-                <!--                  <span :class="['badge badge-'+status(post.status).class]">-->
-                <!--                    {{ status(post.status).name }}-->
-                <!--                  </span>-->
-                <!--              </td>-->
                 <td class="project-actions">
                   <nuxt-link v-can="'user.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/users/'+user.id">
                     <i class="fa-solid fa-user-pen"></i>
@@ -95,7 +87,7 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer note-float d-flex align-items-center justify-content-between">
-          <pagination :data="users" @pagination-change-page="getResults"></pagination>
+          <pagination :show-disabled="true" :limit="6" :keepLength="true" :data="users" @pagination-change-page="getResults"></pagination>
           <div class="ml-auto">
             <nuxt-link class="text-dark" to="/admin/posts/delete">
               Заблокированные пользователи <i class="fas fa-trash ml-1"></i>
@@ -111,9 +103,7 @@
 </template>
 
 <script>
- import Breadcrumbs from "../../../components/admin/ui/Breadcrumbs";
 export default {
-  components: {Breadcrumbs},
   name: "posts",
   layout: 'Admin',
   middleware: 'permission',
