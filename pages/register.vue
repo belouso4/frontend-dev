@@ -3,35 +3,30 @@
     <div class="container">
       <form action="" class="form-auth" @submit.prevent="register">
         <h1>Регистрация</h1>
-        <label for="">
-          <p>Имя</p>
+        <p v-if="typeof errorMsg === 'string'">{{ errorMsg }}</p>
+        <p v-else v-for="error in errorMsg">{{ error[0] }}</p>
+        <form-group :validator="$v.form.name" label="Имя">
           <input type="text" v-model="form.name" placeholder="Введите имя">
-          <p class="error-msg">{{ validations.name.message }}</p>
-        </label>
-        <label for="">
-          Email
+        </form-group>
+
+        <form-group :validator="$v.form.email" label="Email">
           <input type="text" v-model="form.email" placeholder="Введите email">
-          <p class="error-msg">{{ validations.email.message }}</p>
-        </label>
-        <label for="">
-          Пароль
+        </form-group>
+        <form-group :validator="$v.form.password" label="Пароль">
           <div>
             <input class="eye" v-model="form.password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль">
             <i @click="showPass = !showPass" :class="[showPass ? 'fas fa-eye' : 'fas fa-eye-slash' ]"></i>
           </div>
           <Meter :value="passwordStrength"></Meter>
-          <p class="error-msg">{{ validations.password.message }}</p>
-        </label>
-        <label for="">
-          Повторите пароль
+        </form-group>
+        <form-group :validator="$v.form.confirm_password" label="Имя">
           <div>
             <input class="eye" v-model="form.confirm_password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль повторно">
-
           </div>
-          <p class="error-msg">{{ validations.confirm_password.message }}</p>
-        </label>
+        </form-group>
+
         <div class="form-auth_footer d-flex align-items-center">
-          <nuxt-link to="/forgot-password">Уже есть аккаунт?</nuxt-link>
+          <nuxt-link to="/login">Уже есть аккаунт?</nuxt-link>
           <button>
             <span v-if="!loading">Зарегистрироваться</span>
             <Loader style="display: inline-block;" v-else width="20px"/>
@@ -43,113 +38,93 @@
 </template>
 
 <script>
-    import zxcvbn from 'zxcvbn'
-    import Meter from "../components/Meter";
+import zxcvbn from 'zxcvbn'
+import Meter from "../components/Meter";
+import {email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
 
-    export default {
-        middleware: 'guest',
-        layout: 'AppMain',
-        data(){
-            return {
-              loading: false,
-                form: {
-                    name: '',
-                    email: '',
-                    password: '',
-                    confirm_password: ''
-                },
-                validations: {
-                    name: {
-                        valid: true,
-                        message: ''
-                    },
-                    email: {
-                        valid: true,
-                        message: ''
-                    },
-                    password: {
-                        valid: true,
-                        message: ''
-                    },
-                    confirm_password: {
-                        valid: true,
-                        message: ''
-                    }
-                },
-                showPass: false
-            }
-        },
-        computed: {
-            passwordStrength () {
-                return zxcvbn(this.form.password).score
-            },
-        },
-      created() {
-        this.$axios.get('/v1/sanctum/csrf-cookie')
-      },
-      methods: {
-            async register() {
-                if( this.validateRegistration() ){
-                  this.loading = true
-                  try {
-                    await this.$axios.post('/v1/register', this.form ).then( response => {
-                        this.$auth.loginWith( 'laravelSanctum', { data: this.form } )
-                        this.loading = false
-                        this.$router.push({ path: '/' })
-                    })
-                  } catch (err) {
-                    console.log(err)
-
-                  }
-                  this.loading = false
-                }
-            },
-
-          validateRegistration() {
-            if( this.form.name == '' ){
-              this.validations.name.valid = false;
-              this.validations.name.message = 'В этом поле необходимо указать имя.'
-            }else{
-              this.validations.name.valid = true;
-              this.validations.name.message = '';
-            }
-            if( this.form.email == ''
-              || !this.form.email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ){
-              this.validations.email.valid = false;
-              this.validations.email.message = 'Необходимо ввести корректныую электронную почту.'
-            }else{
-              this.validations.email.valid = true;
-              this.validations.email.message = '';
-            }
-            if( this.form.password == ''|| this.passwordStrength < 4 ){
-              this.validations.password.valid = false;
-              this.validations.password.message = 'Необходимо ввести надежный пароль.'
-            }else{
-              this.validations.password.valid = true;
-              this.validations.password.message = '';
-            }
-            if( this.form.confirm_password == '' || this.form.confirm_password != this.form.password ){
-              this.validations.confirm_password.valid =
-                false;
-              this.validations.confirm_password.message =
-                'Ваши пароли должны совпадать для регистрации.';
-            }else{
-              this.validations.confirm_password.valid = true;
-              this.validations.confirm_password.message = '';
-            }
-
-            return (
-              this.validations.name.valid &&
-              this.validations.email.valid &&
-              this.validations.password.valid &&
-              this.validations.confirm_password.valid
-            ) ? true : false;
+export default {
+  middleware: 'guest',
+  components: {Meter},
+  layout: 'AppMain',
+  data(){
+      return {
+        loading: false,
+        errorMsg: '',
+        showPass: false,
+          form: {
+              name: '',
+              email: '',
+              password: '',
+              confirm_password: ''
           },
+      }
+  },
+
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+          minLength: minLength(3),
+          maxLength: maxLength(255)
         },
-        global: {
-            Meter
-        }
+        email: {
+          required,
+          email,
+          maxLength: maxLength(255)
+        },
+        password: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(255)
+        },
+        confirm_password: {
+          sameAsPassword: sameAs('password')
+        },
+      }
     }
+  },
+
+  computed: {
+    passwordStrength () {
+        return zxcvbn(this.form.password).score
+    },
+  },
+
+  methods: {
+    async register() {
+      this.$v.$touch()
+
+      if (this.$v.$invalid) return
+      this.loading = true
+
+      try {
+        await this.$axios.post('/v1/register', this.form )
+        await this.$auth.loginWith( 'laravelSanctum', { data: this.form } )
+        await this.$router.push({ path: '/' })
+
+        this.$v.$reset()
+      } catch (err) {this.setErrorMsg(err)}
+
+      this.loading = false
+    },
+
+    setErrorMsg(err) {
+      if (err.response.status === 403) {
+        this.errorMsg = err.response.data.error
+      } else if (err.response.status === 422) {
+        this.errorMsg = err.response.data.errors
+      } else {
+        this.errorMsg = 'неизвестная ошибка'
+      }
+      console.log(err.response)
+    }
+  },
+
+  created() {
+    this.$axios.get('/v1/sanctum/csrf-cookie')
+  },
+}
 </script>
 
 <style scoped>

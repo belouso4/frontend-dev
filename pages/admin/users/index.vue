@@ -5,56 +5,57 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Каталог пользователей</h1>
+            <h1>Пользователи</h1>
           </div>
           <div class="col-sm-6">
-            <AdminUiBreadcrumbs :name="'Пользователи'" />
+            <AdminUiBreadcrumbs :name="'пользователи'" />
           </div>
         </div>
       </div><!-- /.container-fluid -->
     </section>
 
     <section class="content">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Таблица с пользователями</h3>
-          <div class="card-tools d-flex align-items-center">
-            <nuxt-link v-can="'user.create'" class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
-                       to="/admin/users/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
-            <form @submit.prevent="searchUsers()" class="form-search input-group input-group-sm">
-              <input v-model="search"
-                     @keyup="searchUsers()"
-                     type="text"
-                     name="table_search"
-                     class="form-control float-right border-dark"
-                     placeholder="Поиск...">
-              <div class="input-group-append">
-                <button type="submit" class="btn btn-default border-dark">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-            </form>
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Таблица с пользователями</h3>
+            <div class="card-tools d-flex align-items-center">
+              <nuxt-link v-can="'user.create'" class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
+                         to="/admin/users/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
+              <form @submit.prevent="searchUsers()" class="form-search input-group input-group-sm">
+                <input v-model="search"
+                       @keyup="searchUsers()"
+                       type="text"
+                       name="table_search"
+                       class="form-control float-right border-dark"
+                       placeholder="Поиск...">
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-default border-dark">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-        <div class="card-body p-0">
-          <table  class="table projects">
-            <thead>
-            <tr>
-              <th style="width: 25%">
-                id
-              </th>
-              <th style="width: 25%">
-                Имя
-              </th>
-              <th style="width: 25%">
-                Email
-              </th>
-              <th style="width: 25%">
-                Действия
-              </th>
-            </tr>
-            </thead>
-            <tbody>
+          <div class="card-body p-0">
+            <table  class="table projects">
+              <thead>
+              <tr>
+                <th style="width: 1%">
+                  id
+                </th>
+                <th style="width: 33%">
+                  Имя
+                </th>
+                <th style="width: 33%">
+                  Email
+                </th>
+                <th style="width: 33%">
+                  Действия
+                </th>
+              </tr>
+              </thead>
+              <tbody>
               <tr v-for="user in users.data">
                 <td>
                   {{ user.id }}
@@ -79,22 +80,24 @@
                   </a>
                 </td>
               </tr>
-            </tbody>
-            <div v-if="loading" class="spinner-load">
-              <img src="/loader.gif">
+              </tbody>
+              <div v-if="loading" class="spinner-load">
+                <img src="/loader.gif">
+              </div>
+            </table>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer note-float d-flex align-items-center justify-content-between">
+            <pagination :show-disabled="true" :limit="1" :data="users" @pagination-change-page="getResults"></pagination>
+            <div class="ml-auto">
+              <nuxt-link class="text-dark" to="/admin/posts/delete">
+                Заблокированные пользователи <i class="fas fa-trash ml-1"></i>
+              </nuxt-link>
             </div>
-          </table>
-        </div>
-        <!-- /.card-body -->
-        <div class="card-footer note-float d-flex align-items-center justify-content-between">
-          <pagination :show-disabled="true" :limit="6" :keepLength="true" :data="users" @pagination-change-page="getResults"></pagination>
-          <div class="ml-auto">
-            <nuxt-link class="text-dark" to="/admin/posts/delete">
-              Заблокированные пользователи <i class="fas fa-trash ml-1"></i>
-            </nuxt-link>
           </div>
         </div>
       </div>
+
 
       <!-- /.card -->
     </section>
@@ -124,6 +127,13 @@ export default {
     }
   },
 
+  async asyncData({$api}) {
+    try {
+      const users = await $api.adminUsers.index(1)
+      return {users}
+    } catch (err) {console.log(err)}
+  },
+
   data() {
     return {
       loading: false,
@@ -132,14 +142,7 @@ export default {
     }
   },
 
-  created() {
-    console.log(this.users)
-  },
 
-  async asyncData({app}) {
-    const users = await app.$api.adminUsers.index(1)
-    return {users}
-  },
 
   computed: {
 
@@ -184,12 +187,15 @@ export default {
     },
 
     async remove(id) {
-      this.loading = true
+      try {
+        this.loading = true
 
-      await this.$api.adminUsers.delete(id)
-      await this.getResults()
+        await this.$api.adminUsers.delete(id)
+        await this.getResults()
 
-      this.loading = false
+        this.loading = false
+      } catch (err) {console.log(err)}
+
     },
 
     async getSearchData() {
@@ -200,5 +206,7 @@ export default {
 </script>
 
 <style>
-
+tr {
+  text-align: center;
+}
 </style>

@@ -13,6 +13,10 @@
   display: flex;
 }
 
+.navigation > a:first-child {
+  font-weight: 700;
+}
+
 .navigation ul li:not(:last-child) {
   margin-right: 23px;
 }

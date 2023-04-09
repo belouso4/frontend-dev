@@ -32,11 +32,6 @@
 export default {
   name: "PostCard",
   props: ['post'],
-  data() {
-    return {
-      BASE_URL: process.env.API_BASE_URL_IMG,
-    }
-  },
   methods:{
 
     like(slug, user_like_count) {

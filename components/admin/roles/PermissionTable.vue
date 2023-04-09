@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <div class="permissions-table_footer">
+      <div class="permissions-table_footer cursor-pointer">
         Сбросьте системные разрешения на:
         <span @click="setMinimumPermissions()">Минимальный доступ к приложению</span> / <span @click="setDefaultPermissions()">Рекомендуемые значения по умолчанию</span>
       </div>
@@ -121,7 +121,87 @@ export default {
 </script>
 
 <style scoped>
+
+.permissions-table {
+  border-radius: 6px;
+  border: 2px solid #d3dae4;
+}
+
+.permissions-table_header {
+  display: flex;
+  padding: 12px;
+  border-bottom: 2px solid #d3dae4;
+}
+
+.permissions-table_header .name {
+  flex-grow: 1;
+}
+
+.v-icon {
+  width: 24px;
+}
+
+.permissions-table_header .v-icon+.v-icon {
+  margin-left: 20px;
+}
+
+.permissions-table_body .elem-permission img{
+  width: 19px;
+}
+
+.permissions-table_body .elem-permission{
+  cursor: pointer;
+  text-align: center;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.permissions-table_body .elem-permission:hover{
+  background: #ededed;
+  transition: background 0.3s ease;
+}
+
+.permissions-table_body .elem-permission.disabled{
+  opacity: .5;
+  cursor: default;
+}
+.permissions-table_body .elem-permission.disabled:hover{
+  background: transparent;
+}
+
+.permissions-table_body .permissions-table_body__row{
+  display: flex;
+  height: 48px;
+  padding: 0 12px;
+  align-items: center;
+}
+
+.permissions-table_body .name{
+  flex-grow: 1;
+}
+
+.permissions-table_body .v-icon+.v-icon{
+  margin-left: 20px;
+}
+
+.permissions-table_footer {
+  padding: 8px;
+  font-size: 14px;
+}
+
   .permissions-table_footer span {
-    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
   }
+
+.btn-all-collection {
+  border: none;
+  width: 100%;
+  height: 48px
+}
+
+.btn-all-collection i {
+  vertical-align: middle;
+  margin-left: 2px;
+}
 </style>

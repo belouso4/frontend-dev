@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="$route.path.indexOf('/admin') > -1" class="tab-content">
+  <div v-if="this.$route.path.split('/').includes('admin')" class="tab-content">
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -47,9 +47,10 @@
       name: "error",
       // layout: 'App',
       props: ['error'],
-      layout: (context) => context.route.path.indexOf('/admin') > -1 ? 'Admin' : 'AppMain',
+      layout: (context) => context.route.path.split('/').includes('admin') ? 'Admin' : 'AppMain',
       created() {
-console.log(this.$route.path.indexOf('/admin') > -1)
+// console.log(this.$route.path.indexOf('/admin') > -1)
+
       }
 
     }

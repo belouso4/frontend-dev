@@ -1,5 +1,5 @@
 <template>
-  <img :src="mySVG" alt="">
+  <img src="/loader.gif" alt="">
 </template>
 
 <script>
@@ -7,7 +7,7 @@ export default {
   name: "Loader",
   data() {
     return {
-      mySVG: require('/static/loader.gif')
+
     }
   }
 }

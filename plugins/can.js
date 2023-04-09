@@ -22,6 +22,8 @@ export default function( { $axios, $auth }, inject ){
   })
 
   function can($permission) {
+    if($auth.user.role === 'super-admin') return true
+
     if (typeof $permission === 'string') {
       return $auth.user.permission.includes($permission)
     } else {

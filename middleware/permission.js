@@ -1,6 +1,8 @@
 export default ({ store, route, redirect, $auth, error }) => {
   // Check if user is connected first
 
+  if($auth.user.role === 'super-admin') return
+
   // Get authorizations for matched routes (with children routes too)
   const [authorizationLevels] = route.meta.map((meta) => {
     if (meta.permission && typeof meta.permission !== 'undefined')
@@ -14,7 +16,7 @@ export default ({ store, route, redirect, $auth, error }) => {
     if (!$auth.user.permission.includes(authorizationLevels)) {
       return error({
         statusCode: 401,
-        message: 'Du måste vara admin för att besöka denna sidan.'
+        message: 'Вы должны быть администратором, чтобы посетить эту страницу.'
       })
     }
   } else {
@@ -22,7 +24,7 @@ export default ({ store, route, redirect, $auth, error }) => {
 
     if (!found) return error({
       statusCode: 401,
-      message: 'Du måste vara admin för att besöka denna sidan.'
+      message: 'Вы должны быть администратором, чтобы посетить эту страницу.'
     })
   }
 

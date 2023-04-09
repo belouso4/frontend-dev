@@ -32,15 +32,17 @@
                     </client-only>
                   </form-group>
 
-                  <form-group :validator="$v.form.excerpt" label="Небольшое описание">
-                    <textarea v-model="form.excerpt" @input="textAreaAdjust($event.target)"
-                              type="text" class="form-control textarea-resize"
-                              id="except-textarea" placeholder="Введите небольшое описание"></textarea>
+                  <form-group label="Небольшое описание">
+                  <textarea v-model="form.excerpt" @input="textAreaAdjust($event.target)"
+                            type="text"
+                            class="form-control textarea-resize"
+                            id="except-textarea"
+                            placeholder="Введите небольшое описание"></textarea>
                   </form-group>
 
-                  <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+                  <ul class="nav cursor-pointer nav-tabs" id="custom-content-below-tab" role="tablist">
                     <li class="nav-item" @click="tabShow = 'Metadata'">
-                      <a class="nav-link" :class="[{active: tabShow === 'Metadata'}]">MetaData</a>
+                      <a class="nav-link active" :class="[{active: tabShow === 'Metadata'}]">MetaData</a>
                     </li>
                   </ul>
                   <div class="tab-content" id="custom-content-below-tabContent">
@@ -102,12 +104,10 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button @click="sendBtn($event)" type="submit" class="btn btn-primary float-right btn-with-loader">
-                    <span v-if="!loading">Сохранить</span>
-                    <Loader width="20px" v-else/>
-                  </button>
+                  <button-loader :fetch="sendBtn" :loading="loading">
+                    Сохранить
+                  </button-loader>
                 </div>
-
             </div>
           </div>
         </div>
@@ -205,6 +205,7 @@ export default {
 
   methods: {
     async sendBtn(e) {
+      console.log('qwfqf')
       this.$v.$touch()
 
       if (!this.$v.$invalid) {
@@ -231,12 +232,17 @@ export default {
       if (this.tag.length < 2) return;
       clearTimeout(this.debounce);
 
-      this.debounce = setTimeout(() => {
-        this.$api.adminTags.search({search: this.tag}).then(({data}) => {
-          this.autocompleteItems = data.filter(a => {
-            return a.tag.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      this.debounce = setTimeout(async () => {
+        try {
+          let tags = await this.$api.adminTags.search({search: this.tag})
+
+          this.autocompleteItems = tags.filter(a => {
+            let toLowerCase =  a.tag.toLowerCase()
+
+            return toLowerCase.indexOf(this.tag.toLowerCase()) !== -1;
           }).map(a => ({text: a.tag, id: a.id}));
-        })
+
+        } catch (err) {console.log(err)}
       }, 600)
     },
 
@@ -307,87 +313,5 @@ export default {
 </script>
 
 <style>
-
-.content ul input{
-  flex: 1;
-  padding: 5px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-}
-
-ul.select-tags {
-  border: 1px solid #cecece;
-  margin-top: 5px;
-  border-radius: 5px;
-  padding: 11px 20px 20px 13px;
-  position: absolute;
-  width: 100%;
-  bottom: -192px;
-  right: 0;
-  left: 0;
-  height: 187px;
-  overflow: hidden;
-  overflow-y: auto;
-  z-index: 99999;
-  background: #fff;
-}
-
-.select-tags li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.select-tags li span {
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  transition: all .3s ease;
-  display: block;
-  cursor: pointer;
-}
-
-.select-tags li span:hover {
-  background: #ff3c3c;;
-  color: #fff;
-  transition: all .3s ease;
-}
-
-.select-tags li:not(:last-child) {
-  margin-bottom: 5px;
-}
-
-.select-tags li p {
-  cursor: pointer;
-}
-
-.create-new-tag {
-  margin-top: 10px;
-}
-
-.tags-input .inputs {
-  display: flex;
-
-}
-
-.tags-input .inputs i {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.tabs-enter-active, .tabs-leave-active {
-  transition: opacity .15s;
-}
-
-.tabs-enter, .tabs-leave-to{
-  opacity: 0;
-}
-
-.nav-tabs a {
-  cursor: pointer;
-}
-
 
 </style>

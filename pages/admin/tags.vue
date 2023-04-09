@@ -45,21 +45,17 @@ export default {
     }
   },
 
-  async asyncData({app,store}) {
-    const tags = await app.$api.adminTags.index(1)
-    await store.commit('tags/setTags', tags)
-    return {tags}
-  }
+  async asyncData({$api,store}) {
+    try {
+      const tags = await $api.adminTags.index(1)
+      await store.commit('tags/setTags', tags)
 
+      return {tags}
+    } catch (err) {console.log(err)}
+  }
 }
 </script>
 
 <style scoped>
-
-
-
-
-
-
 
 </style>

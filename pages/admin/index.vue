@@ -27,7 +27,7 @@
 export default {
   name: "admin",
   layout: 'Admin',
-  created() {
+  mounted() {
 
   }
 }

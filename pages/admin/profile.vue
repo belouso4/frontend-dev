@@ -89,10 +89,9 @@
                       </form-group>
                       <div class="form-group row">
                         <div class="offset-sm-2 col-sm-10 d-flex justify-content-end">
-                          <button type="submit" :disabled="loading" class="btn btn-primary btn-with-loader">
-                            <span v-if="!loading">Сохранить</span>
-                            <Loader width="20px" v-else/>
-                          </button>
+                          <button-loader :loading="loading">
+                            Сохранить
+                          </button-loader>
                         </div>
                       </div>
                     </form>

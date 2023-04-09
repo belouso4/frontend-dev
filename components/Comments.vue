@@ -89,7 +89,12 @@
 
 export default {
   name: "Comments",
-  props: ['comments'],
+  props: {
+    comments: {
+      type: Object,
+      defaults: {}
+    }
+  },
 
   data: () => ({
     body: '',

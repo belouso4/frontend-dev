@@ -38,27 +38,29 @@
 <script>
 import {mapMutations} from "vuex";
 import Comments from "../../components/Comments";
-import socialMetadata from '~/mixins/social-metadata'
+
 
 export default {
   name: 'addPost',
   components: {Comments},
   layout: 'AppMain',
-  mixins: [socialMetadata],
+
+
+  async asyncData({$api, params,error}) {
+    try {
+      const [post, comments] = await Promise.all([
+        $api.posts.show(params.slug),
+        $api.comments.index(params.slug, 0)
+      ]);
+
+      return {post, comments}
+    } catch (err) {console.log(err)}
+  },
 
   data() {
     return {
-      post: {},
-      comments: {},
+      baseURL: process.env.BASE_URL
     }
-  },
-
-  async asyncData({app, params,error}) {
-      const [post, comments] = await Promise.all([
-        app.$api.posts.show(params.slug),
-        app.$api.comments.index(params.slug, 0)
-      ]);
-      return {post, comments}
   },
 
   methods: {
@@ -72,6 +74,8 @@ export default {
   },
 
   created() {
+    console.log(this.post)
+
     this.setBreadcrumbs([
       { text: 'Главная', to: { path: '/' }},
       { text: 'Новости', to: { path: '/posts' }},

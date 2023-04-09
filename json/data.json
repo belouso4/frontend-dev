@@ -1,0 +1,12 @@
+{
+  "nav": {
+    "admin-posts": "посты",
+    "admin-posts-delete": "удаленные посты",
+    "admin-posts-add": "добавить пост",
+    "admin-users": "пользователи",
+    "admin-users-roles": "пользователи с ролями",
+    "admin-tags": "теги",
+    "admin-roles": "роли",
+    "admin-email": "email"
+  }
+}

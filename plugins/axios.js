@@ -1,10 +1,10 @@
-export default function({app, route, $axios, redirect, store, error: nuxtError}) {
+export default function({app, route, $axios, $auth, redirect, store, error: nuxtError}) {
   // handle api errors
 
   $axios.onError(error => {
    console.log('--error.message--: ',error.response)
     const code = parseInt(error.response && error.response.status)
-    console.log(error.message)
+    console.log(error)
     // const url = app.context.from.path.split('/')
     const url = route.path.split('/')
     // console.log(url[1],code,app.context.from.path)
@@ -16,8 +16,6 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
           statusCode: error.response.status,
           message: 'Такой страницы не существует',
         });
-
-        return Promise.resolve(false);
       }
 
 
@@ -27,10 +25,8 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
           message: error.message,
         });
 
-        return Promise.resolve(true);
       }
     }
-
 
     if (process.client && url[1] === 'admin') {
       // if (code === 404 || code === 500) {
@@ -84,7 +80,7 @@ export default function({app, route, $axios, redirect, store, error: nuxtError})
     }
 
     // logout the user if the session expired
-    if (app.$auth.loggedIn && [401, 419].includes(code) || error.response.data.ban === 1) {
+    if (app.$auth.loggedIn && [401, 419].includes(code) || error.response?.data.ban === 1) {
       logout()
       return Promise.resolve(false);
     }

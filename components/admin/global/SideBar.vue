@@ -124,112 +124,6 @@
               </p>
             </nuxt-link>
           </li>
-
-          <li class="nav-item">
-            <nuxt-link to="/admin/email/compose" class="nav-link">
-              <i class="nav-icon far fa-envelope"></i>
-              <p>
-                Email compose
-              </p>
-            </nuxt-link>
-          </li>
-          <li class="nav-header">
-            EXAMPLES
-          </li>
-          <li class="nav-item">
-            <a href="pages/calendar.html" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt" />
-              <p>
-                Calendar
-                <span class="badge badge-info right">2</span>
-              </p>
-            </a>
-          </li>
-          <li class="nav-item has-treeview">
-            <a @click.prevent="openMenu($event)" href="#" class="nav-link">
-              <i class="nav-icon far fa-envelope" />
-              <p>
-                Mailbox
-                <i class="fas fa-angle-left right" />
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                  <i class="far fa-circle nav-icon" />
-                  <p>Inbox</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/mailbox/compose.html" class="nav-link">
-                  <i class="far fa-circle nav-icon" />
-                  <p>Compose</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/mailbox/read-mail.html" class="nav-link">
-                  <i class="far fa-circle nav-icon" />
-                  <p>Read</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <li class="nav-header">
-            MULTI LEVEL EXAMPLE
-          </li>
-          <li class="nav-item has-treeview nested">
-            <a @click.prevent="openMenu($event)" href="#" class="nav-link">
-              <i class="nav-icon fas fa-circle" />
-              <p>
-                Level 1
-                <i class="right fas fa-angle-left" />
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon" />
-                  <p>Level 2</p>
-                </a>
-              </li>
-              <li class="nav-item has-treeview">
-                <a @click.prevent="openMenu($event)" href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon" />
-                  <p>
-                    Level 2
-                    <i class="right fas fa-angle-left" />
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-dot-circle nav-icon" />
-                      <p>Level 3</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-dot-circle nav-icon" />
-                      <p>Level 3</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-dot-circle nav-icon" />
-                      <p>Level 3</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon" />
-                  <p>Level 2</p>
-                </a>
-              </li>
-            </ul>
-          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
@@ -244,9 +138,6 @@
       data: () => ({
         active: false
       }),
-      created() {
-        // console.log('+++++',this.$can('post.view'))
-      },
       methods: {
         openMenu(e) {
           let sidebar = document.querySelectorAll('ul[role="menu"] li')

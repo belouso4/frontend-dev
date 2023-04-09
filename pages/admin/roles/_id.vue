@@ -66,10 +66,9 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
-                  <button @click="sendBtn" type="submit" class="btn btn-primary float-right btn-with-loader">
-                    <span v-if="!loading">Сохранить</span>
-                    <Loader width="20px" v-else/>
-                  </button>
+                  <button-loader :fetch="sendBtn" :loading="loading">
+                    Сохранить
+                  </button-loader>
                 </div>
               </div>
             </div>
@@ -125,22 +124,24 @@ export default {
     }
   },
 
-  async asyncData({app, params, store}) {
-    const [role, permissions] = await Promise.all([
-      app.$api.adminRoles.edit(params.id),
-      app.$api.adminRoles.permissions()
-    ])
-    const users = role.users
-    store.commit('role/setUsers', role.users)
-    delete role.users
+  async asyncData({$api, params, store}) {
+    try {
+      const [role, permissions] = await Promise.all([
+        $api.adminRoles.edit(params.id),
+        $api.adminRoles.permissions()
+      ])
+      const users = role.users
+      store.commit('role/setUsers', role.users)
+      delete role.users
 
-    return {
-      form:role,
-      permissions,
-      title: role.name,
-      copyRole: {...role},
-      copyUsers: [...users]
-    }
+      return {
+        form:role,
+        permissions,
+        title: role.name,
+        copyRole: {...role},
+        copyUsers: [...users]
+      }
+    } catch (err) {console.log(err)}
   },
 
   data() {
@@ -325,169 +326,6 @@ export default {
 
 textarea {
   height: 125px;
-}
-
-.content ul input{
-  flex: 1;
-  padding: 5px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-}
-
-.error-text {
-  color: red;
-  margin-top: 4px;
-}
-
-ul.select-tags {
-  border: 1px solid #cecece;
-  margin-top: 5px;
-  border-radius: 5px;
-  padding: 11px 20px 20px 13px;
-  position: absolute;
-  width: 100%;
-  bottom: -192px;
-  right: 0;
-  left: 0;
-  height: 187px;
-  overflow: hidden;
-  overflow-y: auto;
-  z-index: 99999;
-  background: #fff;
-}
-
-.select-tags li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.select-tags li span {
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  transition: all .3s ease;
-  display: block;
-  cursor: pointer;
-}
-
-.select-tags li span:hover {
-  background: #ff3c3c;;
-  color: #fff;
-  transition: all .3s ease;
-}
-
-.select-tags li:not(:last-child) {
-  margin-bottom: 5px;
-}
-
-.select-tags li p {
-  cursor: pointer;
-}
-
-.create-new-tag {
-  margin-top: 10px;
-}
-
-.tags-input .inputs {
-  display: flex;
-
-}
-
-.tags-input .inputs i {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* style table permissions */
-
-.permissions-table {
-  border-radius: 6px;
-  border: 2px solid #d3dae4;
-}
-
-.permissions-table_header {
-  display: flex;
-  padding: 12px;
-  border-bottom: 2px solid #d3dae4;
-}
-
-.permissions-table_header .name {
-  flex-grow: 1;
-}
-
-.v-icon {
-  width: 24px;
-}
-
-.permissions-table_header .v-icon+.v-icon {
-  margin-left: 20px;
-}
-
-.btn-all-collection {
-  border: none;
-  width: 100%;
-  height: 48px
-}
-
-.btn-all-collection i {
-  vertical-align: middle;
-  margin-left: 2px;
-}
-
-.permissions-table_body .elem-permission img{
-  width: 19px;
-}
-
-.permissions-table_body .elem-permission{
-  cursor: pointer;
-  text-align: center;
-  border-radius: 50%;
-  transition: background 0.3s ease;
-}
-
-.permissions-table_body .elem-permission:hover{
-  background: #ededed;
-  transition: background 0.3s ease;
-}
-
-.permissions-table_body .elem-permission.disabled{
-  opacity: .5;
-  cursor: default;
-}
-.permissions-table_body .elem-permission.disabled:hover{
-  background: transparent;
-}
-
-.permissions-table_body .permissions-table_body__row{
-  display: flex;
-  height: 48px;
-  padding: 0 12px;
-  align-items: center;
-}
-
-.permissions-table_body .name{
-  flex-grow: 1;
-}
-
-.permissions-table_body .v-icon+.v-icon{
-  margin-left: 20px;
-}
-
-.permissions-table_footer {
-  padding: 8px;
-  font-size: 14px;
-}
-
-.permissions-table_footer span {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.users-roles {
-
 }
 
 .users-roles li:not(:last-child) {

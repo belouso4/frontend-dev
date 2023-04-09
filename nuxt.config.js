@@ -1,4 +1,7 @@
 require('dotenv').config()
+import getSiteMeta from "./utils/getSiteMeta";
+
+const meta = getSiteMeta();
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -11,18 +14,26 @@ export default {
   head: {
     title: 'frontend',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'ru'
     },
     meta: [
+      ...meta,
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { name: 'format-detection', content: 'telephone=no' },
+      { hid: 'keywords', name: 'keywords', content: 'own-house, ownHouse, ownhouse' },
+      { property: "og:image:width", content: "740" },
+      { property: "og:image:height", content: "300" },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel:"stylesheet", type:"text/css", href:'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css' },
     ]
+  },
+
+  publicRuntimeConfig: {
+    API_URL_IMG: process.env.API_BASE_URL_IMG || 'http://localhost:8000'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -53,11 +64,14 @@ export default {
     { src: '~/plugins/vue-tags-input.js', ssr: false },
     {src:'~/plugins/vue-quill-editor.js',ssr: false},
   ],
+
   axios: {
     baseURL: process.env.API_BASE_URL,
     credentials: true
   },
+
   loading: false,
+
   auth: {
     redirect: {
       login: '/login',

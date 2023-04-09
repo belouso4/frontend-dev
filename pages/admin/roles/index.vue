@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Список всех постов</h1>
+            <h1>Роли & Разрешения</h1>
           </div>
           <div class="col-sm-6">
             <AdminUiBreadcrumbs name="Роли" />
@@ -15,94 +15,92 @@
 
     <section class="content">
 
-      <!-- Default box -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Таблица с ролями</h3>
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Таблица с ролями</h3>
 
-
-          <div class="card-tools d-flex align-items-center">
-            <button v-can="'role.create'" @click="modals.userAdd.show = true" class="btn btn-outline-dark btn-sm mr-2">
-              <i class="fa-solid fa-plus"></i> Добавить
-            </button>
-            <form @submit.prevent="searchRoles()" class="form-search input-group input-group-sm" style="width: 300px;">
-              <input v-model="search"
-                     @keyup="searchRoles()"
-                     type="text"
-                     name="table_search"
-                     class="form-control float-right border-dark"
-                     placeholder="Поиск...">
-              <div class="input-group-append">
-                <button type="submit" class="btn btn-default border-dark">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-            </form>
+            <div class="card-tools d-flex align-items-center">
+              <button v-can="'role.create'"
+                      @click="modals.userAdd.show = true" class="btn btn-outline-dark btn-sm mr-2">
+                <i class="fa-solid fa-plus"></i> Добавить
+              </button>
+              <form @submit.prevent="searchRoles()" class="form-search input-group input-group-sm">
+                <input v-model="search"
+                       @keyup="searchRoles()"
+                       type="text"
+                       name="table_search"
+                       class="form-control float-right border-dark"
+                       placeholder="Поиск...">
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-default border-dark">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-        <div class="card-body p-0">
-          <table  class="table projects">
-            <thead>
-            <tr>
-              <th>
-                #
-              </th>
-              <th>
-                Название
-              </th>
-              <th>
-                Пользователи
-              </th>
-              <th>
-                Описание
-              </th>
-              <th>
-                Действия
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="role in roles.data">
-              <td>
-               {{role.id}}
-              </td>
-              <td>
-                {{role.name}}
-              </td>
-              <td>
-                {{role.users_count}}
-              </td>
-              <td>
+          <div class="card-body p-0">
+            <table  class="table projects">
+              <thead>
+              <tr>
+                <th>
+                  #
+                </th>
+                <th>
+                  Название
+                </th>
+                <th>
+                  Пользователи
+                </th>
+                <th>
+                  Описание
+                </th>
+                <th>
+                  Действия
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="role in roles.data">
+                <td>
+                  {{role.id}}
+                </td>
+                <td>
+                  {{role.name}}
+                </td>
+                <td>
+                  {{role.users_count}}
+                </td>
+                <td>
                 <span>
                   {{ role.desc }}
                 </span>
-              </td>
-              <td class="project-actions">
-                <nuxt-link v-can="'post.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/roles/'+role.id">
-                  <i class="fas fa-pencil-alt">
-                  </i>
-                </nuxt-link>
-                <button v-can="'role.delete'" @click="confirDeletion(role.id)" :title="role.id === 1 ? '' : 'Удалить'" :class="['btn btn-outline-dark btn-sm', {'disabled': role.id === 1}]">
-                  <i class="fas fa-trash">
-                  </i>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-            <div v-if="loading" class="spinner-load">
-              <img src="/loader.gif">
-            </div>
-          </table>
-        </div>
-        <!-- /.card-body -->
+                </td>
+                <td class="project-actions">
+                  <nuxt-link v-can="'role.edit'" title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/roles/'+role.id">
+                    <i class="fas fa-pencil-alt">
+                    </i>
+                  </nuxt-link>
+                  <button v-can="'role.delete'" @click="confirDeletion(role.id)" :title="role.id === 1 ? '' : 'Удалить'" :class="['btn btn-outline-dark btn-sm', {'disabled': role.id === 1}]">
+                    <i class="fas fa-trash">
+                    </i>
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+              <div v-if="loading" class="spinner-load">
+                <img src="/loader.gif">
+              </div>
+            </table>
+          </div>
+          <!-- /.card-body -->
 
-        <div class="card-footer note-float d-flex align-items-center justify-content-between">
-          <pagination :data="roles" @pagination-change-page="getResults"></pagination>
+          <div class="card-footer note-float d-flex align-items-center justify-content-between">
+            <pagination :show-disabled="true" :limit="1"  :data="roles" @pagination-change-page="getResults"></pagination>
+          </div>
         </div>
       </div>
-      <!--      <div class="loading">-->
-      <!--        <i class="fa-solid fa-gears"></i>-->
-      <!--      </div>-->
 
       <!-- /.card -->
     </section>
@@ -138,6 +136,13 @@ export default {
     }
   },
 
+  async asyncData({$api}) {
+    try {
+      const roles = await $api.adminRoles.index()
+      return {roles}
+    } catch (err) {console.log(err)}
+  },
+
   data() {
     return {
       loading: false,
@@ -154,15 +159,6 @@ export default {
         }
       },
     }
-  },
-
-  created() {
-    console.log(this.roles)
-  },
-
-  async asyncData({app}) {
-    const roles = await app.$api.adminRoles.index()
-    return {roles}
   },
 
   methods: {
@@ -217,5 +213,4 @@ export default {
 tr {
   text-align: center;
 }
-
 </style>

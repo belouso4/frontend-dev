@@ -60,13 +60,13 @@
           </div>
         </table>
       </div>
-      <div class="card-footer d-flex">
+      <div class="card-footer note-float d-flex justify-content-between">
         <button @click="deleteTag()" type="submit"
                 class="btn btn-default delete-btn"
                 :disabled="checkbox.length ? false : true">
           Удалить
         </button>
-        <pagination :data="tags" @pagination-change-page="getTags"></pagination>
+        <pagination :show-disabled="true" :limit="1" :data="tags" @pagination-change-page="getTags"></pagination>
       </div>
     </div>
   </div>

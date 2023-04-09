@@ -21,7 +21,7 @@
         <div class="wrapper-post">
           <PostCard v-for="post in posts.data" :post="post" :key="'cafe-'+post.id"/>
           <client-only>
-            <infinite-loading v-if="posts.data.length" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+            <infinite-loading v-if="posts.data?.length" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
           </client-only>
         </div>
       </div>
@@ -35,35 +35,32 @@ import { mapMutations } from 'vuex';
 export default {
   name: "posts",
   layout: 'AppMain',
-  head: {
-    title: 'Последние новости',
-    meta: [
-      {
-        hid: 'description',
-        name: 'description',
-        content: 'Последние новости',
-      },
-    ],
+
+  async asyncData({ $api }) {
+    try {
+      let page = 1
+      const posts = await $api.posts.index(1)
+      return {posts, page}
+    } catch (err) {}
   },
 
   data() {
     return {
       posts: {},
       page: 0,
+      metadata: {
+        title: 'Свежие посты',
+        description: 'Свежие посты'
+      }
     }
   },
 
   created() {
+    console.log(this.posts)
     this.setBreadcrumbs([
       { text: 'Главная', to: { path: '/' }},
       { text: 'Новости'},
     ]);
-  },
-
-  async asyncData({ $api }) {
-    let page = 1
-    const posts = await $api.posts.index(1)
-    return {posts, page}
   },
 
   methods: {
@@ -88,6 +85,8 @@ export default {
       }, 500);
     },
   },
+
+
 
 
 

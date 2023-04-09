@@ -25,7 +25,7 @@
               <li v-for="item in items" class="d-flex align-items-center" @click="pathPush(key, item.id)">
                 <span>
                   <div class="avatar">
-                    <img :src="url_img + '/' +item.img" alt="">
+                    <img :src="$config.API_URL_IMG + '/' +item.img" alt="">
                   </div>
                 </span>
                   <div v-if="key === 'users'" class="d-flex flex-column">
@@ -51,7 +51,6 @@ export default {
   components: {Modal},
   data() {
     return {
-      url_img: process.env.API_BASE_URL_IMG,
       loading: false,
       search: "",
       debounce: null,
@@ -88,20 +87,17 @@ export default {
           this.loading = true
           clearTimeout(this.debounce);
 
-          this.debounce = setTimeout(() => {
-            if(!this.search) {
-              this.loading = false
-              return false
-            }
-            this.$api.adminGeneral.search({search: this.search}).then(response => {
+          this.debounce = setTimeout(async () => {
+            if(!this.search) return this.loading = false
+
+            try {
+              let response = await this.$api.adminGeneral.search({search: this.search})
+
               if (!Object.keys(response).length) this.notResult = 'Нет результатов для "'+this.search+'"'
-              console.log(response)
               this.data = response ?? {}
-            }).catch(() => {
-              console.warn('Oh. Something went wrong')
-            }).finally(() => {
-              this.loading = false
-            });
+            } catch (err) {console.log(err)}
+
+            this.loading = false
           }, 400);
         } else {
           this.notResult = 'Нет недавних поисков'

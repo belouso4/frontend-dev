@@ -87,10 +87,9 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                <button @click="sendBtn" type="submit" :disabled="loading" class="btn btn-primary float-right btn-with-loader">
-                  <span v-if="!loading">Сохранить</span>
-                  <Loader width="20px" v-else/>
-                </button>
+                <button-loader :fetch="sendBtn" :loading="loading">
+                  Сохранить
+                </button-loader>
               </div>
             </div>
           </div>
@@ -127,8 +126,10 @@ export default {
   },
 
   async asyncData({$api}) {
-    const roles = (await $api.adminRoles.index()).data;
-    return {roles}
+    try {
+      const roles = (await $api.adminRoles.index()).data;
+      return {roles}
+    } catch (err) {console.log(err)}
   },
 
   data() {
@@ -236,87 +237,5 @@ export default {
 </script>
 
 <style>
-
-textarea {
-  height: 125px;
-}
-
-.content ul input{
-  flex: 1;
-  padding: 5px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-}
-
-.error-text {
-  color: red;
-  margin-top: 4px;
-}
-
-ul.select-tags {
-  border: 1px solid #cecece;
-  margin-top: 5px;
-  border-radius: 5px;
-  padding: 11px 20px 20px 13px;
-  position: absolute;
-  width: 100%;
-  bottom: -192px;
-  right: 0;
-  left: 0;
-  height: 187px;
-  overflow: hidden;
-  overflow-y: auto;
-  z-index: 99999;
-  background: #fff;
-}
-
-.select-tags li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.select-tags li span {
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  transition: all .3s ease;
-  display: block;
-  cursor: pointer;
-}
-
-.select-tags li span:hover {
-  background: #ff3c3c;;
-  color: #fff;
-  transition: all .3s ease;
-}
-
-.select-tags li:not(:last-child) {
-  margin-bottom: 5px;
-}
-
-.select-tags li p {
-  cursor: pointer;
-}
-
-.create-new-tag {
-  margin-top: 10px;
-}
-
-.tags-input .inputs {
-  display: flex;
-
-}
-
-.tags-input .inputs i {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.avatar {
-  object-fit: cover;
-}
 
 </style>

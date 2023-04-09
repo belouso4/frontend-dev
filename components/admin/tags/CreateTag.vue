@@ -19,10 +19,9 @@
         </div>
 
         <div class="card-footer">
-          <button type="submit" class="btn btn-primary float-right btn-with-loader">
-            <span v-if="!loading || !loadBtn">Сохранить</span>
-            <Loader width="20px" v-else/>
-          </button>
+          <button-loader :loading="!(!loading || !loadBtn)">
+            Сохранить
+          </button-loader>
         </div>
 
       </form>

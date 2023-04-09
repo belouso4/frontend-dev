@@ -3,20 +3,19 @@
     <div class="container">
       <form action="" class="form-auth" @submit.prevent="login">
         <h1>Авторизация</h1>
-        <label for="">
-          Email
-          <input id="login-email" v-model="form.email" type="text" placeholder="Введите email">
-          <p v-if="!validations.email.valid" class="error-msg">{{ validations.email.message }}</p>
-        </label>
-        <label for="">
-          Пароль
+        <p v-if="typeof errorMsg === 'string'">{{ errorMsg }}</p>
+        <p v-else v-for="error in errorMsg">{{ error[0] }}</p>
+        <form-group :validator="$v.form.email" label="Email">
+          <input type="text" v-model="form.email" placeholder="Введите email">
+        </form-group>
+
+        <form-group :validator="$v.form.password" label="Пароль">
           <div>
-            <input id="login-password" class="eye" v-model="form.password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль">
+            <input class="eye" v-model="form.password" :type="showPass ? 'text' : 'password'" placeholder="Введите пароль">
             <i @click="showPass = !showPass" :class="[showPass ? 'fas fa-eye' : 'fas fa-eye-slash' ]"></i>
           </div>
-          <p v-if="!validations.password.valid" class="error-msg">{{ validations.password.message }}</p>
-          <p v-if="!validations.invalidLogin.valid" class="error-msg">{{ validations.invalidLogin.message }}</p>
-        </label>
+        </form-group>
+
         <div class="form-auth_footer d-flex align-items-center">
           <nuxt-link to="/forgot-password">Забыли пароль?</nuxt-link>
           <button>
@@ -31,82 +30,74 @@
 </template>
 
 <script>
-    export default {
-        middleware: 'guest',
-        layout: 'AppMain',
-        data(){
-            return {
-                form: {
-                    email: '',
-                    password: ''
-                },
-                loading: false,
-                validations: {
-                    email: {
-                        valid: true,
-                        message: ''
-                    },
-                    password: {
-                        valid: true,
-                        message: ''
-                    },
-                    invalidLogin: {
-                        valid: true,
-                        message: ''
-                    }
-                },
-                showPass: false,
-                errorMessage: ''
-            }
-        },
+import {email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
 
-      methods: {
-            validateLogin(){
-
-                if( this.form.email == ''
-                    || !this.form.email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ){
-                    this.validations.email.valid = false;
-                    this.validations.email.message = 'Необходимо ввести корректныую электронную почту.'
-                }else{
-                    this.validations.email.valid = true;
-                    this.validations.email.mesage = '';
-                }
-                if( this.form.password == ''){
-                    this.validations.password.valid = false;
-                    this.validations.password.message = 'Необходимо ввести пароль'
-                }else{
-                    this.validations.password.valid = true;
-                    this.validations.password.message = '';
-                }
-                return (
-                    this.validations.email.valid &&
-                    this.validations.password.valid
-                ) ? true : false;
-            },
-            async login(){
-                if( this.validateLogin() ){
-                  this.loading = true
-                  try {
-                    await this.$auth.loginWith( 'laravelSanctum', {
-                      data: {
-                        email: this.form.email,
-                        password: this.form.password,
-                      }
-                    })
-
-                     this.$router.push('/')
-                  } catch (e) {
-                    console.log(e)
-                    this.validations.invalidLogin.valid = false;
-                    this.validations.invalidLogin.message = 'Неверные учетные данные, пожалуйста, повторите попытку!';
-                    this.validations.email.valid = true;
-                    this.validations.password.valid = true;
-                  }
-                  this.loading = false
-                }
-            },
-        }
+export default {
+  middleware: 'guest',
+  layout: 'AppMain',
+  data(){
+    return {
+      loading: false,
+      showPass: false,
+      errorMsg: '',
+      form: {
+        email: '',
+        password: ''
+      },
     }
+  },
+
+  validations() {
+    return {
+      form: {
+        email: {
+          required,
+          email,
+          maxLength: maxLength(255)
+        },
+        password: {
+          required,
+          minLength: minLength(6),
+          maxLength: maxLength(255)
+        },
+      }
+    }
+  },
+
+  methods: {
+    async login(){
+      this.$v.$touch()
+
+      if (this.$v.$invalid) return
+      this.loading = true
+
+      try {
+        await this.$auth.loginWith( 'laravelSanctum', {
+          data: {
+            email: this.form.email,
+            password: this.form.password,
+          }
+        })
+        await this.$router.push('/')
+
+        this.$v.$reset()
+      } catch (err) {this.setErrorMsg(err)}
+
+      this.loading = false
+    },
+
+    setErrorMsg(err) {
+      if (err.response.status === 403) {
+        this.errorMsg = err.response.data.error
+      } else if (err.response.status === 422) {
+        this.errorMsg = err.response.data.errors
+      } else {
+        this.errorMsg = 'неизвестная ошибка'
+      }
+      console.log(err.response)
+    }
+  }
+}
 </script>
 
 <style>

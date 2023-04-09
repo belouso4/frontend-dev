@@ -10,12 +10,18 @@
             <AdminUiBreadcrumbs :name="['Посты', 'Удаленные посты']" />
           </div>
         </div>
-        <nuxt-link to="/admin/posts/add" style="font: 22px;" class="add-post">Добавить новый пост</nuxt-link>
       </div>
     </section>
 
     <section class="content">
       <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Таблица с постами</h3>
+          <div class="card-tools d-flex align-items-center">
+            <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
+                       to="/admin/posts/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
+          </div>
+        </div>
         <div class="card-body p-0">
           <table  class="table projects">
             <thead>
@@ -94,7 +100,7 @@
             </button>
             <button @click="showCheckbox = !showCheckbox" class="btn btn-default">Выбрать</button>
           </div>
-          <pagination :data="posts" @pagination-change-page="getResults"></pagination>
+          <pagination :show-disabled="true" :limit="1" :data="posts" @pagination-change-page="getResults"></pagination>
         </div>
 
       </div>
@@ -121,31 +127,34 @@ export default {
     }
   },
 
-  async asyncData({app}) {
-    const posts = await app.$api.adminPosts.getDeletedPosts(1)
-    return {posts}
+  async asyncData({$api}) {
+    try {
+      const posts = await $api.adminPosts.getDeletedPosts(1)
+      return {posts}
+    } catch (err) {console.log(err)}
   },
 
   methods: {
-    async getResults(page) {
-      this.loading = true
-      if (typeof page === 'undefined') {
-        page = 1;
-      }
+    async getResults(page = 1) {
+      try {
+        this.loading = true
 
-      this.posts = await this.$api.adminPosts.getDeletedPosts(page)
-      this.loading = false
+        this.posts = await this.$api.adminPosts.getDeletedPosts(page)
+        this.loading = false
+      } catch (err) {console.log(err)}
     },
 
     async delPost(id) {
-      this.loading = true
+      try {
+        this.loading = true
 
-      let posts = await this.$api.adminPosts.deleteDeletedPosts(id)
-      console.log(posts)
-      await this.getResults()
+        await this.$api.adminPosts.deleteDeletedPosts(id)
+        await this.getResults()
 
-      this.showCheckbox = false
-      this.checkbox = []
+        this.showCheckbox = false
+        this.checkbox = []
+      } catch (err) {console.log(err)}
+
       this.loading = false
     },
 
@@ -155,13 +164,16 @@ export default {
     },
 
     async restorePost(id) {
-      this.loading = true
+      try {
+        this.loading = true
 
-      await this.$api.adminPosts.restore(id)
-      await this.getResults()
+        await this.$api.adminPosts.restore(id)
+        await this.getResults()
 
-      this.showCheckbox = false
-      this.checkbox = []
+        this.showCheckbox = false
+        this.checkbox = []
+      } catch (err) {console.log(err)}
+
       this.loading = false
     },
 
@@ -192,9 +204,5 @@ export default {
 </script>
 
 <style>
-.add-post {
-  margin-left: auto;
-  width: fit-content;
-  display: block;
-}
+
 </style>

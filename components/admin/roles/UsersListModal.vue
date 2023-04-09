@@ -76,7 +76,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button @click="closeModal()" class="btn btn-outline-light">Отмена</button>
-        <pagination :data="users" @pagination-change-page="getUsers"></pagination>
+        <pagination :show-disabled="true" :limit="1" :data="users" @pagination-change-page="getUsers"></pagination>
         <button @click="add()" class="btn btn-outline-dark">
           <span>Добавить</span>
         </button>

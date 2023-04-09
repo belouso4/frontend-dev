@@ -1,19 +1,19 @@
+import getSiteMeta from "~/utils/getSiteMeta";
+
 const socialMetadata = {
   head() {
-    const title = this.post?.metadata?.title
-      ? this.post.metadata.title
-      : this.post.title
-    const description = this.post?.metadata?.description
-      ? this.post.metadata.description
-      : this.post.title
-    const image = this.post?.metadata?.image
-      ? this.post.metadata.image
-      : 'https://globalmaintainersummit.github.com/social-card-past.jpg'
+    const title = this.meta.title ?? "Заголовок блога"
+    const description = this.meta.description
+    const image = this.meta?.image
+      ? this.meta.image
+      : '/website.png'
+    const keywords = this.metadata?.keywords
     const meta = [
+        ...getSiteMeta(this.meta),
       {
-        hid: 'description',
-        name: 'description',
-        content: description,
+        hid: 'keywords',
+        name: 'keywords',
+        content: keywords
       },
       {
         hid: 'twitter:card',
@@ -21,79 +21,44 @@ const socialMetadata = {
         content: 'summary_large_image',
       },
       {
-        hid: 'twitter:site',
-        name: 'twitter:site',
-        content: '@github',
-      },
-      {
-        hid: 'twitter:creator',
-        name: 'twitter:creator',
-        content: '@github',
-      },
-      {
-        hid: 'twitter:title',
-        name: 'twitter:title',
-        content: title,
-      },
-      {
-        hid: 'twitter:description',
-        name: 'twitter:description',
-        content: description,
-      },
-      {
-        hid: 'twitter:image',
-        name: 'twitter:image',
-        content: image,
-      },
-      {
-        hid: 'twitter:image:alt',
-        name: 'twitter:image:alt',
-        content: description,
-      },
-      {
-        hid: 'og:type',
-        property: 'og:type',
-        content: 'website',
-      },
-      {
-        hid: 'og:title',
-        property: 'og:title',
-        content: title,
-      },
-      {
-        hid: 'og:description',
-        property: 'og:description',
-        content: description,
-      },
-      {
-        hid: 'og:image',
-        property: 'og:image',
-        content: image,
-      },
-      {
-        hid: 'og:image:width',
-        property: 'og:image:width',
-        content: '1200',
-      },
-      {
-        hid: 'og:image:height',
-        property: 'og:image:height',
-        content: '630',
-      },
-      {
-        hid: 'og:image:secure_url',
-        property: 'og:image:secure_url',
-        content: image,
-      },
-      {
         hid: 'og:image:alt',
         property: 'og:image:alt',
         content: description,
       },
+
+      {
+        property: "article:published_time",
+        content: this.meta.createdAt,
+      },
+      {
+        property: "article:modified_time",
+        content: this.meta.updatedAt,
+      },
+      {
+        property: "article:tag",
+        content: this.meta.tags ? this.meta.tags.toString() : "",
+      },
+      { name: "twitter:label1", content: "Written by" },
+      { name: "twitter:data1", content: "Bob Ross" },
+      { name: "twitter:label2", content: "Filed under" },
+      {
+        name: "twitter:data2",
+        content: this.meta.tags ? this.meta.tags.toString() : "",
+      },
     ]
+
+    const link = [
+      {
+        hid: "canonical",
+        rel: "canonical",
+        href: `https://bobross.com/articles/${this.$route.params.slug}`,
+      },
+    ];
+
     return {
       title,
       meta,
+      link,
     }
   },
 }

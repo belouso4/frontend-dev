@@ -18,7 +18,7 @@
           <div class="col-12 col-sm-6 d-flex align-items-stretch flex-column">
             <div class="card bg-light d-flex flex-fill">
               <div class="card-header text-muted border-bottom-0 d-flex justify-content-between">
-                {{ form.role ? form.role : 'Пользователь'}}
+                {{ form.role?.name ?? 'Пользователь'}}
                 <p v-if="getTime()" class="ml-auto mb-0">{{ getTime() }}</p>
               </div>
               <div class="card-body pt-0">
@@ -90,10 +90,9 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                <button @click="sendBtn()" class="btn btn-primary float-right btn-with-loader">
-                  <span v-if="!loading">Сохранить</span>
-                  <Loader width="20px" v-else/>
-                </button>
+                <button-loader :fetch="sendBtn" :loading="loading">
+                  Сохранить
+                </button-loader>
               </div>
             </div>
           </div>
@@ -120,12 +119,12 @@ const filSize = (value) => {
 }
 
 export default {
+  validate ({ params }) {return /^\d+$/.test(params.id)},
   layout: 'Admin',
   middleware: 'permission',
   meta: {
     permission: 'user.edit'
   },
-
   head() {
     return {
       title: 'Создание нового поста',
@@ -140,23 +139,25 @@ export default {
   },
 
   async asyncData({$api, params}) {
-    const [user,roles] = await Promise.all([
-      $api.adminUsers.edit(params.id),
-      $api.adminRoles.index(),
-    ])
+    try {
+      const [user,roles] = await Promise.all([
+        $api.adminUsers.edit(params.id),
+        $api.adminRoles.index(),
+      ])
 
-    user.role_id = user.role.id ?? ''
+      user.role_id = user.role.id ?? ''
 
-    return {
-      form:user,
-      title: user.name,
-      roles,
-      imgShow: user.avatar,
-      banned_until: user.banned_until,
-      banned: user.status,
-      copy: {...user},
-      email: user.email
-    }
+      return {
+        form:user,
+        title: user.name,
+        roles,
+        imgShow: user.avatar,
+        banned_until: user.banned_until,
+        banned: user.status,
+        copy: {...user},
+        email: user.email
+      }
+    } catch (err) {console.log(err)}
   },
 
   data() {
@@ -240,6 +241,9 @@ export default {
 
     dataFormat(val) {
       var today = new Date(val);
+      const options = {weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' }
+
+      // new Date(val).toLocaleDateString()
       var dd = today.getDate();
       var mm = today.getMonth() + 1; //January is 0!
       var yyyy = today.getFullYear();
@@ -249,7 +253,7 @@ export default {
       if (mm < 10) {
         mm = '0' + mm
       }
-      return dd + '/' + mm + '/' + yyyy;
+      return dd + '.' + mm + '.' + yyyy;
     },
 
     async sendBtn() {
@@ -327,77 +331,4 @@ textarea {
   height: 125px;
 }
 
-.content ul input{
-  flex: 1;
-  padding: 5px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-}
-
-.error-text {
-  color: red;
-  margin-top: 4px;
-}
-
-ul.select-tags {
-  border: 1px solid #cecece;
-  margin-top: 5px;
-  border-radius: 5px;
-  padding: 11px 20px 20px 13px;
-  position: absolute;
-  width: 100%;
-  bottom: -192px;
-  right: 0;
-  left: 0;
-  height: 187px;
-  overflow: hidden;
-  overflow-y: auto;
-  z-index: 99999;
-  background: #fff;
-}
-
-.select-tags li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.select-tags li span {
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  transition: all .3s ease;
-  display: block;
-  cursor: pointer;
-}
-
-.select-tags li span:hover {
-  background: #ff3c3c;;
-  color: #fff;
-  transition: all .3s ease;
-}
-
-.select-tags li:not(:last-child) {
-  margin-bottom: 5px;
-}
-
-.select-tags li p {
-  cursor: pointer;
-}
-
-.create-new-tag {
-  margin-top: 10px;
-}
-
-.tags-input .inputs {
-  display: flex;
-
-}
-
-.tags-input .inputs i {
-  font-size: 20px;
-  cursor: pointer;
-}
 </style>

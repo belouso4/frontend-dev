@@ -7,6 +7,21 @@
           <li>
             <nuxt-link to="/posts">Посты</nuxt-link>
           </li>
+          <li>
+            <nuxt-link to="/posts">Категории</nuxt-link>
+          </li>
+          <li>
+            -->
+          </li>
+          <li>
+            <nuxt-link to="/posts">Смартфоны</nuxt-link>
+          </li>
+          <li>
+            <nuxt-link to="/posts">Бытовая техника</nuxt-link>
+          </li>
+          <li>
+            <nuxt-link to="/posts">ИИ</nuxt-link>
+          </li>
         </ul>
         <nuxt-link v-if="$auth.loggedIn" to="/account" class="cabinet-auth">Личный кабинет</nuxt-link>
         <div v-else class="auth">
