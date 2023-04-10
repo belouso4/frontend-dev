@@ -237,10 +237,6 @@ export default {
 </script>
 
 <style scoped>
-.form-select {
-  flex: 1 auto;
-  margin-bottom: 0;
-  position: relative;
-}
+
 
 </style>

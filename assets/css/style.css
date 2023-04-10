@@ -2,6 +2,14 @@
   display: flex;
 }
 
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
 .navigation {
   padding: 20px 0;
   display: flex;
@@ -26,7 +34,7 @@
 }
 
 .main-section .container > * {
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
 .news-item,

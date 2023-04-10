@@ -97,11 +97,23 @@
                   </div>
                 </form-group>
 
-                <div class="form-group img">
-                  <img :src="imgShow" alt="">
+                <div class="form-group img" :class="{'img-set': imgShow}">
+                  <img v-if="!!imgShow" :src="imgShow" alt="">
+                  <div v-else class="upload-overlay">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                  </div>
                 </div>
+                <form-group label="Категории">
+                  <Options :list.sync="categories" :name.sync="form.category" :fetch="fetchCategory">
+                    <li v-for="category in categories"
+                        @click="setCategory(category)"
+                        :class="['select2-results__option', {'active': form.category === category.name}]">
+                      {{ category.name }}
+                    </li>
+                  </Options>
+                </form-group>
                 <div class="form-group tags-controller">
-                  <label  class="label-tags">Добавить тег</label><p></p>
+                  <label  class="label-tags">Добавить теги</label><p></p>
                   <client-only>
                     <vue-tags-input
                       v-model="tag"
@@ -183,6 +195,7 @@ export default {
       ])
 
       post.tags = post.tags ? post.tags.map(a => ({text: a.tag, id: a.id})) : []
+      post.category = 'ИИ'
       post.keywords = post.meta_keywords
         ? post.meta_keywords.split(',').map(a => ({text: a}))
         : []
@@ -208,6 +221,24 @@ export default {
       debounce: null,
       imgShow: '',
       loading: false,
+
+      categories: [
+        {
+          id: 1,
+          name: 'ИИ',
+          slug: 'ii',
+        },
+        {
+          id: 2,
+          name: 'Смартфоны',
+          slug: 'Smartphones',
+        },
+        {
+          id: 3,
+          name: 'Бытовая техника',
+          slug: 'Appliances',
+        },
+      ],
     }
   },
 
@@ -265,7 +296,6 @@ export default {
     },
 
     formData(data) {
-      console.log(data)
       let tags = []
       let keywords = []
 
@@ -324,6 +354,38 @@ export default {
         }
 
       }, 600)
+    },
+
+    fetchCategory(e) {
+      const category = e.target.value
+      let categories = [
+        {
+          id: 1,
+          name: 'ИИ',
+          slug: 'ii',
+        },
+        {
+          id: 2,
+          name: 'Смартфоны',
+          slug: 'Smartphones',
+        },
+        {
+          id: 3,
+          name: 'Бытовая техника',
+          slug: 'Appliances',
+        },
+      ]
+
+      this.categories = categories
+      // this.autocompleteItems = list_emails.filter(a => {
+      //   let toLowerCase =  a.tag.toLowerCase()
+      //
+      //   return toLowerCase.indexOf(this.tag.toLowerCase()) !== -1;
+      // }).map(a => ({text: a.tag, id: a.id}));
+    },
+
+    setCategory(category) {
+      this.form.category = category.name
     },
 
     onFileChange(e) {

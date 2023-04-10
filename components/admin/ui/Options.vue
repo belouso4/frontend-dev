@@ -27,7 +27,8 @@ export default {
       default: ''
     },
     fetch: {
-      type: Function
+      type: Function,
+      default: () => {}
     },
     list: {
       type: Array,
@@ -40,15 +41,15 @@ export default {
       search: ''
     }
   },
- created() {
-   this.$emit('update:list', [])
- },
+ // created() {
+ //   this.$emit('update:list', [])
+ // },
 
   methods: {
     optionsClose(e) {
       let option = this.$el.querySelector('.option-cust')
-      this.$emit('update:list', [])
-      this.search = ''
+      // this.$emit('update:list', [])
+      // this.search = ''
 
       if(!option.contains(e.target)) {
         this.show =false
@@ -116,5 +117,11 @@ export default {
 .option-cust > div:last-child li.active {
   background-color: #0074f0;
   color: #fff;
+}
+
+.form-select {
+  flex: 1 auto;
+  margin-bottom: 0;
+  position: relative;
 }
 </style>

@@ -164,8 +164,47 @@ textarea {
 
 .form-group.img {
   padding: 8px 24px;
-  border: 1px solid #ced4da;
+  border: 1px dashed #ced4da;
   height: 300px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .3s ease;
+}
+
+.form-group.img.img-set {
+  cursor: default;
+}
+
+.form-group.img:hover {
+  border-color: #c88a46;
+}
+
+.form-group.img.img-set:hover {
+  border-color: #ced4da;
+}
+
+.form-group i {
+  font-size: 50px;
+  display: block;
+}
+
+.form-group.img .upload-overlay:after {
+  content: '';
+  background: #000;
+  opacity: 0;
+  transition: all .3s ease;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+}
+
+.form-group.img:hover .upload-overlay:after {
+  opacity: 0.1;
 }
 
 .form-group.img img {
@@ -179,7 +218,6 @@ textarea {
 .content-wrapper section {
   margin: 0;
 }
-
 
 .form-group label.label-tags {
   position: relative;

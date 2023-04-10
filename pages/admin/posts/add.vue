@@ -81,8 +81,11 @@
                   </form-group>
 
 
-                  <div class="form-group img">
+                  <div class="form-group img" :class="{'img-set': imgShow}">
                     <img v-if="!!imgShow" :src="imgShow" alt="">
+                    <div v-else @click="onUpload" class="upload-overlay">
+                      <i class="fas fa-cloud-arrow-up"></i>
+                    </div>
                   </div>
                   <div class="form-group tags-controller">
                     <label  class="label-tags">Добавить тег</label><p></p>
@@ -275,6 +278,14 @@ export default {
       })
 
       return formData
+    },
+
+    onUpload() {
+      if(this.imgShow) {
+        this.imgShow = ''
+      } else {
+        this.$el.querySelector('#customFile').click()
+      }
     },
 
     onFileChange(e) {
