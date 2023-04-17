@@ -5,74 +5,40 @@ export default function({app, route, $axios, $auth, redirect, store, error: nuxt
    console.log('--error.message--: ',error.response)
     const code = parseInt(error.response && error.response.status)
     console.log(error)
-    // const url = app.context.from.path.split('/')
-    const url = route.path.split('/')
-    // console.log(url[1],code,app.context.from.path)
+    const url = route?.path.split('/')
+    // const url = app.context.from.path.split('/')console.log('to', )
 
+    if (code === 404) {
+      nuxtError({
+        statusCode: error.response.status,
+        message: 'Такой страницы не существует',
+      });
 
-    if (process.server) {
-      if (code === 404) {
-        nuxtError({
-          statusCode: error.response.status,
-          message: 'Такой страницы не существует',
-        });
-      }
-
-
-      if (code === 500) {
-        nuxtError({
-          statusCode: error.response.status,
-          message: error.message,
-        });
-
-      }
+      // if (url && url[1] === 'admin') {
+      //   return Promise.resolve(false);
+      // }
     }
 
-    if (process.client && url[1] === 'admin') {
+    if (code === 500) {
+      nuxtError({
+        statusCode: error.response.status,
+        message: error.message,
+      });
+    }
+
+    if (code === 422) {
+      for (const [key, value] of Object.entries(error.response.data.errors)) {
+        app.$toaster.error(value[0])
+      }
+      // return Promise.resolve(false);
+    }
+
+    if (process.server) {}
+    if (process.client && url && url[1] === 'admin') {
       // if (code === 404 || code === 500) {
       //   redirect('/admin/404');
       // }
-
-
-      if (code === 404) {
-        nuxtError({
-          statusCode: error.response.status,
-          message: 'Такой страницы не существует',
-        });
-
-        return Promise.resolve(false);
-      }
-
-      if (code === 500) {
-        nuxtError({
-          statusCode: error.response.status,
-          message: error.message,
-        });
-      }
-
-      if (code === 422) {
-        for (const [key, value] of Object.entries(error.response.data.errors)) {
-          app.$toaster.error(value[0])
-        }
-        // return Promise.resolve(false);
-      }
     }
-
-
-    // if (code === 404) {
-    //   if(url[1] === 'admin') {
-    //     redirect('/admin/404');
-    //   } else {
-    //
-    //   }
-    // }
-
-
-    // if (code === 403) {
-    //   console.log(error)
-    //   app.$toaster.error(error.message)
-    // }
-
 
 
     if (code === 422) {
@@ -97,8 +63,11 @@ export default function({app, route, $axios, $auth, redirect, store, error: nuxt
     await app.$auth.logout()
     // app.$auth.setToken('local', false)
     // store.commit('alerts/removeAll')
-    if (route.path !== '/login') {
-      redirect({ name: 'login' })
-    }
+    // if(process.client) {
+    //   if (route.path !== '/login') {
+    //     redirect({ name: 'login' })
+    //   }
+    // }
+
   }
 }

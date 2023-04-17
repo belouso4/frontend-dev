@@ -104,10 +104,11 @@
                   </div>
                 </div>
                 <form-group label="Категории">
-                  <Options :list.sync="categories" :name.sync="form.category" :fetch="fetchCategory">
+                  <Options :inputShow="false" :list.sync="categories" :name.sync="categoryName" :fetch="fetchCategories">
                     <li v-for="category in categories"
                         @click="setCategory(category)"
-                        :class="['select2-results__option', {'active': form.category === category.name}]">
+                        class="select2-results__option"
+                        :class="{'active': +form.category_id === +category.id}">
                       {{ category.name }}
                     </li>
                   </Options>
@@ -187,15 +188,11 @@ export default {
 
   async asyncData({$api, params}) {
     try {
-
-    } catch (err) {console.log(err)}
-      const [post, comments] = await Promise.all([
-        $api.adminPosts.edit(params.slug),
-        $api.adminPostComments.getComments(params.slug, 0)
-      ])
+      const post = await $api.adminPosts.edit(params.slug)
+      const comments = await $api.adminPostComments.getComments(params.slug, 0)
+      const categories = await $api.adminCategories.index({fetch: 'all'});
 
       post.tags = post.tags ? post.tags.map(a => ({text: a.tag, id: a.id})) : []
-      post.category = 'ИИ'
       post.keywords = post.meta_keywords
         ? post.meta_keywords.split(',').map(a => ({text: a}))
         : []
@@ -205,8 +202,10 @@ export default {
         title: post.title,
         imgShow: post.img,
         comments,
-        copy: {...post}
+        copy: {...post},
+        categories
       }
+    } catch (err) {console.log(err)}
   },
 
   data() {
@@ -221,24 +220,6 @@ export default {
       debounce: null,
       imgShow: '',
       loading: false,
-
-      categories: [
-        {
-          id: 1,
-          name: 'ИИ',
-          slug: 'ii',
-        },
-        {
-          id: 2,
-          name: 'Смартфоны',
-          slug: 'Smartphones',
-        },
-        {
-          id: 3,
-          name: 'Бытовая техника',
-          slug: 'Appliances',
-        },
-      ],
     }
   },
 
@@ -266,6 +247,13 @@ export default {
 
   watch:{
     'tag': 'initItems',
+  },
+
+  computed: {
+    categoryName() {
+      let index = this.categories.findIndex(e => e.id === this.form.category_id)
+      return this.categories[index]?.name
+    }
   },
 
   methods: {
@@ -356,36 +344,12 @@ export default {
       }, 600)
     },
 
-    fetchCategory(e) {
-      const category = e.target.value
-      let categories = [
-        {
-          id: 1,
-          name: 'ИИ',
-          slug: 'ii',
-        },
-        {
-          id: 2,
-          name: 'Смартфоны',
-          slug: 'Smartphones',
-        },
-        {
-          id: 3,
-          name: 'Бытовая техника',
-          slug: 'Appliances',
-        },
-      ]
-
-      this.categories = categories
-      // this.autocompleteItems = list_emails.filter(a => {
-      //   let toLowerCase =  a.tag.toLowerCase()
-      //
-      //   return toLowerCase.indexOf(this.tag.toLowerCase()) !== -1;
-      // }).map(a => ({text: a.tag, id: a.id}));
+    async fetchCategories() {
+      this.categories = await this.$api.adminCategories.index({fetch: 'all'});
     },
 
     setCategory(category) {
-      this.form.category = category.name
+      this.form.category_id = category.id
     },
 
     onFileChange(e) {

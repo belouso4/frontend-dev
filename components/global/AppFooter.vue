@@ -1,7 +1,7 @@
 <template>
   <footer>
 
-    <nuxt-link v-if="$auth.user && $auth.user.is_admin" to="/admin"  class="button-admin">
+    <nuxt-link target="_blank" v-if="$auth.user && $auth.user.is_admin" to="/admin"  class="button-admin">
       <i class="fas fa-users-cog"></i>
     </nuxt-link>
     <div class="author-section">

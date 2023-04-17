@@ -1,6 +1,7 @@
 import PostsAPI from "../api/posts.js";
 import CommentsAPI from "../api/comments.js";
 import UserAPI from "../api/user.js";
+import CategoryAPI from "../api/categories.js";
 
 import AdminTagsAPI from "../api/admin/tags.js";
 import AdminPostsAPI from "../api/admin/posts.js";
@@ -10,6 +11,7 @@ import AdminRolesAPI from "../api/admin/roles.js";
 import AdminUsersRolesAPI from "../api/admin/users-roles.js";
 import AdminGeneralAPI from "../api/admin/general.js";
 import AdminMailAPI from "../api/admin/mail.js";
+import AdminCategoriesAPI from "../api/admin/categories.js";
 
 export default function( { $axios }, inject ){
 
@@ -18,6 +20,7 @@ export default function( { $axios }, inject ){
     posts: PostsAPI( $axios ),
     comments: CommentsAPI( $axios ),
     user: UserAPI( $axios ),
+    category: CategoryAPI($axios),
 
     // api admin
     adminTags: AdminTagsAPI( $axios ),
@@ -28,6 +31,7 @@ export default function( { $axios }, inject ){
     adminUsersRoles: AdminUsersRolesAPI( $axios ),
     adminGeneral: AdminGeneralAPI( $axios ),
     adminMail: AdminMailAPI( $axios ),
+    adminCategories: AdminCategoriesAPI( $axios ),
   }
 
   inject('api', api);

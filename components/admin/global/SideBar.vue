@@ -40,7 +40,7 @@
                with font-awesome or any other icon font library -->
 
           <li class="nav-item has-treeview menu-open">
-            <nuxt-link to="/" class="nav-link active">
+            <nuxt-link target="_blank" to="/" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt" />
               <p>
                 На сайт
@@ -71,14 +71,32 @@
               </li>
             </ul>
           </li>
-
-          <li v-can="'tag.view'" class="nav-item" >
-            <nuxt-link to="/admin/tags" class="nav-link">
+          <li v-can="'user.view'" class="nav-item has-treeview" >
+            <a @click.prevent="openMenu($event)" href="#" class="nav-link">
               <i class="nav-icon fas fa-th" />
               <p>
-                Теги
+                Внешний вид
+                <i class="fas fa-angle-left right" />
               </p>
-            </nuxt-link>
+            </a>
+            <ul class="nav nav-treeview">
+              <li v-can="'tag.view'" class="nav-item" >
+                <nuxt-link to="/admin/categories" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Категории
+                  </p>
+                </nuxt-link>
+              </li>
+              <li v-can="'tag.view'" class="nav-item" >
+                <nuxt-link to="/admin/tags" class="nav-link">
+                  <i class="far fa-circle nav-icon" />
+                  <p>
+                    Теги
+                  </p>
+                </nuxt-link>
+              </li>
+            </ul>
           </li>
 
           <li v-can="'user.view'" class="nav-item has-treeview" >

@@ -87,6 +87,16 @@
                       <i class="fas fa-cloud-arrow-up"></i>
                     </div>
                   </div>
+                  <form-group label="Категории">
+                    <Options :inputShow="false" :list.sync="categories" :name.sync="categoryName" :fetch="fetchCategories">
+                      <li v-for="category in categories"
+                          @click="setCategory(category)"
+                          class="select2-results__option"
+                          :class="{'active': +form.category_id === +category.id}">
+                        {{ category.name }}
+                      </li>
+                    </Options>
+                  </form-group>
                   <div class="form-group tags-controller">
                     <label  class="label-tags">Добавить тег</label><p></p>
                     <client-only>
@@ -161,6 +171,7 @@ export default {
       debounce: false,
       tag: '',
       loading: false,
+      categories: [],
       form:{
         title: '',
         desc: '',
@@ -170,7 +181,8 @@ export default {
         tags: [],
         keywords: [],
         meta_title: '',
-        meta_desc: ''
+        meta_desc: '',
+        category_id: ''
       },
       imgShow: false,
     }
@@ -204,6 +216,13 @@ export default {
 
   watch:{
     'tag': 'initItems',
+  },
+
+  computed: {
+    categoryName() {
+      let index = this.categories.findIndex(e => e.id === this.form.category_id)
+      return this.categories[index]?.name
+    }
   },
 
   methods: {
@@ -247,6 +266,14 @@ export default {
 
         } catch (err) {console.log(err)}
       }, 600)
+    },
+
+    async fetchCategories() {
+      this.categories = await this.$api.adminCategories.index({fetch: 'all'});
+    },
+
+    setCategory(category) {
+      this.form.category_id = category.id
     },
 
     formData(data) {

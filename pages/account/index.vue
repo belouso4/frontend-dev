@@ -39,8 +39,8 @@
             <form-group :validator="$v.form.email" label="Изменить Email">
               <input type="text" placeholder="Email" v-model="form.email">
             </form-group>
-            <form-group :validator="$v.form.existing_password" label="Старый пароль">
-              <input type="text" placeholder="Введите старый пароль" v-model="form.existing_password">
+            <form-group :validator="$v.form.old_password" label="Старый пароль">
+              <input type="text" placeholder="Введите старый пароль" v-model="form.old_password">
             </form-group>
             <form-group :validator="$v.form.new_password" label="Новый пароль">
               <input type="text" placeholder="Введите новый пароль" v-model="form.new_password">
@@ -89,7 +89,7 @@ export default {
       form: {
         avatar: this.$auth.user.avatar,
         name: this.$auth.user.name,
-        existing_password: '',
+        old_password: '',
         new_password: '',
         confirm_password: '',
         email: this.$auth.user.email,
@@ -110,7 +110,7 @@ export default {
           email,
           maxLength: maxLength(255)
         },
-        existing_password: {
+        old_password: {
           minLength: minLength(6),
           maxLength: maxLength(255)
         },

@@ -6,10 +6,11 @@ const meta = getSiteMeta();
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   // mode: 'universal',
-  server: {
-    host: process.env.NUXT_HOST,
-    port: process.env.NUXT_PORT,
-  },
+  // server: {
+  //   host: process.env.NUXT_HOST,
+  //   port: process.env.NUXT_PORT
+  // },
+
   ssr: true,
   head: {
     title: 'frontend',
@@ -30,6 +31,53 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel:"stylesheet", type:"text/css", href:'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css' },
     ]
+  },
+
+  // prismic: {
+  //   apiOptions: {
+  //     routes: [
+  //       {
+  //         type: 'page',
+  //         path: '/:category/post/:slug',
+  //         resolvers: {
+  //           // A list of "path variables" mapped to the API ID
+  //           // of a Content Relationship field in the Custom Type.
+  //           category: 'category',
+  //           section: 'category.section',
+  //         },
+  //       },
+  //     ],
+  //   },
+  // },
+
+  router: {
+    // routes: [
+    //   {
+    //     path: '/:category',
+    //     component: 'pages/_category/post/index.vue',
+    //     children: {
+    //       path: '/post/:slug',
+    //       component: 'pages/_category/post/_slug.vue',
+    //       // children: {
+    //       //   path: '/:slug',
+    //       //   component: 'pages/_category/post/_slug.vue',
+    //       // }
+    //     }
+    //   }
+    // ],
+    extendRoutes(routes, resolve) {
+      // console.log(routes)
+      // routes.push({
+      //   path: '/:category/post/:slug',
+      //   component: 'pages/_category/post/_slug.vue',
+      //   // components: {
+      //   //   default: resolve(__dirname, 'pages/_category/post/_slug.vue'), // or routes[index].component
+      //   // },
+      //   // chunkNames: {
+      //   //   modal: 'components/modal'
+      //   // }
+      // })
+    }
   },
 
   publicRuntimeConfig: {

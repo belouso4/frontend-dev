@@ -2,7 +2,7 @@
   <div class="news-item">
     <img :src="post.img" alt="">
     <div class="news-item-area">
-      <nuxt-link :to="'/posts/'+post.slug">
+      <nuxt-link :to="path + 'article/' + post.slug">
         <h3 class="news-item-area_title">
           {{ post.title }}
         </h3>
@@ -16,7 +16,7 @@
       <div class="news-item-area_elem">
         <p>{{ post.post_view_count }} <i class="far fa-eye"></i></p>
         <a href=""><i class="fas fa-share"></i></a>
-        <a href="" @click.prevent="like(post.slug, post.user_like_count)" :class="[{ active: post.user_like_count }, 'like']">
+        <a href="" @click.prevent="like(post.id, post.user_like_count)" :class="[{ active: post.user_like_count }, 'like']">
           <i class="far fa-heart"></i>
           <span class="like-count">
             {{ post.likes_count }}
@@ -32,18 +32,26 @@
 export default {
   name: "PostCard",
   props: ['post'],
+  data() {
+    return {
+      path: this.$route.path.endsWith('/') ? this.$route.path : this.$route.path + '/'
+    }
+  },
+
   methods:{
+    async like(id, user_like_count) {
+      const like = await this.$api.posts.like(id).then(() => {
+        if (user_like_count === 0) {
+          this.post.user_like_count++
+          this.post.likes_count++
+        } else {
+          this.post.user_like_count--
+          this.post.likes_count--
+        }
+      })
+      console.log(like)
 
-    like(slug, user_like_count) {
-      this.$api.posts.like(slug)
 
-      if (user_like_count == 0) {
-        this.post.user_like_count++
-        this.post.likes_count++
-      } else {
-        this.post.user_like_count--
-        this.post.likes_count--
-      }
 
     },
   },

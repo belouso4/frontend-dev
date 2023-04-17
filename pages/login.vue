@@ -87,14 +87,15 @@ export default {
     },
 
     setErrorMsg(err) {
-      if (err.response.status === 403) {
+      const code = parseInt(err.response && err.response?.status)
+
+      if (code === 403) {
         this.errorMsg = err.response.data.error
-      } else if (err.response.status === 422) {
+      } else if (code === 422) {
         this.errorMsg = err.response.data.errors
       } else {
         this.errorMsg = 'неизвестная ошибка'
       }
-      console.log(err.response)
     }
   }
 }

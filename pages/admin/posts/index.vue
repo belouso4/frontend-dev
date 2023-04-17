@@ -86,7 +86,7 @@
                     <i class="fas fa-pencil-alt">
                     </i>
                   </nuxt-link>
-                  <nuxt-link title="Посмотреть" class="btn btn-outline-dark btn-sm" :to="'/posts/'+post.slug">
+                  <nuxt-link title="Посмотреть" target="_blank" class="btn btn-outline-dark btn-sm" :to="post.url">
                     <i class="fa-solid fa-eye"></i>
                   </nuxt-link>
                   <a v-can="'post.delete'" title="Удалить" @click.prevent="delPost(post.id)" class="btn btn-outline-dark btn-sm" href="#">

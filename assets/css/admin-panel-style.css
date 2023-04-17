@@ -106,6 +106,7 @@ section.content, section.content-header {
 
 .content-wrapper .tab-content {
   overflow: auto;
+  flex: auto;
   padding: 0 0.5rem;
 }
 

@@ -35,13 +35,17 @@ import { mapMutations } from 'vuex';
 export default {
   name: "posts",
   layout: 'AppMain',
+  validate({store, route }) {
+    return store.dispatch('core/validCategory', {path: route.path})
+  },
 
-  async asyncData({ $api }) {
+  async asyncData({ $api, route, store }) {
     try {
-      let page = 1
-      const posts = await $api.posts.index(1)
-      return {posts, page}
-    } catch (err) {}
+      const id = await store.dispatch('core/validCategory', {path: route.path})
+      const posts = await $api.posts.index(id, 1)
+
+      return {posts, page: 1}
+    } catch (err) {console.log(err)}
   },
 
   data() {
@@ -56,7 +60,6 @@ export default {
   },
 
   created() {
-    console.log(this.posts)
     this.setBreadcrumbs([
       { text: 'Главная', to: { path: '/' }},
       { text: 'Новости'},
@@ -85,20 +88,6 @@ export default {
       }, 500);
     },
   },
-
-
-
-
-
-  // beforeRouteLeave (to, from , next) {
-  //   const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-  //   if (answer) {
-  //     next()
-  //   } else {
-  //     next(false)
-  //   }
-  // }
-
 }
 </script>
 

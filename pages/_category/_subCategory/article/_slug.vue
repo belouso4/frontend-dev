@@ -37,7 +37,7 @@
 
 <script>
 import {mapMutations} from "vuex";
-import Comments from "../../components/Comments";
+import Comments from "../../../../components/Comments";
 
 
 export default {
@@ -45,8 +45,16 @@ export default {
   components: {Comments},
   layout: 'AppMain',
 
+  async validate({ params, route, query, store }) {
+    let validCategory = await store.dispatch('core/validCategory', {
+      path: route.path,
+      slug: params.slug
+    })
 
-  async asyncData({$api, params,error}) {
+    return !!params.slug && !!validCategory
+  },
+
+  async asyncData({$api, params,}) {
     try {
       const [post, comments] = await Promise.all([
         $api.posts.show(params.slug),
@@ -59,7 +67,8 @@ export default {
 
   data() {
     return {
-      baseURL: process.env.BASE_URL
+      baseURL: process.env.BASE_URL,
+      post: {}
     }
   },
 
@@ -73,9 +82,7 @@ export default {
     }),
   },
 
-  created() {
-    console.log(this.post)
-
+  async created() {
     this.setBreadcrumbs([
       { text: 'Главная', to: { path: '/' }},
       { text: 'Новости', to: { path: '/posts' }},

@@ -12,7 +12,7 @@
         ><i class="fas fa-bars" /></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <nuxt-link class="nav-link" to="/">Home</nuxt-link>
+        <nuxt-link class="nav-link" target="_blank" to="/">Home</nuxt-link>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>

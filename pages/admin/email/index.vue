@@ -127,10 +127,10 @@ export default {
       list_emails: [],
       showOption: false,
       form: {
-        to: 'email@gmail.com',
+        to: '',
         select: 3,
-        subject: 'email@gmail.com',
-        message: 'email@gmail.com',
+        subject: '',
+        message: '',
         attachment: '',
         select_email: ''
       }

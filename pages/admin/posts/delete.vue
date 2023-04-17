@@ -67,9 +67,6 @@
                 </span>
               </td>
               <td class="project-actions">
-                <nuxt-link title="Посмотреть" class="btn btn-outline-dark btn-sm" :to="'/posts/'+post.slug">
-                  <i class="fa-solid fa-eye"></i>
-                </nuxt-link>
                 <nuxt-link title="Редактировать" class="btn btn-outline-dark btn-sm" :to="'/admin/posts/'+post.slug">
                   <i class="fas fa-pencil-alt">
                   </i>

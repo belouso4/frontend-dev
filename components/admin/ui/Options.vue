@@ -1,12 +1,12 @@
 <template>
   <div v-else class="form-group form-select" data-select2-id="29">
 
-    <div v-click-outside="optionsClose" @click="show = !show" class="select-cust">
-      {{ name ? name : 'email@gmail.com' }}
+    <div v-click-outside="optionsClose" @click="eventClick()" class="select-cust">
+      {{ name || placeholder }}
     </div>
 
     <div v-show="show" class="option-cust">
-      <div class="select2-search select2-search--dropdown">
+      <div v-if="inputShow" class="select2-search select2-search--dropdown">
         <input @keyup="fetch" type="search" autocomplete="off" autocorrect="off" v-model="search">
       </div>
       <div class="select2-results">
@@ -26,6 +26,10 @@ export default {
       type: String,
       default: ''
     },
+    inputShow: {
+      type: Boolean,
+      default: true
+    },
     fetch: {
       type: Function,
       default: () => {}
@@ -33,6 +37,10 @@ export default {
     list: {
       type: Array,
       default: []
+    },
+    placeholder: {
+      type: String,
+      default: '--Выберите эллемент--'
     }
   },
   data() {
@@ -54,6 +62,11 @@ export default {
       if(!option.contains(e.target)) {
         this.show =false
       }
+    },
+    eventClick() {
+      if (!this.show) this.fetch()
+
+      return this.show = !this.show
     }
   }
 }
@@ -66,9 +79,25 @@ export default {
   padding: 0.46875rem 0.75rem;
   height: calc(2.25rem + 2px);
   background-color: #fff;
-  border: 1px solid #aaa;
+  /*border: 1px solid #aaa;*/
   border-radius: 4px;
   width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.select-cust:after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  border-top: 5px solid #888;
+  border-bottom: 0;
 }
 
 .option-cust {

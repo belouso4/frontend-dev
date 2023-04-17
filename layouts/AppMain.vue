@@ -19,36 +19,16 @@
 
     export default {
       components: {AppHeader, AppFooter},
-      head: {
-        title: 'ownhouse',
-        meta: [
-          {
-            hid: 'description',
-            name: 'description',
-            content: 'ownhouse',
-          },
-        ],
-      },
-        data(){
-            return {
-
-            }
-        },
 
       computed: {
-            showFooter(){
-                let pages = [
-                ];
-                return pages.indexOf( this.$route.name ) == -1;
-            },
-            showHeader(){
-                let pages = [
-                ];
-                return pages.indexOf( this.$route.name ) == -1;
-            }
+        showFooter(){
+            let pages = [];
+            return pages.indexOf( this.$route.name ) == -1;
         },
-      created() {
-
+        showHeader(){
+            let pages = [];
+            return pages.indexOf( this.$route.name ) == -1;
+        }
       },
     }
 </script>
