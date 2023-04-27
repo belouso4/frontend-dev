@@ -3,40 +3,45 @@
     <div class="container">
 
       <div class="wrapper-post">
-        <div class="slider-wrapper">
-          <div @click="prev" class="slide-arrow prev"> < </div>
-          <client-only>
-            <slick ref="slick" :options="slickOptions">
-              <div v-for="item in 3">
-                <div class="news-item">
-                  <div class="img-news">
-                    <img :src="$config.API_URL_IMG +'/300x200.png'" alt="">
-                  </div>
-                  <div class="news-item-area">
-                    <h3 class="news-item-area_title">
-                      Что ждет Афганистан после возвращения под
-                      власть талибов
-                    </h3>
-                    <p class="news-item-area_desc">
-                      После того как «Талибан» захватил почти всю
-                      территорию Афганистана, президент бежал из
-                      страны, его дворец захватили талибы. Какие
-                      ошибки допустили власти Афганистана и чего
-                      ждать от возвращения «Талибана», разбирался
-                      РБК
-                    </p>
-                    <div class="news-item-area_elem">
-                      <p>23 477 <i class="far fa-eye"></i></p>
-                      <a href=""><i class="fas fa-share"></i></a>
-                      <a href="" class="like active"><i class="far fa-heart"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </slick>
-          </client-only>
-          <div @click="next" class="slide-arrow next"> > </div>
-        </div>
+        <client-only>
+          <SliderMain :sliders="sliders"/>
+        </client-only>
+
+
+<!--        <div class="slider-wrapper">-->
+<!--          <div @click="prev" class="slide-arrow prev"> < </div>-->
+<!--          <client-only>-->
+<!--            <slick ref="slick" :options="slickOptions">-->
+<!--              <div v-for="item in 3">-->
+<!--                <div class="news-item">-->
+<!--                  <div class="img-news">-->
+<!--                    <img :src="$config.API_URL_IMG +'/300x200.png'" alt="">-->
+<!--                  </div>-->
+<!--                  <div class="news-item-area">-->
+<!--                    <h3 class="news-item-area_title">-->
+<!--                      Что ждет Афганистан после возвращения под-->
+<!--                      власть талибов-->
+<!--                    </h3>-->
+<!--                    <p class="news-item-area_desc">-->
+<!--                      После того как «Талибан» захватил почти всю-->
+<!--                      территорию Афганистана, президент бежал из-->
+<!--                      страны, его дворец захватили талибы. Какие-->
+<!--                      ошибки допустили власти Афганистана и чего-->
+<!--                      ждать от возвращения «Талибана», разбирался-->
+<!--                      РБК-->
+<!--                    </p>-->
+<!--                    <div class="news-item-area_elem">-->
+<!--                      <p>23 477 <i class="far fa-eye"></i></p>-->
+<!--                      <a href=""><i class="fas fa-share"></i></a>-->
+<!--                      <a href="" class="like active"><i class="far fa-heart"></i></a>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </slick>-->
+<!--          </client-only>-->
+<!--          <div @click="next" class="slide-arrow next"> > </div>-->
+<!--        </div>-->
       </div>
 
       <div class="section-list section-featured">
@@ -107,37 +112,37 @@
 </template>
 
 <script>
-import Slick from 'vue-slick';
-import 'slick-carousel/slick/slick.css';
+import SliderMain from "../components/SliderMain";
 export default {
   name: 'index',
-  components: { Slick },
+  components: {SliderMain},
   layout: 'AppMain',
 
+  async asyncData({app}) {
+    try {
+      const sliders = await app.$api.otherAPI.index()
+      return {sliders}
+    } catch (err) {console.log(err)}
+  },
 
   data() {
     return {
-      slickOptions: {
-        slidesToShow: 1,
-        arrows: false,
-        // Any other options that can be got from plugin documentation
-      },
+
     };
   },
 
-  methods: {
-    next() {
-      this.$refs.slick.next();
-    },
 
-    prev() {
-      this.$refs.slick.prev();
-    },
+  methods: {
+    // next() {
+    //   this.$refs.slick.next();
+    // },
+    //
+    // prev() {
+    //   this.$refs.slick.prev();
+    // },
   },
 
-  created() {
-    console.log(this.$auth.user)
-  }
+
 }
 </script>
 
@@ -146,18 +151,9 @@ export default {
 </style>
 
 <style scoped>
-.news-item {
-  height: auto;
-  margin-bottom: 0px;
-}
 
-.img-news {
-  height: 345px;
-}
 
-.slider-wrapper {
-  position: relative;
-}
+
 .slider-wrapper .slide-arrow{
   position: absolute;
   background: #fff;

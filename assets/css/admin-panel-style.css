@@ -25,6 +25,10 @@ section.content, section.content-header {
   display: none;
 }
 
+.card-header.note-float::after {
+  display: none;
+}
+
 .spinner-load {
   position: absolute;
   z-index: 10;

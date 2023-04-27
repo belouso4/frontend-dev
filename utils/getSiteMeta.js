@@ -1,5 +1,5 @@
 const type = "website";
-const url = "https://example.com";
+const url = "http://localhost:3000";
 const title = "Заголовок блога";
 const description = "Небольшое описание блога";
 const mainImage = "/website.png";

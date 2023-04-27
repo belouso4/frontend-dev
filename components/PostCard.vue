@@ -16,7 +16,7 @@
       <div class="news-item-area_elem">
         <p>{{ post.post_view_count }} <i class="far fa-eye"></i></p>
         <a href=""><i class="fas fa-share"></i></a>
-        <a href="" @click.prevent="like(post.id, post.user_like_count)" :class="[{ active: post.user_like_count }, 'like']">
+        <a href="" @click.prevent="like(post.id)" :class="[{ active: post.like_my }, 'like']">
           <i class="far fa-heart"></i>
           <span class="like-count">
             {{ post.likes_count }}
@@ -39,22 +39,17 @@ export default {
   },
 
   methods:{
-    async like(id, user_like_count) {
-      const like = await this.$api.posts.like(id).then(() => {
-        if (user_like_count === 0) {
-          this.post.user_like_count++
-          this.post.likes_count++
-        } else {
-          this.post.user_like_count--
-          this.post.likes_count--
-        }
-      })
-      console.log(like)
+    async like(id) {
+      try {
+        const like = await this.$api.posts.like(id)
 
-
-
+        this.post.likes_count = like.like_count
+        this.post.like_my = like.like_my
+      } catch (err){ console.log(err)}
     },
   },
+
+
 }
 </script>
 

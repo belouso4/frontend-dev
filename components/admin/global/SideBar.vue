@@ -142,6 +142,15 @@
               </p>
             </nuxt-link>
           </li>
+
+          <li class="nav-item">
+            <nuxt-link to="/admin/other" class="nav-link">
+<!--              <i class="nav-icon far fa-envelope"></i>-->
+              <p>
+                Другое
+              </p>
+            </nuxt-link>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

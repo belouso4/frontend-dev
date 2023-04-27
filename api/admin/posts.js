@@ -1,7 +1,7 @@
 export default $axios => ({
 
-  async index(page) {
-      return await $axios.$get('/v1/admin/posts?page='+page);
+  async index(page, take = null) {
+      return await $axios.$get('/v1/admin/posts', {params: {page, take}});
   },
 
   async edit(slug){
