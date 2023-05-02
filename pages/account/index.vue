@@ -81,7 +81,8 @@ const filSize = (value) => {
 
 export default {
   layout: 'AppMain',
-  middleware: ['auth', 'verified'],
+  // middleware: ['auth', 'verified'],
+  middleware: ['auth'],
   data(){
     return {
       loading: false,

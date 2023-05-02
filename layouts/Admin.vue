@@ -56,7 +56,7 @@ export default {
       },
     ],
     link: [
-      // { rel:"stylesheet", type:"text/css", href: require('~/assets/css/admin-panel-style.css') },
+      { rel:"stylesheet", type:"text/css", href: require('~/assets/css/admin-panel-style.css') },
       { rel:"stylesheet", type:"text/css", href: '/AdminLTE/css/toastr.min.css' },
       { rel:"stylesheet", type:"text/css", href: '/AdminLTE/css/adminlte.min.css' },
       { rel:"stylesheet", type:"text/css", href:'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback' },
@@ -176,5 +176,5 @@ export default {
 </style>
 
 <style>
-@import "~/assets/css/admin-panel-style.css";
+/*@import "~/assets/css/admin-panel-style.css";*/
 </style>

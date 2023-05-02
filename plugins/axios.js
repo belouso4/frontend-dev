@@ -1,5 +1,6 @@
 export default function({app, route, $axios, $auth, redirect, store, error: nuxtError}) {
   // handle api errors
+  // $axios.setBaseURL('http://172.19.0.5')
 
   $axios.onError(error => {
    console.log('--error.message--: ',error.response)

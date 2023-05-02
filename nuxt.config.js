@@ -6,9 +6,13 @@ const meta = getSiteMeta();
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   // mode: 'universal',
+  server: {
+    host: process.env.NUXT_HOST,
+    port: process.env.NUXT_PORT
+  },
   // server: {
-  //   host: process.env.NUXT_HOST,
-  //   port: process.env.NUXT_PORT
+  //   host: "0.0.0.0",
+  //   port: '3000'
   // },
 
   ssr: true,

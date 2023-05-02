@@ -4,7 +4,7 @@
     <!-- Brand Logo -->
     <nuxt-link to="/admin" class="brand-link">
       <img
-        src="/AdminLTE/dist/img/AdminLTELogo.png"
+        src="/AdminLTE/img/AdminLTELogo.png"
         alt="AdminLTE Logo"
         class="brand-image img-circle elevation-3"
         style="opacity: .8"

@@ -1,30 +1,29 @@
 FROM node:14-alpine
 
-RUN mkdir -p /app
-COPY . /app
+#RUN mkdir -p /app
+#COPY . /app
 WORKDIR /app
 
 RUN apk update && apk upgrade && apk add git
 
-COPY package.json /app
-
-RUN node -v
-RUN npm -v
-RUN yarn -v
+COPY ./package*.json /app/
 
 #RUN npm rebuild
-RUN yarn install
+RUN npm install && npm cache clean --force
 
-COPY . /app
-RUN yarn build
+COPY . .
 
-EXPOSE 3000
+#EXPOSE 3000
 
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 #
 #ENV NODE_ENV=production
+ENV PATH ./node_modules/.bin/:$PATH
 
-CMD [ "yarn", "start" ]
+CMD [ "npm", "run", "dev" ]
+
+
+
 
 

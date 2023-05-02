@@ -54,7 +54,7 @@
             <!-- Message Start -->
             <div class="media">
               <img
-                src="/AdminLTE/dist/img/user1-128x128.jpg"
+                src="/AdminLTE/img/user1-128x128.jpg"
                 alt="User Avatar"
                 class="img-size-50 mr-3 img-circle"
               >
@@ -78,7 +78,7 @@
             <!-- Message Start -->
             <div class="media">
               <img
-                src="/AdminLTE/dist/img/user8-128x128.jpg"
+                src="/AdminLTE/img/user8-128x128.jpg"
                 alt="User Avatar"
                 class="img-size-50 img-circle mr-3"
               >
@@ -102,7 +102,7 @@
             <!-- Message Start -->
             <div class="media">
               <img
-                src="/AdminLTE/dist/img/user3-128x128.jpg"
+                src="/AdminLTE/img/user3-128x128.jpg"
                 alt="User Avatar"
                 class="img-size-50 img-circle mr-3"
               >

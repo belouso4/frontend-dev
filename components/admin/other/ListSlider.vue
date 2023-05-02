@@ -66,7 +66,7 @@ export default {
   padding-left: 1.5rem;
 }
 
-.nestable-item, .nestable-item-copy {
+.collection-container .nestable-item, .nestable-item-copy {
   margin: 0;
 }
 
