@@ -1,56 +1,55 @@
 <template>
-  <slider :autoplay="false" animation="fade">
-    <slider-item
-      v-for="slider in sliders"
-      :key="slider.id"
-      @click="hello"
-      class="news-item"
-    >
+    <client-only  placeholder="Loading...">
+
+          <agile :infinite="true">
+<!--            <div class="slide">1</div>-->
+<!--            <div class="slide">1</div>-->
+<!--            <div class="slide">1</div>-->
+<!--            <div class="slide">1</div>-->
+                <div v-for="slider in sliders"
+                    :key="slider.id"
+                    @click="hello"
+                    class="news-item slide"
+                  >
+                  <div class="wrap-slide">
+                    <div class="img-news">
+                      <img :src="slider.img" alt="">
+                    </div>
+                    <div class="news-item-area">
+                      <h3 class="news-item-area_title">
+                        {{ slider.title }}
+                      </h3>
+                      <p class="news-item-area_desc">
+                        {{slider.excerpt}}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+            <template slot="prevButton"><i class="fas fa-chevron-left"></i></template>
+            <template slot="nextButton"> <i class="fas fa-chevron-right"></i> </template>
+          </agile>
+    </client-only>
 
 
-        <div class="img-news">
-          <img :src="slider.img" alt="">
-        </div>
-        <div class="news-item-area">
-          <h3 class="news-item-area_title">
-            {{ slider.title }}
-          </h3>
-          <p class="news-item-area_desc">
-            {{slider.excerpt}}
-          </p>
-          <div class="news-item-area_elem">
-            <p>23 477 <i class="far fa-eye"></i></p>
-            <a href=""><i class="fas fa-share"></i></a>
-            <a href="" class="like active"><i class="far fa-heart"></i></a>
-          </div>
-        </div>
-
-
-    </slider-item>
-  </slider>
 </template>
 
 <script>
-import { Slider, SliderItem } from 'vue-easy-slider'
-
+// import { VueAgile } from 'vue-agile'
 export default {
-  components: {
-    Slider,
-    SliderItem,
-  },
   name: "SliderMain",
-
   props: ['sliders'],
-
+  // components: {
+  //   agile: VueAgile
+  // },
   data() {
     return {
-      // list: [
-      //   { width: '100%', height: '100%' },
-      //   { width: '100%', height: '100%' },
-      //   { width: '100%', height: '100%' },
-      // ],
+
     }
   },
+  created() {
+    console.log(this.sliders)
+  },
+
   methods: {
     hello($event) {
       console.log(`hello index: ${$event}`)
@@ -73,4 +72,41 @@ export default {
 .slider-wrapper {
   position: relative;
 }
+</style>
+
+<style>
+
+.agile {
+
+}
+
+.agile .wrap-slide {
+display: flex;
+}
+.agile .agile__nav-button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 24px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  transition-duration: .3s;
+  width: 80px;
+
+}
+.agile .agile__nav-button:hover {
+  background-color: rgba(#000, .5);
+  opacity: 1;
+
+}
+.agile .agile__nav-button--prev {
+  left: 0
+}
+
+.agile .agile__nav-button--next {
+  right: 0
+}
+
 </style>

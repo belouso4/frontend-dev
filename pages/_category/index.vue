@@ -19,9 +19,11 @@
           </div>
         </aside>
         <div class="wrapper-post">
-          <PostCard v-for="post in posts.data" :post="post" :key="'cafe-'+post.id"/>
+          <PostCard v-for="post in posts" :post="post" :key="'cafe-'+post.id"/>
           <client-only>
-            <infinite-loading v-if="posts.data?.length" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+            <infinite-loading v-if="posts?.length" spinner="spiral" @infinite="infiniteScroll">
+              <div slot="no-results">Результатов больше нет :(</div>
+            </infinite-loading>
           </client-only>
         </div>
       </div>
@@ -43,9 +45,9 @@ export default {
   async asyncData({ $api, route, store }) {
     try {
       const id = await store.dispatch('core/validCategory', {path: route.path})
-      const posts = await $api.posts.index(id, 1)
+      const posts = (await $api.posts.index(id, 1)).data
 
-      return {posts, page: 1}
+      return {posts, page: 1, idCategory: id}
     } catch (err) {console.log(err)}
   },
 
@@ -61,6 +63,7 @@ export default {
   },
 
   async created() {
+
     // console.log(this.$route)
     // console.log(this.posts)
     // console.log('param', this.$route.param)
@@ -170,21 +173,44 @@ export default {
       setBreadcrumbs: 'set',
     }),
 
-    infiniteScroll($state) {
-      setTimeout(async () => {
-        this.page++; // next page
+    async infiniteScroll($state) {
+      this.page++;
+      const posts = await this.$api.posts.index(this.idCategory, this.page)
+        // posts.data.unshift(...this.posts.data)
+        // this.posts = posts
+      this.posts.push(...posts.data)
+      console.log(posts)
 
-        const posts = await this.$api.posts.index(this.page)
-
-        index.data.unshift(...this.posts.data)
-        this.posts = index
-
-        if(index.data.length > 1 && index.to) {
+      // posts.data.length && posts.meta.to
+      console.log('length', this.posts.length , posts.meta.total)
+        if(this.posts.length !== posts.meta.total) {
           $state.loaded();
         } else {
           $state.complete()
         }
-      }, 500);
+      // if (data.hits.length) {
+      //   this.page += 1;
+      //   this.list.push(...data.hits);
+      //   $state.loaded();
+      // } else {
+      //   $state.complete();
+      // }
+      // let self = this
+      // setTimeout(async () => {
+      //
+      //   self.page++; // next page
+      //   console.log(self.page)
+      //   const posts = await self.$api.posts.index(self.page)
+      //
+      //   posts.data.unshift(...this.posts.data)
+      //   self.posts = posts
+      //
+      //   if(self.data.length > 1 && posts.to) {
+      //     $state.loaded();
+      //   } else {
+      //     $state.complete()
+      //   }
+      // }, 500);
     },
   },
 

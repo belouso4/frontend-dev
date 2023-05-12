@@ -4,7 +4,7 @@ FROM node:14-alpine
 #COPY . /app
 WORKDIR /app
 
-RUN apk update && apk upgrade && apk add git
+RUN apk update && apk upgrade && apk add git && apk add curl
 
 COPY ./package*.json /app/
 

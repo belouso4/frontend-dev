@@ -12,8 +12,10 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    ports:
-      - '3000:3000'
+    expose:
+      - 3000
+    networks:
+      - dev-network
 
 networks:
   dev-network:

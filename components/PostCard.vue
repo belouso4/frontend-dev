@@ -1,6 +1,6 @@
 <template>
   <div class="news-item">
-    <img :src="post.img" alt="">
+    <LazyImage class="my-class" :src="post.img" alt="something" />
     <div class="news-item-area">
       <nuxt-link :to="path + 'article/' + post.slug">
         <h3 class="news-item-area_title">

@@ -85,7 +85,7 @@ export default {
   },
 
   publicRuntimeConfig: {
-    API_URL_IMG: process.env.API_BASE_URL_IMG || 'http://localhost:8000'
+    API_URL_IMG: process.env.API_BASE_URL_IMG || 'http://api.itsownhouse.local'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -112,6 +112,8 @@ export default {
     '~/plugins/mixins/validation.js',
     '~/plugins/pagination.js',
     '~/plugins/route',
+    '~/plugins/vue-lazysizes.client.js',
+    '~/plugins/vue-agile.js',
     { src: '~/plugins/vue-infinite-loading.js', ssr: false},
     { src: '~/plugins/vue-tags-input.js', ssr: false },
     {src:'~/plugins/vue-quill-editor.js',ssr: false},
@@ -249,8 +251,16 @@ export default {
         ]
       },
     },
+    extend (config, { isDev, isClient, loaders: { vue } }) {
+      vue.transformAssetUrls.LazyImage = ["src"];
+      // if (isClient) {
+      //   vue.transformAssetUrls.img = ['data-src', 'src']
+      //   vue.transformAssetUrls.source = ['data-srcset', 'srcset']
+      // }
+    },
     transpile: [
       'defu',
+      'vue-agile'
     ],
     splitChunks: {
       layouts: true

@@ -3,10 +3,8 @@
     <div class="container">
 
       <div class="wrapper-post">
-        <client-only>
-          <SliderMain :sliders="sliders"/>
-        </client-only>
 
+          <SliderMain :sliders="sliders"/>
 
 <!--        <div class="slider-wrapper">-->
 <!--          <div @click="prev" class="slide-arrow prev"> < </div>-->
