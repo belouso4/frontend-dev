@@ -118,7 +118,7 @@ export default {
 
   async asyncData({app}) {
     try {
-      const sliders = await app.$api.otherAPI.index()
+      const sliders = await app.$api.other.index()
       return {sliders}
     } catch (err) {console.log(err)}
   },

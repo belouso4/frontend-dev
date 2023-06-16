@@ -132,7 +132,7 @@ export default {
   layout: 'Admin',
   data() {
     return {
-      imgShow: this.$auth.user.avatar,
+      imgShow: this.$auth.user.avatar.original,
       loading: false,
       form: {
         email: this.$auth.user.email,

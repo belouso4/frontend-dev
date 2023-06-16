@@ -19,21 +19,32 @@ export default {
         placeholder: 'Введите описание...',
         theme: 'snow',
         modules: {
-          toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            ['clean'],
-            ['blockquote', 'code-block'],
-            [{ 'header': 1 }, { 'header': 2 }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'script': 'sub' }, { 'script': 'super' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'direction': 'rtl' }],
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'color': ['#343434'] }, { 'background': ["#445678"] }],
-            [{ 'font': [] }],
-            [{ 'align': [] }],
-            ['link', 'image', 'video']
-          ],
+          imageUploader: {
+             upload: async (file) => {
+               try {
+                 let formData = new FormData();
+                 formData.append('img', file);
+                 return await this.$api.adminPosts.upload(formData)
+               } catch (err) {console.log(err)}
+            },
+          },
+          toolbar: {
+            container: [
+              ['bold', 'italic', 'underline', 'strike'],
+              ['clean'],
+              ['blockquote', 'code-block'],
+              [{ 'header': 1 }, { 'header': 2 }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [{ 'script': 'sub' }, { 'script': 'super' }],
+              [{ 'indent': '-1' }, { 'indent': '+1' }],
+              [{ 'direction': 'rtl' }],
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              [{ 'color': ['#343434'] }, { 'background': ["#445678"] }],
+              [{ 'font': [] }],
+              [{ 'align': [] }],
+              ['link', 'image', 'video']
+            ],
+          }
         },
       },
     }
@@ -43,13 +54,36 @@ export default {
     onEditorChange(value) {
       this.$emit('input', value.html)
     },
+    getImgUrls(delta) {
+      return delta.ops.filter(i => i.insert && i.insert.image).map(i => i.insert.image);
+    }
   },
 
-  // computed: {
-  //   editor() {
-  //     return this.$refs.editor.quill
-  //   },
-  // }
+  computed: {
+    quillEditor() {
+      return this.$refs.editor.quill
+    },
+  },
+
+  mounted() {
+    this.quillEditor.on('text-change', (delta, oldContents, source) => {
+      if (source !== 'user') return;
+
+      const inserted = this.getImgUrls(delta);
+      const deleted = this.getImgUrls(this.quillEditor.getContents().diff(oldContents));
+
+      // inserted.length && console.log('insert', inserted)
+      // deleted.length && console.log('delete', deleted)
+
+      if (deleted.length && deleted[0].length < 200) {
+        let array = deleted[0].split('/')
+        let file_name = array[array.length - 1]
+
+        this.$api.adminPosts.deleteImage({delete_file: file_name})
+      }
+    });
+
+  }
 
 }
 </script>

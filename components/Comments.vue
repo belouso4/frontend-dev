@@ -2,15 +2,14 @@
   <div class="comments">
     <div class="comments-header">
       <h2>Комментарии</h2>
-      <p @click="showComments = !showComments">
-
+      <div>
         <i class="fa-solid fa-comment"></i>
         <span>{{ comments.comments_count }}</span>
-      </p>
+      </div>
     </div>
-    <div v-if="showComments" class="comments-body">
-      <div v-for="comment in comments.comments" class="comment">
-        <div class="main-comment">
+    <div class="comments-body">
+      <div v-for="comment in comments.comments" :key="'comment-'+comment.id" class="comment">
+        <div :id="'comment-'+comment.id" class="main-comment">
           <div class="avatar">
             <img :src="comment.user.avatar" alt="">
           </div>
@@ -35,7 +34,7 @@
           </div>
         </div>
         <div class="comments-replying">
-          <div v-if="repliesShow.length > 0 && repliesShow.indexOf(comment.id) !== -1"
+          <div :key="'reply-'+reply.id" :id="'comment-'+reply.id" v-if="repliesShow.length > 0 && repliesShow.indexOf(comment.id) !== -1"
                v-for="reply in comment.replies" class="comment">
             <div class="avatar">
               <img :src="comment.user.avatar" alt="">
@@ -69,7 +68,7 @@
       </template>
     </div>
 
-    <form v-if="showComments" class="add-comment" @submit.prevent="sendCommet()">
+    <form class="add-comment" @submit.prevent="sendCommet()">
       <p v-if="replyingTo.id">
         <span class="close-replying" @click="clearReplyingTo()">
           <i class="fa-solid fa-xmark"></i>
@@ -86,7 +85,7 @@
 </template>
 
 <script>
-
+import scrollBehavior from '~/app/router.scrollBehavior.js'
 export default {
   name: "Comments",
   props: {
@@ -98,7 +97,6 @@ export default {
 
   data: () => ({
     body: '',
-    showComments: false,
     replyingTo: {},
     repliesShow: [],
     loadComments: false
@@ -184,10 +182,23 @@ export default {
       }
     },
   },
+
+  mounted() {
+    if (this.$route.hash) {
+      scrollBehavior(this.$route)
+    }
+  },
+
 }
 </script>
 
 <style scoped>
+
+.main-comment.active {
+  -webkit-box-shadow: inset -6px 0px 59px -21px rgba(0,0,0,0.5);
+  -moz-box-shadow: inset -6px 0px 59px -21px rgba(0,0,0,0.5);
+  box-shadow: inset -6px 0px 59px -21px rgba(0,0,0,0.5);
+}
 .comments {
   margin-top: 30px;
 }
@@ -209,6 +220,7 @@ export default {
   border-radius: 15px;
   padding: 17px;
   background: #fff;
+  transition: all .3s ease;
 }
 
 .comment-header {

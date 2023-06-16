@@ -19,9 +19,11 @@
           </div>
         </aside>
         <div class="wrapper-post">
-          <PostCard v-for="post in posts.data" :post="post" :key="'cafe-'+post.id"/>
+          <PostCard v-for="post in posts" :post="post" :key="'cafe-'+post.id"/>
           <client-only>
-            <infinite-loading v-if="posts.data?.length" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+            <infinite-loading v-if="posts?.length" spinner="spiral" @infinite="infiniteScroll">
+              <div slot="no-results">Результатов больше нет :(</div>
+            </infinite-loading>
           </client-only>
         </div>
       </div>

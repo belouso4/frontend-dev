@@ -3,11 +3,11 @@ export default function({app, route, $axios, $auth, redirect, store, error: nuxt
   // $axios.setBaseURL('http://172.19.0.5')
 
   $axios.onError(error => {
-   console.log('--error.message--: ',error.response)
-    const code = parseInt(error.response && error.response.status)
+    console.log('message: ',error.response.data)
     console.log(error)
+    const code = parseInt(error.response && error.response.status)
     const url = route?.path.split('/')
-    // const url = app.context.from.path.split('/')console.log('to', )
+    // const url = app.context.from.path.split('/')
 
     if (code === 404) {
       nuxtError({
@@ -39,8 +39,10 @@ export default function({app, route, $axios, $auth, redirect, store, error: nuxt
       // if (code === 404 || code === 500) {
       //   redirect('/admin/404');
       // }
+      if (code === 409) {
+        app.$toaster.warning(error.response.data)
+      }
     }
-
 
     if (code === 422) {
       store.dispatch('validation/setErrors', error.response.status)

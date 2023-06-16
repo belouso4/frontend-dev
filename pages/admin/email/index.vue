@@ -43,7 +43,11 @@
 
                     <input v-if="form.select === 0" v-model="form.to" class="form-control" placeholder="To:">
                     <input v-else-if="form.select === 1" class="form-control" disabled placeholder="To: all">
-                    <Options :list.sync="list_emails" :name.sync="form.to" :fetch="searchEmail" v-else>
+                    <Options :list.sync="list_emails"
+                             :name.sync="form.to"
+                             :fetch="searchEmail"
+                             :status="!!list_emails.length"
+                             v-else>
                       <li v-for="user in list_emails"
                           @click="setEmail(user.email)"
                           :class="['select2-results__option', {'active': form.to === user.email}]">
@@ -201,7 +205,7 @@ export default {
     },
 
     searchEmail(e) {
-      const email = e.target.value
+      let email = e !== undefined ? e.target.value : null
 
       if (email && email.length >= 2) {
         clearTimeout(this.debounce);

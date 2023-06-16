@@ -1,7 +1,7 @@
 <template>
   <footer>
 
-    <nuxt-link target="_blank" v-if="$auth.user && $auth.user.is_admin" to="/admin"  class="button-admin">
+    <nuxt-link target="_blank" v-if="$auth.user && $auth.user.role" to="/admin"  class="button-admin">
       <i class="fas fa-users-cog"></i>
     </nuxt-link>
     <div class="author-section">
@@ -15,21 +15,64 @@
         </div>
       </div>
     </div>
+    <button id="pagetop" @click="toTop">
+      <i class="fas fa-chevron-up"></i>
+    </button>
   </footer>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
     export default {
       name: "AppFooter",
-      computed: {
-        ...mapGetters({
-          // getReloadStatus: 'ui/getReloadStatus'
-        })
+
+      data() {
+        return {
+          scTimer: 0,
+          scY: 0
+        }
+      },
+
+      methods: {
+        handleScroll: function () {
+          if (this.scTimer) return;
+
+          this.scTimer = setTimeout(() => {
+            this.scY = window.scrollY;
+            clearTimeout(this.scTimer);
+            this.scTimer = 0;
+          }, 100);
+        },
+
+        toTop() {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        },
+
+        debounce(func, wait) {
+          let timeout;
+          return () => {
+            if (timeout) {
+              clearTimeout(timeout);
+            }
+            timeout = setTimeout(func, wait)
+          }
+        },
+      },
+
+      mounted() {
+        window.addEventListener('scroll', this.debounce(this.handleScroll, 200));
       },
     }
 </script>
 
-<style scoped>
-
+<style>
+#pagetop {
+  position: fixed;
+  color: #000;
+  font-size: 20px;
+  bottom: 50px;
+  right: 50px;
+}
 </style>

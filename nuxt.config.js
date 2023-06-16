@@ -37,53 +37,6 @@ export default {
     ]
   },
 
-  // prismic: {
-  //   apiOptions: {
-  //     routes: [
-  //       {
-  //         type: 'page',
-  //         path: '/:category/post/:slug',
-  //         resolvers: {
-  //           // A list of "path variables" mapped to the API ID
-  //           // of a Content Relationship field in the Custom Type.
-  //           category: 'category',
-  //           section: 'category.section',
-  //         },
-  //       },
-  //     ],
-  //   },
-  // },
-
-  router: {
-    // routes: [
-    //   {
-    //     path: '/:category',
-    //     component: 'pages/_category/post/index.vue',
-    //     children: {
-    //       path: '/post/:slug',
-    //       component: 'pages/_category/post/_slug.vue',
-    //       // children: {
-    //       //   path: '/:slug',
-    //       //   component: 'pages/_category/post/_slug.vue',
-    //       // }
-    //     }
-    //   }
-    // ],
-    extendRoutes(routes, resolve) {
-      // console.log(routes)
-      // routes.push({
-      //   path: '/:category/post/:slug',
-      //   component: 'pages/_category/post/_slug.vue',
-      //   // components: {
-      //   //   default: resolve(__dirname, 'pages/_category/post/_slug.vue'), // or routes[index].component
-      //   // },
-      //   // chunkNames: {
-      //   //   modal: 'components/modal'
-      //   // }
-      // })
-    }
-  },
-
   publicRuntimeConfig: {
     API_URL_IMG: process.env.API_BASE_URL_IMG || 'http://api.itsownhouse.local'
   },
@@ -114,17 +67,17 @@ export default {
     '~/plugins/route',
     '~/plugins/vue-lazysizes.client.js',
     '~/plugins/vue-agile.js',
+    '~/plugins/instantsearch.js',
     { src: '~/plugins/vue-infinite-loading.js', ssr: false},
     { src: '~/plugins/vue-tags-input.js', ssr: false },
     {src:'~/plugins/vue-quill-editor.js',ssr: false},
+    // {src:'~/plugins/instantsearch.js',ssr: false},
   ],
 
   axios: {
     baseURL: process.env.API_BASE_URL,
     credentials: true
   },
-
-  loading: false,
 
   auth: {
     redirect: {
@@ -260,7 +213,9 @@ export default {
     },
     transpile: [
       'defu',
-      'vue-agile'
+      'vue-agile',
+      'vue-instantsearch',
+      'instantsearch.js/es'
     ],
     splitChunks: {
       layouts: true

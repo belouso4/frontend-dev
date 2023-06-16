@@ -110,9 +110,7 @@ export default {
           body: this.body,
           parent_id: this.replyingTo.id
         }
-        console.log(data)
         const comment = await this.$api.adminPostComments.addComment(this.$route.params.slug, data)
-        console.log(comment)
         this.body = ''
         this.clearReplyingTo()
         e.target.querySelector('textarea').removeAttribute('disabled')
@@ -140,7 +138,9 @@ export default {
       this.loading = false
     },
     async fetchComments(offset = 0) {
-      return await this.$api.adminPostComments.getComments(this.$route.params.slug, offset)
+      try {
+        return await this.$api.adminPostComments.getComments(this.$route.params.slug, offset)
+      } catch (err) {console.log(err)}
     },
     setReplyingTo(comment) {
       this.replyingTo = comment
@@ -150,16 +150,16 @@ export default {
       this.replyingTo = {}
     },
 
-     async deleteComment(id) {
-      this.$emit('update:loading-comments', true)
+    async deleteComment(id) {
+      try {
+        this.$emit('update:loading-comments', true)
 
-     const [comment, comments] = await Promise.all([
-       this.$api.adminPostComments.deleteComment(id),
-       this.fetchComments()
-     ])
+        const comment = await this.$api.adminPostComments.deleteComment(id)
+        const comments = await this.fetchComments()
 
-       this.$emit('update:comments', comments)
-       this.$emit('update:loading-comments', false)
+        this.$emit('update:comments', comments)
+        this.$emit('update:loading-comments', false)
+      } catch (err) {console.log(err)}
     },
 
     clearComment(comment) {
@@ -169,8 +169,8 @@ export default {
         comments.splice(comments.findIndex(object => object.id === comment.id), 1)
       } else {
         let replies = comments.find(x => x.id === comment.parent_id).replies
-        comments.find(x => x.id === comment.parent_id)
-          .replies.splice(replies.findIndex(object => object.id === comment.id), 1)
+        let comments_parent = comments.find(x => x.id === comment.parent_id).replies
+        comments_parent.splice(replies.findIndex(object => object.id === comment.id), 1)
       }
     },
 
@@ -183,34 +183,24 @@ export default {
       this.repliesShow.push(id)
     },
 
-    like(comment) {
-      this.$api.adminPostComments.likeComment(comment.id).then(res => console.log(res))
-      if(!comment.parent_id) {
-        this.comments.comments.filter(a => {
-          if(a.id === comment.id) {
-            if (comment.user_like_count === 0) {
-              a.user_like_count = 1
-              a.likes_count++
-            } else {
-              a.user_like_count = 0
-              a.likes_count--
-            }
+    async like(comment) {
+      try {
+        const like_comment = await this.$api.adminPostComments.likeComment(comment.id)
+
+        this.comments.comments.map((item) => {
+          if (comment.id === item.id) {
+            item.likes_count = +like_comment.like_count
+            item.user_like_count = +like_comment.like_my
           }
-        })
-      } else {
-        this.comments.comments.find(x => x.id === comment.parent_id)
-          .replies.filter(a => {
-          if(a.id === comment.id) {
-            if (comment.user_like_count === 0) {
-              a.user_like_count = 1
-              a.likes_count++
-            } else {
-              a.user_like_count = 0
-              a.likes_count--
+
+          item.replies.map((replie) => {
+            if (comment.id === replie.id) {
+              replie.likes_count = +like_comment.like_count
+              replie.user_like_count = +like_comment.like_my
             }
-          }
+          })
         })
-      }
+      } catch (err) {console.log(err)}
     },
   },
 }

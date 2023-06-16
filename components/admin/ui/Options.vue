@@ -1,17 +1,18 @@
 <template>
   <div v-else class="form-group form-select" data-select2-id="29">
 
-    <div v-click-outside="optionsClose" @click="eventClick()" class="select-cust">
+    <div v-click-outside="optionsClose" @click="eventClick" class="select-cust">
       {{ name || placeholder }}
     </div>
 
     <div v-show="show" class="option-cust">
       <div v-if="inputShow" class="select2-search select2-search--dropdown">
-        <input @keyup="fetch" type="search" autocomplete="off" autocorrect="off" v-model="search">
+        <input placeholder="Поиск..." @keyup="fetch" type="search" autocomplete="off" autocorrect="off" v-model="search">
       </div>
       <div class="select2-results">
-        <ul class="select2-results__options">
-          <slot></slot>
+        <ul v-if="inputShow ? search && search.length >= 2 : true" class="select2-results__options">
+          <slot v-if="status"></slot>
+          <Loader v-else width="15px" class="m-auto"/>
         </ul>
       </div>
     </div>
@@ -41,6 +42,10 @@ export default {
     placeholder: {
       type: String,
       default: '--Выберите эллемент--'
+    },
+    status: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -49,9 +54,6 @@ export default {
       search: ''
     }
   },
- // created() {
- //   this.$emit('update:list', [])
- // },
 
   methods: {
     optionsClose(e) {
@@ -60,13 +62,14 @@ export default {
       // this.search = ''
 
       if(!option.contains(e.target)) {
+        this.$emit('update:list', [])
         this.show =false
+        this.search = ''
       }
     },
-    eventClick() {
-      if (!this.show) this.fetch()
-
-      return this.show = !this.show
+    eventClick(e) {
+      if (!this.show) this.fetch(e)
+      this.show = !this.show
     }
   }
 }

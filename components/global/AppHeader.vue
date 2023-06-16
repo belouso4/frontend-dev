@@ -1,35 +1,35 @@
 <template>
   <header>
     <div class="container">
-      <nav class="navigation">
+      <div class="header-main">
         <nuxt-link to="/" class="logo">OwnHouse</nuxt-link>
-<!--        <ul>-->
-<!--          <li>-->
-<!--            <nuxt-link to="/posts">Посты</nuxt-link>-->
-<!--          </li>-->
-<!--          <li>-->
-<!--            <nuxt-link to="/posts">Категории</nuxt-link>-->
-<!--          </li>-->
-<!--          <li>-->
-<!--            &ndash;&gt;-->
-<!--          </li>-->
-<!--          <li>-->
-<!--            <nuxt-link to="/posts">Смартфоны</nuxt-link>-->
-<!--          </li>-->
-<!--          <li>-->
-<!--            <nuxt-link to="/posts">Бытовая техника</nuxt-link>-->
-<!--          </li>-->
-<!--          <li>-->
-<!--            <nuxt-link to="/posts">ИИ</nuxt-link>-->
-<!--          </li>-->
-<!--        </ul>-->
-        <nested-menu/>
-        <nuxt-link v-if="$auth.loggedIn" to="/account" class="cabinet-auth">Личный кабинет</nuxt-link>
+        <div class="search-model">
+          <form action="" class="form-search" @submit.prevent>
+            <input v-model="search" @focus="toggleClass($event)"
+                   @focusout="toggleClass($event, true)"
+                   placeholder="Поиск..."
+                   type="text">
+            <button><i class="fas fa-search"></i></button>
+          </form>
+          <template v-if="search && list.length">
+              <ul>
+                <li v-for="item in list">
+                  <nuxt-link :to="item.url">{{ item.title }}</nuxt-link>
+                </li>
+              </ul>
+          </template>
+        </div>
+        <nuxt-link v-if="$auth.loggedIn" to="/account/profile" class="cabinet-auth">
+          <img :src="$auth.user.avatar.small" alt="">
+          <span>{{ $auth.user.name }}</span>
+        </nuxt-link>
         <div v-else class="auth">
           <nuxt-link to="/login">Войти</nuxt-link>
           <nuxt-link to="/register">Зарегистрироваться</nuxt-link>
         </div>
-
+      </div>
+      <nav class="navigation">
+        <nested-menu/>
       </nav>
     </div>
   </header>
@@ -37,14 +37,136 @@
 
 <script>
     import NestedMenu from "./menu/NestedMenu";
+    import { MeiliSearch } from 'meilisearch'
     export default {
       name: "AppHeader",
       components: {NestedMenu},
-    }
 
+      data() {
+        return {
+          search: '',
+          list: [],
+          meiliSearch: new MeiliSearch({
+            host: process.env.MEILISEARCH_HOST,
+            apiKey: process.env.MEILISEARCH_KEY,
+          })
+        }
+      },
+
+      watch: {
+        async search(val) {
+          this.list = (await this.meiliSearch.index('posts').search(val, {limit: 5})).hits
+        }
+      },
+
+      methods: {
+        toggleClass(e, blur = false) {
+          if (blur) setTimeout(() => this.search = '', 100)
+          e.target.closest('.form-search').classList.toggle('focus-shadow')
+        }
+      }
+    }
 </script>
 
 <style>
+
+.header-main {
+  gap: 30px;
+}
+
+.header-main > * {
+  max-width: 185px;
+  width: 100%
+}
+
+.header-main .search-model {
+  max-width: 500px;
+  width: 100%;
+}
+
+.cabinet-auth {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.cabinet-auth span{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cabinet-auth img {
+  height: 2.1rem;
+  box-shadow: 0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)!important;
+  object-fit: cover;
+  width: 2.1rem;
+  margin-right: 12px;
+  border-radius: 50%;
+}
+
+.search-model {
+  position: relative;
+}
+
+.search-model ul {
+  position: absolute;
+  background: #fff;
+  left: 0;
+  right: 0;
+  top: 40px;
+  z-index: 10;
+  border-radius: 10px;
+}
+
+.search-model ul li {
+  padding: 10px;
+}
+
+.search-model ul li:hover {
+  background: #e4e7e8;
+}
+
+.search-model .form-search {
+  background: #ecf0f3;
+  border-radius: 10px;
+  box-shadow: -3px -3px 7px #ffffff, 3px 3px 5px #ceced1;
+  min-width: 500px;
+  display: flex;
+}
+
+.search-model .form-search.focus-shadow {
+  box-shadow: inset -3px -3px 7px #ffffff,
+  inset 3px 3px 5px #ceced1;
+}
+
+.search-model .form-search input {
+  border: none;
+  background: transparent;
+  padding: 7px 15px;
+  flex: 1;
+}
+
+.search-model .form-search button {
+  border: none;
+  background: transparent;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.header-main {
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navigation {
+  padding: 11px 0;
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+}
 
 .references-menu {
   visibility: hidden;

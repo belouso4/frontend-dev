@@ -4,41 +4,90 @@
          :size="'margin-lg'"
          :bg="'bg-secondary'">
     <template>
+      <div v-if="loading" class="overlay">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+      </div>
       <div class="modal-body">
+        <ais-instant-search :search-client="searchClientMeiliSearch"  index-name="admin_global">
+          <ais-configure :attributesToSnippet="['title:7','desc:15']"
+                         snippetEllipsisText="…"
+                         :hits-per-page.camel="4"/>
+          <ais-autocomplete>
+            <div slot-scope="{ currentRefinement, indices, refine, result }" class="md:relative">
+                <input
+                  type="search"
+                  ref="searchInput"
+                  class="form-control form-control-lg"
+                  :value="currentRefinement"
+                  @input="refine($event.currentTarget.value)"
+                  placeholder="Поиск..."
+                  show-loading-indicator
+                  autocomplete="off"
+                >
 
-        <form @submit.prevent="searchData()" class="w-100 mb-3">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i v-if="!loading" class="fa fa-search"></i>
-                <Loader v-else/>
-              </span>
-            </div>
-            <input ref="searchInput" v-model.trim="search" @keyup="searchData()"
-                   type="search" class="form-control form-control-lg" placeholder="Введите ключевые слова здесь">
-          </div>
-        </form>
-        <div v-if="search !== '' && Object.keys(data).length">
-          <div v-for="(items, key) in data">
-            <h5>{{key === 'posts' ? 'Посты' : 'Пользователи'}}</h5>
-            <ul class="custom-list">
-              <li v-for="item in items" class="d-flex align-items-center" @click="pathPush(key, item.id)">
-                <span>
-                  <div class="avatar">
-                    <img :src="$config.API_URL_IMG + '/' +item.img" alt="">
-                  </div>
-                </span>
-                  <div v-if="key === 'users'" class="d-flex flex-column">
-                    <span>{{item.title}}</span>
-                    <span>{{item.email}}</span>
-                  </div>
-                  <span v-else>{{item.title}}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+              <template v-if="currentRefinement">
 
-        <div v-else class="start-screen">{{notResult}}</div>
+                <ais-hits>
+                  <div slot="item" slot-scope="{ item }" @click="pathPush(item)">
+                        <h5>{{checkPost(item.modelId) ? 'Посты' : 'Пользователи'}}</h5>
+                        <div  class="search-elements d-flex align-items-center" >
+                            <div class="search-img">
+                              <img :src="checkPost(item.modelId) ? item.img : item.avatar" alt="">
+                            </div>
+
+                          <div v-if="!checkPost(item.modelId)" class="d-flex flex-column">
+                            <ais-highlight attribute="name" :hit="item" />
+                            <ais-highlight attribute="email" :hit="item" />
+                          </div>
+                            <div v-else class="d-flex flex-column">
+                              <ais-snippet :hit="item" attribute="title" />
+                              <ais-snippet :hit="item" attribute="desc"/>
+                            </div>
+
+                        </div>
+                      </div>
+                </ais-hits>
+<!--                <ais-pagination />-->
+              </template>
+
+
+              </div>
+          </ais-autocomplete>
+        </ais-instant-search>
+
+<!--        <form @submit.prevent="searchData()" class="w-100 mb-3">-->
+<!--          <div class="input-group">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">-->
+<!--                <i v-if="!loading" class="fa fa-search"></i>-->
+<!--                <Loader v-else/>-->
+<!--              </span>-->
+<!--            </div>-->
+<!--            <input ref="searchInput" v-model.trim="search" @keyup="searchData()"-->
+<!--                   type="search" class="form-control form-control-lg" placeholder="Введите ключевые слова здесь">-->
+<!--          </div>-->
+<!--        </form>-->
+<!--        <div v-if="search !== '' && Object.keys(data).length">-->
+<!--          <div v-for="(items, key) in data">-->
+<!--            <h5>{{key === 'posts' ? 'Посты' : 'Пользователи'}}</h5>-->
+<!--            <ul class="custom-list">-->
+<!--              <li v-for="item in items" class="d-flex align-items-center" @click="pathPush(key, item.id)">-->
+<!--                <span>-->
+<!--                  <div class="avatar">-->
+<!--                    <img :src="$config.API_URL_IMG + '/' +item.img" alt="">-->
+<!--                  </div>-->
+<!--                </span>-->
+<!--                  <div v-if="key === 'users'" class="d-flex flex-column">-->
+<!--                    <span>{{item.title}}</span>-->
+<!--                    <span>{{item.email}}</span>-->
+<!--                  </div>-->
+<!--                  <span v-else>{{item.title}}</span>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div v-else class="start-screen">{{notResult}}</div>-->
       </div>
     </template>
   </modal>
@@ -46,17 +95,56 @@
 
 <script>
 import Modal from "../global/Modal";
+import { createServerRootMixin } from 'vue-instantsearch'
+import { instantMeiliSearch } from '@meilisearch/instant-meilisearch';
+import { MeiliSearch } from 'meilisearch'
+
+import 'instantsearch.css/themes/satellite-min.css'
+
 export default {
   name: "UsersListModal",
   components: {Modal},
+
+  // mixins: [
+  //   createServerRootMixin({
+  //     searchClient,
+  //     indexName: 'admin_main_search',
+  //   }),
+  // ],
+
   data() {
     return {
       loading: false,
       search: "",
       debounce: null,
       data: {},
-      notResult: 'Нет недавних поисков'
+      notResult: 'Нет недавних поисков',
+      searchClientMeiliSearch: instantMeiliSearch(
+        process.env.MEILISEARCH_HOST,
+        process.env.MEILISEARCH_KEY,
+      ),
     }
+  },
+
+  async created() {
+    const client = new MeiliSearch({
+      host: process.env.MEILISEARCH_HOST,
+      apiKey: process.env.MEILISEARCH_KEY,
+    })
+    // console.log('this.instantMeiliSearch', await client.index('posts').search('499'))
+    // admin_main_search
+    // console.log('this.instantMeiliSearch', await client.multiSearch({queries: [
+    //     {
+    //       indexUid: 'posts',
+    //       q: 'alice',
+    //       limit: 5,
+    //     },
+    //     {
+    //       indexUid: 'users',
+    //       q: 'jh',
+    //     },
+    //   ]})
+    // )
   },
 
   watch: {
@@ -75,11 +163,18 @@ export default {
       this.data = {}
     },
 
-    pathPush(page, id) {
-      let path = '/admin/'+page+'/'+id;
+    pathPush(item) {
+      this.loading = true
 
+      const page = this.checkPost(item.modelId)
+        ? ['posts', item.slug]
+        : ['users', item.id]
+
+      let path = '/admin/'+page[0]+'/'+page[1];
       this.$router.push({path: path})
+
       this.closeModal()
+      this.loading = false
     },
 
     searchData() {
@@ -105,9 +200,74 @@ export default {
         }
     },
 
+    checkPost(data) {
+      return data.split('_')[0] === 'post'
+    }
+
   },
 }
 </script>
+
+<style>
+li.ais-Hits-item {
+  background: transparent;
+  display: block;
+}
+
+li.ais-Hits-item:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.ais-Hits-list li {
+  margin: 7px 0;
+  cursor: pointer;
+  color: #fff;
+  border: 1px solid transparent;
+  padding: 10px;
+  border-radius: 0.25rem;
+  background: rgb(255 255 255 / 17%);
+  width: 100%;
+}
+
+.ais-Hits-list li:hover {
+  background: rgb(255 255 255 / 25%);
+}
+
+.ais-Hits-list li > span:not(:last-child) {
+  margin-right: 10px;
+}
+
+.ais-Hits-list .search-img {
+  border: 1px solid #cecece;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  margin-right: 10px;
+}
+.ais-Hits-list .search-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ais-Highlight-highlighted, .ais-Snippet-highlighted {
+  background-color: #959595;
+  color: #ffffff;
+  padding: 0;
+  font-weight: bold;
+  /*background-color: transparent;*/
+  /*color: #ffffff;*/
+  /*padding: 0;*/
+  /*border-bottom: 1px solid #fff;*/
+}
+
+.search-elements {
+  gap: 10px;
+}
+
+</style>
 
 <style scoped>
   .limit-height {
@@ -120,41 +280,7 @@ export default {
     padding: 0 18px;
   }
 
-  .custom-list {
 
-  }
-  .custom-list li {
-    margin: 7px 0;
-    cursor: pointer;
-    color: #fff;
-    border: 1px solid transparent;
-    padding: 10px;
-    border-radius: 0.25rem;
-    background: rgb(255 255 255 / 17%);
-    width: 100%;
-  }
-
-  .custom-list li:hover {
-    background: rgb(255 255 255 / 25%);
-  }
-
-  .custom-list li > span:not(:last-child) {
-    margin-right: 10px;
-  }
-
-  .custom-list .avatar {
-    border: 1px solid #cecece;
-    border-radius: 50%;
-    overflow: hidden;
-    width: 40px;
-    height: 40px;
-    background: #fff;
-  }
-  .custom-list .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
   [type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;
     appearance: none;

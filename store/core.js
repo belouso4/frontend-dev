@@ -7,7 +7,6 @@ export const actions = {
     commit('setCategories', data.categories)
   },
    async validCategory({commit, state}, {path, slug= null}) {
-    console.log('ergerg', state.categories.length)
     if (!state.categories.length) commit('setCategories', await this.$api.category.index())
 
     const category =  await state.categories

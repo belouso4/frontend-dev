@@ -32,7 +32,7 @@
           <div class="attribute">{{ post.title }}</div>
           <div class="attribute">
             <button @click="addSlide(post)" class="arrow-hover" type="button" title="Добавить">
-              <i data-v-92945e56="" class="fas fa-chevron-right"></i>
+              <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </li>

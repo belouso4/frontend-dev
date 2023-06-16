@@ -48,4 +48,17 @@ export default $axios => ({
       });
   },
 
+  /*routes for quill editor*/
+  async upload( data ){
+    return await $axios.$post('/v1/admin/post/upload', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
+  async deleteImage( data ){
+    return $axios.$post('/v1/admin/post/upload', data);
+  },
+
 })

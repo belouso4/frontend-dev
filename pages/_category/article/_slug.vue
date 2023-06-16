@@ -22,10 +22,14 @@
         </aside>
         <div class="wrapper-post">
           <h1>{{ post.title }}</h1>
+          <span>Опубликовано: October 11, 2021</span>
           <img height="560" :src="post.img" alt="">
 <!--          <p v-if="post.excerpt != 'null'">{{ post.excerpt }}</p>-->
           <div class="news-item-area_desc" v-html="post.desc"></div>
-          <Comments :comments="comments"/>
+<!--          <client-only>-->
+            <Comments :comments="comments"/>
+<!--          </client-only>-->
+
         </div>
       </div>
     </div>
@@ -53,11 +57,14 @@ export default {
     return !!params.slug && !!validCategory
   },
 
-  async asyncData({$api, params,}) {
+  async asyncData({$api, params, route}) {
     try {
+      let comment_id = null
+      if (route.query) comment_id = route.query.comment_id
+
       const [post, comments] = await Promise.all([
         $api.posts.show(params.slug),
-        $api.comments.index(params.slug, 0)
+        $api.comments.index(params.slug, 0, comment_id)
       ]);
 
       return {post, comments}

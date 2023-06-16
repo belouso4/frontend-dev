@@ -18,7 +18,7 @@
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
           <img
-            :src="$auth.user.avatar"
+            :src="$auth.user.avatar.small"
             class="img-circle elevation-2"
             alt="User Image"
           >
@@ -75,7 +75,7 @@
             <a @click.prevent="openMenu($event)" href="#" class="nav-link">
               <i class="nav-icon fas fa-th" />
               <p>
-                Внешний вид
+                Навигация
                 <i class="fas fa-angle-left right" />
               </p>
             </a>

@@ -64,6 +64,9 @@
                   </transition>
                 </div>
               </div>
+              <div class="card-footer">
+                <span @click="delPost" class="cursor-pointer text-danger">Удалить запись</span>
+              </div>
             </div>
           </div>
 
@@ -104,13 +107,18 @@
                   </div>
                 </div>
                 <form-group label="Категории">
-                  <Options :inputShow="false" :list.sync="categories" :name.sync="categoryName" :fetch="fetchCategories">
-                    <li v-for="category in categories"
-                        @click="setCategory(category)"
-                        class="select2-results__option"
-                        :class="{'active': +form.category_id === +category.id}">
-                      {{ category.name }}
-                    </li>
+                  <Options :inputShow="false"
+                           :list.sync="categories"
+                           :name.sync="categoryName"
+                           :fetch="fetchCategories"
+                            :status="!!categories.length">
+
+                      <li v-for="category in categories"
+                          @click="setCategory(category)"
+                          class="select2-results__option"
+                          :class="{'active': +form.category_id === +category.id}">
+                        {{ category.name }}
+                      </li>
                   </Options>
                 </form-group>
                 <div class="form-group tags-controller">
@@ -196,6 +204,8 @@ export default {
       post.keywords = post.meta_keywords
         ? post.meta_keywords.split(',').map(a => ({text: a}))
         : []
+      const index = categories.findIndex(e => e.id === post.category_id)
+      const categoryName = categories[index].name
 
       return {
         form:post,
@@ -203,7 +213,8 @@ export default {
         imgShow: post.img,
         comments,
         copy: {...post},
-        categories
+        categories,
+        categoryName
       }
     } catch (err) {console.log(err)}
   },
@@ -235,7 +246,6 @@ export default {
           required,
           minLength: minLength(4)
         },
-
         img: {
           required,
           fileImg,
@@ -247,13 +257,6 @@ export default {
 
   watch:{
     'tag': 'initItems',
-  },
-
-  computed: {
-    categoryName() {
-      let index = this.categories.findIndex(e => e.id === this.form.category_id)
-      return this.categories[index]?.name
-    }
   },
 
   methods: {
@@ -345,11 +348,22 @@ export default {
     },
 
     async fetchCategories() {
-      this.categories = await this.$api.adminCategories.index({fetch: 'all'});
+      try {
+        this.categories = await this.$api.adminCategories.index({fetch: 'all'});
+      } catch (err) {console.log(err)}
     },
 
     setCategory(category) {
       this.form.category_id = category.id
+      this.categoryName = category.name
+    },
+
+    async delPost() {
+      try {
+        await this.$api.adminPosts.delete(this.form.id)
+        await this.$router.push({path: '/admin/posts'})
+        this.$toaster.error('Запись №'+this.form.id+' удалена')
+      } catch (err) {console.log(err)}
     },
 
     onFileChange(e) {
@@ -373,6 +387,7 @@ export default {
         : "100px";
     },
   },
+
   beforeRouteLeave (to, from , next) {
     console.log(this.form.desc ,'===', this.copy.desc)
     if ((this.form.title !== this.copy.title || this.form.desc !== this.copy.desc || this.form.img !== this.copy.img) && to.name !== 'admin-posts-slug') {

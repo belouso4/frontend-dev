@@ -20,7 +20,7 @@
             <h3 class="card-title">Таблица с постами</h3>
             <div class="card-tools d-flex align-items-center">
               <nuxt-link class="btn btn-outline-dark btn-sm mr-2 text-nowrap"
-                         to="/admin/posts/add"><i class="fa-solid fa-user-plus"></i> Добавить</nuxt-link>
+                         to="/admin/posts/add"><i class="fa-solid fa-plus"></i> Добавить</nuxt-link>
               <form @submit.prevent="searchPosts()" class="form-search input-group input-group-sm">
                 <input v-model="search"
                        @keyup="searchPosts()"
@@ -65,9 +65,9 @@
                 </td>
                 <td v-else><input v-model="checkbox" :value="post.id" type="checkbox"></td>
                 <td>
-                  <a>
+                  <span class="table-title">
                     {{ post.title }}
-                  </a>
+                  </span>
                   <br/>
                   <small>
                     Создано {{ post.created_at }}
@@ -256,5 +256,13 @@ tr {
 
 .table td, .table th {
   padding: 1rem;
+}
+
+.table-title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* number of lines to show */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 </style>

@@ -163,7 +163,6 @@ export default {
                   this.statusTag()
                 })
                 .catch(res => {
-                  console.log('ergergerg', res)
                   e.target.value = this.cache
                 })
 

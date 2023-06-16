@@ -1,9 +1,10 @@
 export default $axios => ({
 
-  async index(slug, offset) {
+  async index(slug, offset, comment_id) {
     return await $axios.$get('/v1/article/'+slug+'/comments', {
       params: {
-        offset
+        offset,
+        comment_id
       }
     });
   },
