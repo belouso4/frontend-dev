@@ -17,7 +17,15 @@ export default {
 
   ssr: true,
   head: {
-    title: 'frontend',
+    // title: 'OwnHouse',
+    // titleTemplate: '%s | OwnHouse',
+    titleTemplate: titleChunk => {
+      const baseTitle = 'OwnHouse';
+
+      if (titleChunk) return `${titleChunk} | ${baseTitle}`;
+
+      return baseTitle;
+    },
     htmlAttrs: {
       lang: 'ru'
     },

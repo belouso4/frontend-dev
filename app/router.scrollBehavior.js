@@ -11,6 +11,10 @@ const scrollBehavior = (_to, _from, _savedPosition) => {
     }
     window.scrollTo({ top, behavior: 'smooth' });
   }
+
+  if (_savedPosition) {
+    setTimeout(() => window.scrollTo({ top: _savedPosition.y, behavior: 'smooth' }), 100)
+  }
 };
 
 export default scrollBehavior;

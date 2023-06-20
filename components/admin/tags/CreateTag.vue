@@ -59,7 +59,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      loading: 'tags/loading'
+      loading: 'admin/tags/loading'
     })
   },
 
@@ -71,17 +71,17 @@ export default {
         //   e.target.disabled=disabled
         // }
         try {
-          this.$store.commit('tags/setLoading', true)
+          this.$store.commit('admin/tags/setLoading', true)
           this.loadBtn = true
           await this.$api.adminTags.create({tag: this.tag, slug: this.slug})
-          await this.$store.dispatch('tags/fetchTags', 1)
+          await this.$store.dispatch('admin/tags/fetchTags', 1)
 
           this.$v.$reset()
           this.loadBtn = false
           this.tag = ''
           this.slug = ''
         } catch (err) {
-          this.$store.commit('tags/setLoading', false)
+          this.$store.commit('admin/tags/setLoading', false)
         }
       }
     },

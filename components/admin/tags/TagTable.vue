@@ -93,17 +93,17 @@ export default {
 
   computed: {
     ...mapGetters({
-      tags: 'tags/getTags',
-      loading: 'tags/loading'
+      tags: 'admin/tags/getTags',
+      loading: 'admin/tags/loading'
     })
   },
 
   methods: {
       getTags(page = 1) {
       if (this.search === '') return this.$store
-        .dispatch('tags/fetchTags', page)
+        .dispatch('admin/tags/fetchTags', page)
 
-      this.$store.dispatch('tags/searchTags', {
+      this.$store.dispatch('admin/tags/searchTags', {
         page: page,
         search: this.search,
       })
@@ -159,7 +159,7 @@ export default {
               this.$api.adminTags.update(idTag,{[input]: elem})
                 .then(async (res) => {
                   console.log(res)
-                  this.$store.commit('tags/updateTag', res)
+                  this.$store.commit('admin/tags/updateTag', res)
                   this.statusTag()
                 })
                 .catch(res => {
@@ -177,7 +177,7 @@ export default {
 
     async deleteTag() {
       if(this.checkbox.length > 0) {
-        this.$store.commit('tags/setLoading', true)
+        this.$store.commit('admin/tags/setLoading', true)
 
         await this.$api.adminTags.delete(this.checkbox.join(','))
         await this.getTags()
@@ -204,10 +204,10 @@ export default {
     searchTags() {
       if(this.search && this.search.length >= 2) {
           clearTimeout(this.debounce);
-          this.$store.commit('tags/setLoading')
+          this.$store.commit('admin/tags/setLoading')
 
           this.debounce = setTimeout(() => {
-            this.$store.dispatch('tags/searchTags', {
+            this.$store.dispatch('admin/tags/searchTags', {
               page: 1,
               search: this.search,
             }).then(response => {

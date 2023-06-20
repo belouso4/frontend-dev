@@ -2,12 +2,12 @@ import getSiteMeta from "~/utils/getSiteMeta";
 
 const socialMetadata = {
   head() {
-    const title = this.meta.title ?? "Заголовок блога"
-    const description = this.meta.description
+    const title = this.meta?.title ?? "Заголовок блога"
+    const description = this.meta?.description
     const image = this.meta?.image
       ? this.meta.image
       : '/website.png'
-    const keywords = this.metadata?.keywords
+    const keywords = this.meta?.keywords
     const meta = [
         ...getSiteMeta(this.meta),
       {
@@ -28,22 +28,22 @@ const socialMetadata = {
 
       {
         property: "article:published_time",
-        content: this.meta.createdAt,
+        content: this.meta?.createdAt,
       },
       {
         property: "article:modified_time",
-        content: this.meta.updatedAt,
+        content: this.meta?.updatedAt,
       },
       {
         property: "article:tag",
-        content: this.meta.tags ? this.meta.tags.toString() : "",
+        content: this.meta?.tags ? this.meta.tags.toString() : "",
       },
       { name: "twitter:label1", content: "Written by" },
       { name: "twitter:data1", content: "Bob Ross" },
       { name: "twitter:label2", content: "Filed under" },
       {
         name: "twitter:data2",
-        content: this.meta.tags ? this.meta.tags.toString() : "",
+        content: this.meta?.tags ? this.meta.tags.toString() : "",
       },
     ]
 
@@ -51,7 +51,7 @@ const socialMetadata = {
       {
         hid: "canonical",
         rel: "canonical",
-        href: `https://bobross.com/articles/${this.$route.params.slug}`,
+        href: this.meta?.url,
       },
     ];
 

@@ -1,44 +1,35 @@
 export const state = () => ({
-  tags: {},
-  loading: false
+  tags: [],
+  page: 0,
 })
 
 export const actions = {
-  async fetchTags({commit}, page) {
-    commit('setLoading')
+  async fetchTags({commit, state}) {
+    try {
+      const tags = await this.$api.tag.index(state.page)
 
-    const tags = await this.$api.adminTags.index(page)
+      commit('setTags', tags)
+      commit('setPage', tags.length < 20 ? true : null)
+      return tags
+    } catch (err) {console.log(err)}
 
-    commit('setTags', tags)
-    commit('setLoading', false)
-    return tags
-  },
-
-  async searchTags({commit}, query) {
-    commit('setLoading')
-
-    const tags = await this.$api.adminTags.search(query)
-
-    commit('setTags', tags)
-    commit('setLoading', false)
-    return tags
   },
 }
 
 export const mutations = {
   setTags( state, data) {
-    state.tags = data
+    state.tags.push(...data)
   },
-  updateTag( state, data) {
-    state.tags.data
-      = state.tags.data.map(obj => obj.id === data.id ? data : obj)
-  },
-  setLoading( state, load = true) {
-    state.loading = load
+
+  setPage( state, data = null) {
+    if (data) {
+      state.page = null
+    } else {
+      state.page++
+    }
   },
 }
 
 export const getters = {
   getTags: state => state.tags,
-  loading: state => state.loading,
 }

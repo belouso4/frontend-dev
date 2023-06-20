@@ -4,6 +4,7 @@ import UserAPI from "../api/user.js";
 import CategoryAPI from "../api/categories.js";
 import OtherAPI from "../api/other.js";
 import AccountAPI from "../api/account.js";
+import TagAPI from "../api/tags.js";
 
 import AdminTagsAPI from "../api/admin/tags.js";
 import AdminPostsAPI from "../api/admin/posts.js";
@@ -26,6 +27,7 @@ export default function( { $axios }, inject ){
     category: CategoryAPI($axios),
     other: OtherAPI($axios),
     account: AccountAPI($axios),
+    tag: TagAPI($axios),
 
     // api admin
     adminTags: AdminTagsAPI( $axios ),

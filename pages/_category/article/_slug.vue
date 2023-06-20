@@ -1,63 +1,37 @@
 <template>
+  <div class="wrapper-post">
+    <h1>{{ post.title }}</h1>
+    <span>Опубликовано: October 11, 2021</span>
+    <img height="560" :src="post.img" alt="">
+    <!--          <p v-if="post.excerpt != 'null'">{{ post.excerpt }}</p>-->
+    <div class="news-item-area_desc" v-html="post.desc"></div>
+    <!--          <client-only>-->
+    <Comments :comments="comments"/>
+    <!--          </client-only>-->
 
-  <section class="section-posts">
-    <div class="container">
-      <div class="main-header">
-        <h1>Последние новости</h1>
-        <Breadcrumbs/>
-      </div>
-
-      <div class="flex-position">
-        <aside>
-          <div class="aside-title">
-            Категория новостей
-          </div>
-          <div class="tags">
-            <a>Спорт</a>
-            <a>Мотивация</a>
-            <a>Игры</a>
-            <a>Технологии</a>
-            <a>Музыка</a>
-          </div>
-        </aside>
-        <div class="wrapper-post">
-          <h1>{{ post.title }}</h1>
-          <span>Опубликовано: October 11, 2021</span>
-          <img height="560" :src="post.img" alt="">
-<!--          <p v-if="post.excerpt != 'null'">{{ post.excerpt }}</p>-->
-          <div class="news-item-area_desc" v-html="post.desc"></div>
-<!--          <client-only>-->
-            <Comments :comments="comments"/>
-<!--          </client-only>-->
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-
+  </div>
 </template>
 
 <script>
 import {mapMutations} from "vuex";
 import Comments from "../../../components/Comments";
-
+import SocialMetadata from "~/mixins/social-metadata.js";
 
 export default {
   name: 'addPost',
   components: {Comments},
   layout: 'AppMain',
-
+  mixins: [SocialMetadata],
   async validate({ params, route, query, store }) {
     let validCategory = await store.dispatch('core/validCategory', {
       path: route.path,
       slug: params.slug
     })
+
     return !!params.slug && !!validCategory
   },
 
-  async asyncData({$api, params, route}) {
+  async asyncData({$api, params, route, store}) {
     try {
       let comment_id = null
       if (route.query) comment_id = route.query.comment_id
@@ -67,14 +41,24 @@ export default {
         $api.comments.index(params.slug, 0, comment_id)
       ]);
 
+      store.commit('core/setTitle',post.title)
+
       return {post, comments}
     } catch (err) {console.log(err)}
   },
 
-  data() {
-    return {
-      baseURL: process.env.BASE_URL,
-      post: {}
+  computed: {
+    meta() {
+      return {
+        title: this.post.metadata.title || this.post.title,
+        description: this.post.metadata.description || this.post.excerpt || '',
+        image: this.post.img,
+        keywords: this.post.metadata.keywords,
+        createdAt: this.post.created_at,
+        updatedAt: this.post.updated_at,
+        tags: this.post.tags.map(obj => obj.tag),
+        url: process.env.BASE_URL+this.post.url,
+      }
     }
   },
 
@@ -86,12 +70,19 @@ export default {
       replaceBreadcrumb: 'replace',
       emptyBreadcrumbs: 'empty'
     }),
+
+    categoryPath() {
+      let path = this.$route.path.split('/').filter(e => e !== '')
+      path.splice(-2)
+
+      return path.join('/')
+    }
   },
 
-  async created() {
+  created() {
     this.setBreadcrumbs([
       { text: 'Главная', to: { path: '/' }},
-      { text: 'Новости', to: { path: '/posts' }},
+      { text: this.post.category_name, to: { path: '/'+this.categoryPath()  }},
       { text: ':user' } // placeholder
     ]);
 

@@ -12,9 +12,10 @@
             <button><i class="fas fa-search"></i></button>
           </form>
           <template v-if="search && list.length">
-              <ul>
-                <li v-for="item in list">
-                  <nuxt-link :to="item.url">{{ item.title }}</nuxt-link>
+              <ul class="search-list">
+                <li id="" v-for="item in list" @click="$router.push({path: item.url})">
+                  {{ item.title }}
+<!--                  <nuxt-link :to="item.url" aria-selected="false">{{ item.title }}</nuxt-link>-->
                 </li>
               </ul>
           </template>
@@ -70,6 +71,18 @@
 
 <style>
 
+/*.search-list li[aria-selected="true"] {*/
+/*  background: #e4e7e8;*/
+/*}*/
+
+
+.search-model ul li {
+  cursor: pointer;
+}
+.search-model ul li:hover {
+  background: #e4e7e8;
+}
+
 .header-main {
   gap: 30px;
 }
@@ -123,9 +136,6 @@
   padding: 10px;
 }
 
-.search-model ul li:hover {
-  background: #e4e7e8;
-}
 
 .search-model .form-search {
   background: #ecf0f3;

@@ -9,6 +9,20 @@ export default function({app, route, $axios, $auth, redirect, store, error: nuxt
     const url = route?.path.split('/')
     // const url = app.context.from.path.split('/')
 
+    // switch (error.response.status) {
+    //   case 401: // Not logged in
+    //   case 419: // Session expired
+    //   case 503: // Down for maintenance
+    //     // Bounce the user to the login screen with a redirect back
+    //     window.location.reload();
+    //     break;
+    //   case 500:
+    //     alert('Oops, something went wrong!  The team have been notified.');
+    //     break;
+    //   default:
+    //     // Allow individual requests to handle other errors
+    //     return Promise.reject(error);
+
     if (code === 404) {
       nuxtError({
         statusCode: error.response.status,

@@ -48,7 +48,7 @@ export default {
   async asyncData({$api,store}) {
     try {
       const tags = await $api.adminTags.index(1)
-      await store.commit('tags/setTags', tags)
+      await store.commit('admin/tags/setTags', tags)
 
       return {tags}
     } catch (err) {console.log(err)}

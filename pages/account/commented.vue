@@ -24,7 +24,9 @@
           </div>
         </div>
       </div>
-      <infinite-loading v-if="posts.length && posts.length >= 10" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+      <client-only>
+        <infinite-loading v-if="posts.length && posts.length >= 10" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+      </client-only>
     </template>
     <div v-else>Нет записей</div>
 

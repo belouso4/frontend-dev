@@ -1,5 +1,6 @@
 export const state = () => ({
   categories: [],
+  title_main: '',
 })
 
 export const actions = {
@@ -42,8 +43,13 @@ export const mutations = {
   setCategories( state, categories) {
     state.categories = categories
   },
+
+  setTitle( state, data) {
+    state.title_main = data
+  },
 }
 
 export const getters = {
   getCategories: state => state.categories,
+  getTitle: state => state.title_main,
 }

@@ -3,7 +3,7 @@
     <template v-if="posts?.length">
       <PostCard v-for="post in posts" :post="post" :key="'post-'+post.id"/>
       <client-only>
-        <infinite-loading v-if="posts?.length" spinner="spiral" @infinite="infiniteScroll">
+        <infinite-loading v-if="posts?.length && posts.length >= 10" spinner="spiral" @infinite="infiniteScroll">
           <div slot="no-results">Результатов больше нет :(</div>
         </infinite-loading>
       </client-only>
@@ -11,17 +11,13 @@
     <p v-else>Нет постов</p>
   </div>
 </template>
-
 <script>
-import {mapGetters, mapMutations} from 'vuex';
+
+import {mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "posts",
   layout: 'AppMain',
-
-  validate({store, route }) {
-    return store.dispatch('core/validCategory', {path: route.path})
-  },
 
   head() {
     return {
@@ -29,14 +25,12 @@ export default {
     }
   },
 
-  async asyncData({ $api, route, store }) {
+  async asyncData({ $api, params, store }) {
     try {
-      const id = await store.dispatch('core/validCategory', {path: route.path})
-      const posts = await $api.posts.index(id, 1)
-
+      const posts = await $api.tag.show(params.slug, 1)
       store.commit('core/setTitle', posts.title_main)
 
-      return {posts: posts.data, page: 1, idCategory: id}
+      return {posts: posts.data, page: 1}
     } catch (err) {console.log(err)}
   },
 
@@ -52,16 +46,20 @@ export default {
     }),
 
     async infiniteScroll($state) {
-      this.page++;
-      const posts = await this.$api.posts.index(this.idCategory, this.page)
+      try {
+        this.page++;
 
-      this.posts.push(...posts.data)
+        const slug = this.$route.params.slug
+        const posts = await this.$api.tag.show(slug, this.page)
 
-      if(this.posts.length !== posts.meta.total) {
-        $state.loaded();
-      } else {
-        $state.complete()
-      }
+        this.posts.push(...posts.data)
+
+        if(this.posts.length !== posts.meta.total) {
+          $state.loaded();
+        } else {
+          $state.complete()
+        }
+      } catch (err) {}
     },
   },
 

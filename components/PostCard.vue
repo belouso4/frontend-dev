@@ -1,8 +1,12 @@
 <template>
   <div class="news-item">
-    <LazyImage class="my-class" :src="post.img" alt="something" />
+    <client-only>
+      <LazyImage class="my-class" :src="post.img" alt="something" />
+    </client-only>
+<!--    <LazyImage class="my-class" :src="post.img" alt="something" />-->
+<!--    <img class="my-class" :src="post.img" alt="something" />-->
     <div class="news-item-area">
-      <nuxt-link :to="path + 'article/' + post.slug">
+      <nuxt-link :to="post.url">
         <h3 class="news-item-area_title">
           {{ post.title }}
         </h3>
@@ -32,11 +36,11 @@
 export default {
   name: "PostCard",
   props: ['post'],
-  data() {
-    return {
-      path: this.$route.path.endsWith('/') ? this.$route.path : this.$route.path + '/'
-    }
-  },
+  // data() {
+  //   return {
+  //     path: this.$route.path.endsWith('/') ? this.$route.path : this.$route.path + '/'
+  //   }
+  // },
 
   methods:{
     async like(id) {
@@ -49,10 +53,22 @@ export default {
     },
   },
 
-
 }
 </script>
 
-<style scoped>
+<style>
+.news-item {
+  height: 260px;
+}
 
+.news-item img {
+  height: 100%;
+  object-fit: cover;
+  object-position: left;
+}
+
+.news-item .tags a:hover {
+  box-shadow: -3px -3px 7px #ffffff,
+  3px 3px 5px #ceced1;
+}
 </style>

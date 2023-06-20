@@ -12,7 +12,9 @@
         </a>
       </div>
     </div>
+    <client-only>
     <infinite-loading v-if="posts.length && posts.length >= 10" spinner="spiral" @infinite="infiniteScroll"></infinite-loading>
+    </client-only>
   </div>
 </template>
 

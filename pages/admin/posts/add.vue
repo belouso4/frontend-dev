@@ -256,12 +256,21 @@ export default {
 
       this.debounce = setTimeout(async () => {
         try {
-          let tags = await this.$api.adminTags.search({search: this.tag})
+          let tags = (await this.$api.adminTags.search({search: this.tag})).data
 
           this.autocompleteItems = tags.filter(a => {
-            let toLowerCase =  a.tag.toLowerCase()
+            let tag = this.tag.toLowerCase()
+            let search = false
 
-            return toLowerCase.indexOf(this.tag.toLowerCase()) !== -1;
+            if (a.tag.toLowerCase().indexOf(tag) !== -1 ) {
+              search = true
+            }
+
+            if (a.slug.toLowerCase().indexOf(tag) !== -1 ) {
+              search = true
+            }
+
+            return search;
           }).map(a => ({text: a.tag, id: a.id}));
 
         } catch (err) {console.log(err)}
