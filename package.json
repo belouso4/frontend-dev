@@ -35,5 +35,8 @@
     "vuelidate-error-extractor": "^2.4.1",
     "webpack": "^4.46.0",
     "zxcvbn": "^4.4.2"
+  },
+  "devDependencies": {
+    "nuxt-lazysizes": "^1.4.3"
   }
 }

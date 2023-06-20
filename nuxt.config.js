@@ -164,7 +164,7 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
-
+    'nuxt-lazysizes'
   ],
 
   render: {
@@ -211,13 +211,6 @@ export default {
           ]
         ]
       },
-    },
-    extend (config, { isDev, isClient, loaders: { vue } }) {
-      vue.transformAssetUrls.LazyImage = ["src"];
-      // if (isClient) {
-      //   vue.transformAssetUrls.img = ['data-src', 'src']
-      //   vue.transformAssetUrls.source = ['data-srcset', 'srcset']
-      // }
     },
     transpile: [
       'defu',

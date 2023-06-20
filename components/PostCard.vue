@@ -1,10 +1,6 @@
 <template>
   <div class="news-item">
-    <client-only>
-      <LazyImage class="my-class" :src="post.img" alt="something" />
-    </client-only>
-<!--    <LazyImage class="my-class" :src="post.img" alt="something" />-->
-<!--    <img class="my-class" :src="post.img" alt="something" />-->
+    <img :data-src="post.img" class="lazyload" />
     <div class="news-item-area">
       <nuxt-link :to="post.url">
         <h3 class="news-item-area_title">
