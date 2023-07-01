@@ -61,6 +61,7 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/auth-next',
     '@nuxtjs/dotenv',
+    "vue2-editor/nuxt"
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -79,6 +80,7 @@ export default {
     { src: '~/plugins/vue-infinite-loading.js', ssr: false},
     { src: '~/plugins/vue-tags-input.js', ssr: false },
     {src:'~/plugins/vue-quill-editor.js',ssr: false},
+    '~/plugins/postscribe.client.js',
     // {src:'~/plugins/instantsearch.js',ssr: false},
   ],
 

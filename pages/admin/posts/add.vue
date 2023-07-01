@@ -18,7 +18,6 @@
           <div class="col-md-8">
             <div class="card card-primary">
                 <div class="card-body">
-
                     <form-group :validator="$v.form.title" label="Заголовок">
                       <input v-model="form.title" type="text"
                              :class="['form-control', {'is-invalid': $v.form.title.$error}]"
@@ -27,7 +26,7 @@
                     </form-group>
 
                   <form-group :validator="$v.form.desc" label="Описание">
-                    <client-only>
+                    <client-only  placeholder="loading...">
                       <text-editor v-model="form.desc"/>
                     </client-only>
                   </form-group>
@@ -88,7 +87,11 @@
                     </div>
                   </div>
                   <form-group label="Категории">
-                    <Options :inputShow="false" :list.sync="categories" :name.sync="categoryName" :fetch="fetchCategories">
+                    <Options :inputShow="false"
+                             :list.sync="categories"
+                             :name.sync="categoryName"
+                             :fetch="fetchCategories"
+                             :status="!!categories.length">
                       <li v-for="category in categories"
                           @click="setCategory(category)"
                           class="select2-results__option"
@@ -172,6 +175,7 @@ export default {
       tag: '',
       loading: false,
       categories: [],
+      categoryName: '',
       form:{
         title: '',
         desc: '',
@@ -216,13 +220,6 @@ export default {
 
   watch:{
     'tag': 'initItems',
-  },
-
-  computed: {
-    categoryName() {
-      let index = this.categories.findIndex(e => e.id === this.form.category_id)
-      return this.categories[index]?.name
-    }
   },
 
   methods: {
@@ -278,11 +275,14 @@ export default {
     },
 
     async fetchCategories() {
-      this.categories = await this.$api.adminCategories.index({fetch: 'all'});
+      try {
+        this.categories = await this.$api.adminCategories.index({fetch: 'all'});
+      } catch (err) {console.log(err)}
     },
 
     setCategory(category) {
       this.form.category_id = category.id
+      this.categoryName = category.name
     },
 
     formData(data) {

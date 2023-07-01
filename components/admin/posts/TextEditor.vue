@@ -1,24 +1,44 @@
 <template>
-  <quill-editor
-    ref="editor"
-    :options="editorOption"
-    :value="value"
-    @change="onEditorChange"
-  />
+    <vue-editor
+      :editorOptions="editorOption"
+      placeholder="Напишите что-нибудь..."
+      ref="editor"
+      v-model="content"
+      @text-change="$emit('input', content)"/>
+
+<!--  <quill-editor-->
+<!--    ref="editor"-->
+<!--    :options="editorOption"-->
+<!--    :value="value"-->
+<!--    @change="onEditorChange"-->
+<!--  />-->
 </template>
 
 <script>
+// let VueEditor
+
+// if (process.client) {
+//   VueEditor = require('vue2-editor').VueEditor
+//   Quill = require('vue2-editor').Quill
+// }
+
+import Counter from "../../Counter.vue";
+
 export default {
   name: "TextEditor",
+  components: {Counter},
   props: ['value'],
-
+  // components: {VueEditor},
   data() {
     return {
+      company: 'po0099',
       editor: null,
+      content: '',
       editorOption: {
         placeholder: 'Введите описание...',
         theme: 'snow',
         modules: {
+          imageResize: {modules: ['Resize', 'DisplaySize', 'Toolbar' ]},
           imageUploader: {
              upload: async (file) => {
                try {
@@ -56,7 +76,12 @@ export default {
     },
     getImgUrls(delta) {
       return delta.ops.filter(i => i.insert && i.insert.image).map(i => i.insert.image);
-    }
+    },
+    // addHtml() {
+    //   this.quillEditor.updateContents([
+    //     { insert: { signature: 1 } },
+    //   ]);
+    // }
   },
 
   computed: {
@@ -66,6 +91,7 @@ export default {
   },
 
   mounted() {
+    this.content = this.value;
     this.quillEditor.on('text-change', (delta, oldContents, source) => {
       if (source !== 'user') return;
 
@@ -82,7 +108,6 @@ export default {
         this.$api.adminPosts.deleteImage({delete_file: file_name})
       }
     });
-
   }
 
 }

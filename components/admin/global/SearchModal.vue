@@ -151,7 +151,8 @@ export default {
     '$store.state.ui.searchModal': function (value) {
       if (value) {
         var self = this;
-        setTimeout(() => {self.$refs.searchInput.focus()},100)
+        // setTimeout(() => {self.$refs.searchInput.focus()},100)
+        this.$nextTick(() => self.$refs.searchInput.focus())
       }
     }
   },
