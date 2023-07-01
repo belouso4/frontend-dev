@@ -22,11 +22,8 @@
 //   Quill = require('vue2-editor').Quill
 // }
 
-import Counter from "../../Counter.vue";
-
 export default {
   name: "TextEditor",
-  components: {Counter},
   props: ['value'],
   // components: {VueEditor},
   data() {
