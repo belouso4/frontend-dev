@@ -158,7 +158,6 @@ export default {
 
               this.$api.adminTags.update(idTag,{[input]: elem})
                 .then(async (res) => {
-                  console.log(res)
                   this.$store.commit('admin/tags/updateTag', res)
                   this.statusTag()
                 })
@@ -211,7 +210,7 @@ export default {
               page: 1,
               search: this.search,
             }).then(response => {
-              console.log(response)
+
             }).catch(() => {
               console.warn('Oh. Something went wrong')
             }).finally(() => {

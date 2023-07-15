@@ -31,7 +31,7 @@
       </div>
     </section>
 
-    <nuxt v-else />
+    <nuxt keep-alive v-else />
 
     <AppFooter v-show="showFooter"/>
 
@@ -68,6 +68,7 @@
               'category-subCategory-article-slug',
               'category-article-slug',
               'tag-slug',
+              'articles',
             ];
 
             return pages.indexOf( this.$route.name ) != -1;

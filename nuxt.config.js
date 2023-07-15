@@ -159,7 +159,6 @@ export default {
     path: '/admin',
     handler: '~/server-middleware/swith-spa.js'
   }],
-  // serverMiddleware: ['~/server-middleware/swith-spa.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -172,32 +171,6 @@ export default {
   render: {
     fallback: false
   },
-
-  // router: {
-  //   linkExactActiveClass: 'active',
-  //   extendRoutes(routes, resolve) {
-  //     routes.push({
-  //       name: "custom",
-  //       path: "/admin/:pkg(.*)",
-  //       component: resolve(__dirname, "pages/admin/404k.vue"),
-  //     });
-  //   },
-  // },
-
-  // hooks: {
-  //   render: {
-  //     errorMiddleware(app) {
-  //       app.use((error, _req, _res, next) => {
-  //         if (error) {
-  //           console.log("Logged in errorMiddleware", error);
-  //         }
-  //
-  //         next(error);
-  //       });
-  //     },
-  //   },
-  // },
-
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

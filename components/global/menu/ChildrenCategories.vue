@@ -1,6 +1,6 @@
 <template>
   <li>
-    <nuxt-link :to="nestedUrl">{{ categories.name }}</nuxt-link>
+    <nuxt-link no-prefetch :to="nestedUrl">{{ categories.name }}</nuxt-link>
     <ul v-if="categories.children.length" class="references-menu right">
       <children-categories v-for="children in categories.children" :url="nestedUrl" :key="children.id" :categories="children"/>
     </ul>

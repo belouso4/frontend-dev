@@ -14,6 +14,9 @@
             <li>
               <nuxt-link to="/account/profile">Профиль</nuxt-link>
             </li>
+            <li v-if="!$auth.user.email_verified_at">
+              <nuxt-link to="/account/verify">Подтвердить Email</nuxt-link>
+            </li>
             <li>
               <nuxt-link to="/account/liked">Понравившиеся</nuxt-link>
             </li>
@@ -94,7 +97,11 @@ aside li a.nuxt-link-active {
 
 .user-avatar img {
   object-fit: cover;
-  width: 100%;
+
+  width: 245px;
+  height: 245px;
+  margin: 0 auto 40px;
+  border-radius: 50%;
 }
 
 .user-avatar .overlay-avatar {
@@ -120,7 +127,7 @@ aside li a.nuxt-link-active {
 }
 
 .form-group {
-  width: 400px;
+  max-width: 400px;
   margin: 0 auto;
 }
 
@@ -132,12 +139,27 @@ aside li a.nuxt-link-active {
   width: 100%;
   padding: 7px;
   margin-top: 5px;
+
+  box-shadow: inset -3px -3px 7px #ffffff, inset 3px 3px 5px #ceced1;
+  background: #ecf0f3;
+  border-radius: 10px;
+  border: none;
 }
 
 .form-group button {
   display: block;
   margin-left: auto;
-  padding: 7px;
+  padding: 7px 15px;
   cursor: pointer;
+
+  transition: width 1s ease-in, height 1s ease-in;
+  background: #ecf0f3;
+  border-radius: 10px;
+  box-shadow: -3px -3px 7px #ffffff, 3px 3px 5px #ceced1;
+  border: none;
+}
+
+.form-group button:hover {
+  box-shadow: inset -3px -3px 7px #ffffff, inset 3px 3px 5px #ceced1;
 }
 </style>

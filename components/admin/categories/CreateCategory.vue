@@ -35,7 +35,11 @@
             </div>
           </div>
           <form-group v-if="+status === 1" label="Категории">
-            <Options :inputShow="false" :list.sync="categories" :name="categoryName" :fetch="fetchCategories">
+            <Options :inputShow="false"
+                     :list.sync="categories"
+                     :name.sync="categoryName"
+                     :fetch="fetchCategories"
+                     :status="!!categories.length">
               <li v-for="category in categories"
                   @click="setCategory(category)"
                   class="select2-results__option"
@@ -43,6 +47,7 @@
                 {{ category.name }}
               </li>
             </Options>
+
           </form-group>
 
         </div>
@@ -72,6 +77,7 @@ export default {
       loadBtn: false,
       status: 0,
       categories: [],
+      categoryName: '',
       form: {
         name: 'новые гаджеты',
         slug: '',
@@ -110,11 +116,6 @@ export default {
     ...mapGetters({
       loading: 'categories/loading',
     }),
-
-    categoryName() {
-      let index = this.categories.findIndex(e => e.id === this.form.parent_id)
-      return this.categories[index]?.name
-    }
   },
 
   methods: {
@@ -155,6 +156,7 @@ export default {
 
     setCategory(category) {
       this.form.parent_id = category.id
+      this.categoryName = category.name
     }
   }
 }

@@ -398,7 +398,6 @@ export default {
   },
 
   beforeRouteLeave (to, from , next) {
-    console.log(this.form.desc ,'===', this.copy.desc)
     if ((this.form.title !== this.copy.title || this.form.desc !== this.copy.desc || this.form.img !== this.copy.img) && to.name !== 'admin-posts-slug') {
       if (window.confirm('Вы действительно хотите уйти? у вас есть несохраненные изменения!')) {
         next()

@@ -1,7 +1,6 @@
 <template>
     <vue-editor
       :editorOptions="editorOption"
-      placeholder="Напишите что-нибудь..."
       ref="editor"
       v-model="content"
       @text-change="$emit('input', content)"/>
@@ -28,7 +27,6 @@ export default {
   // components: {VueEditor},
   data() {
     return {
-      company: 'po0099',
       editor: null,
       content: '',
       editorOption: {

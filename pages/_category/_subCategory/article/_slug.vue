@@ -1,8 +1,7 @@
 <template>
-  <div class="wrapper-post">
+  <div class="wrapper-post single-page">
     <h1>{{ post.title }}</h1>
-    <img height="560" :src="post.img" alt="">
-    <!--          <p v-if="post.excerpt != 'null'">{{ post.excerpt }}</p>-->
+    <img :src="post.img" class="img-preview">
     <div class="news-item-area_desc" v-html="post.desc"></div>
     <Comments :comments="comments"/>
   </div>

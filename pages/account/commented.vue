@@ -14,7 +14,7 @@
         </div>
         <div class="comments">
           <div class="comment-item d-flex">
-            <img :src="$config.API_URL_IMG + '/' + post.comment.user.avatar" alt="">
+            <img :src="post.comment.user.avatar.small" alt="">
             <div class="comment-item_details">
               <nuxt-link :to="post.url+'?comment_id='+post.comment.id+'#comment-'+post.comment.id">
                 <p>{{ post.comment.user.name }}</p>

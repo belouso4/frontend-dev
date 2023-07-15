@@ -50,44 +50,10 @@
 <!--                <ais-pagination />-->
               </template>
 
-
               </div>
           </ais-autocomplete>
         </ais-instant-search>
 
-<!--        <form @submit.prevent="searchData()" class="w-100 mb-3">-->
-<!--          <div class="input-group">-->
-<!--            <div class="input-group-prepend">-->
-<!--              <span class="input-group-text">-->
-<!--                <i v-if="!loading" class="fa fa-search"></i>-->
-<!--                <Loader v-else/>-->
-<!--              </span>-->
-<!--            </div>-->
-<!--            <input ref="searchInput" v-model.trim="search" @keyup="searchData()"-->
-<!--                   type="search" class="form-control form-control-lg" placeholder="Введите ключевые слова здесь">-->
-<!--          </div>-->
-<!--        </form>-->
-<!--        <div v-if="search !== '' && Object.keys(data).length">-->
-<!--          <div v-for="(items, key) in data">-->
-<!--            <h5>{{key === 'posts' ? 'Посты' : 'Пользователи'}}</h5>-->
-<!--            <ul class="custom-list">-->
-<!--              <li v-for="item in items" class="d-flex align-items-center" @click="pathPush(key, item.id)">-->
-<!--                <span>-->
-<!--                  <div class="avatar">-->
-<!--                    <img :src="$config.API_URL_IMG + '/' +item.img" alt="">-->
-<!--                  </div>-->
-<!--                </span>-->
-<!--                  <div v-if="key === 'users'" class="d-flex flex-column">-->
-<!--                    <span>{{item.title}}</span>-->
-<!--                    <span>{{item.email}}</span>-->
-<!--                  </div>-->
-<!--                  <span v-else>{{item.title}}</span>-->
-<!--              </li>-->
-<!--            </ul>-->
-<!--          </div>-->
-<!--        </div>-->
-
-<!--        <div v-else class="start-screen">{{notResult}}</div>-->
       </div>
     </template>
   </modal>
@@ -105,13 +71,6 @@ export default {
   name: "UsersListModal",
   components: {Modal},
 
-  // mixins: [
-  //   createServerRootMixin({
-  //     searchClient,
-  //     indexName: 'admin_main_search',
-  //   }),
-  // ],
-
   data() {
     return {
       loading: false,
@@ -124,27 +83,6 @@ export default {
         process.env.MEILISEARCH_KEY,
       ),
     }
-  },
-
-  async created() {
-    const client = new MeiliSearch({
-      host: process.env.MEILISEARCH_HOST,
-      apiKey: process.env.MEILISEARCH_KEY,
-    })
-    // console.log('this.instantMeiliSearch', await client.index('posts').search('499'))
-    // admin_main_search
-    // console.log('this.instantMeiliSearch', await client.multiSearch({queries: [
-    //     {
-    //       indexUid: 'posts',
-    //       q: 'alice',
-    //       limit: 5,
-    //     },
-    //     {
-    //       indexUid: 'users',
-    //       q: 'jh',
-    //     },
-    //   ]})
-    // )
   },
 
   watch: {

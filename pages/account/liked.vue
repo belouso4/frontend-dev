@@ -40,7 +40,6 @@ export default {
 
         this.posts.map((item) => {
           if (+item.id === +id) {
-            console.log(item)
             item.likes_count = like.like_count
             item.like_my = like.like_my
           }

@@ -309,7 +309,6 @@ export default {
   },
 
   beforeRouteLeave (to, from , next) {
-    console.log(this.form.desc ,'===', this.copy.desc)
     if ((this.form.name !== this.copy.name
         || this.form.email !== this.copy.email
         || this.form.avatar !== this.copy.avatar)

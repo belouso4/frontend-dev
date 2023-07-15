@@ -89,13 +89,16 @@ section.content, section.content-header {
 }
 
 .btn-with-loader {
-  max-width: 100px;
-  width: 100%;
-  height: 38px;
+  position: relative;
 }
 
 .btn-with-loader img {
-  margin: 0 auto;
+  object-fit: contain;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
 }
 
 .form-group.error input {
@@ -191,7 +194,7 @@ textarea {
   border-color: #ced4da;
 }
 
-.form-group i {
+.upload-overlay i {
   font-size: 50px;
   display: block;
 }

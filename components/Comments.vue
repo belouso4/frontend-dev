@@ -11,7 +11,7 @@
       <div v-for="comment in comments.comments" :key="'comment-'+comment.id" class="comment">
         <div :id="'comment-'+comment.id" class="main-comment">
           <div class="avatar">
-            <img :src="comment.user.avatar" alt="">
+            <img :src="comment.user.avatar.small" alt="">
           </div>
           <div class="comment-header">
             {{ comment.user.name }} • {{ comment.created_at }}
@@ -37,7 +37,7 @@
           <div :key="'reply-'+reply.id" :id="'comment-'+reply.id" v-if="repliesShow.length > 0 && repliesShow.indexOf(comment.id) !== -1"
                v-for="reply in comment.replies" class="comment">
             <div class="avatar">
-              <img :src="comment.user.avatar" alt="">
+              <img :src="comment.user.avatar.small" alt="">
             </div>
             <div class="comment-header">
               {{ reply.user.name }} • {{ reply.created_at }}
@@ -153,7 +153,7 @@ export default {
       this.repliesShow.push(id)
     },
     like(comment) {
-      this.$api.comments.likeComment(comment.id).then(res => console.log(res))
+      this.$api.comments.likeComment(comment.id)
       if(!comment.parent_id) {
         this.comments.comments.filter(a => {
           if(a.id === comment.id) {
@@ -207,6 +207,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 30px;
 }
 
 .comments-body {

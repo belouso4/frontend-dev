@@ -10,10 +10,12 @@ const scrollBehavior = (_to, _from, _savedPosition) => {
       highlightComment(element)
     }
     window.scrollTo({ top, behavior: 'smooth' });
-  }
+  } else {
+    if (_savedPosition) {
+      setTimeout(() => window.scrollTo({ top: _savedPosition.y }), 100)
+    }
 
-  if (_savedPosition) {
-    setTimeout(() => window.scrollTo({ top: _savedPosition.y, behavior: 'smooth' }), 100)
+    return _savedPosition || { x: 0, y: 0 }
   }
 };
 

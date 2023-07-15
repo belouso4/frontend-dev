@@ -20,7 +20,7 @@
               </ul>
           </template>
         </div>
-        <nuxt-link v-if="$auth.loggedIn" to="/account/profile" class="cabinet-auth">
+        <nuxt-link v-if="$auth.loggedIn" to="/account/profile" no-prefetch class="cabinet-auth">
           <img :src="$auth.user.avatar.small" alt="">
           <span>{{ $auth.user.name }}</span>
         </nuxt-link>
@@ -101,6 +101,7 @@
   display: flex;
   align-items: center;
   justify-content: right;
+  gap: 12px;
 }
 
 .cabinet-auth span{
@@ -114,7 +115,6 @@
   box-shadow: 0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23)!important;
   object-fit: cover;
   width: 2.1rem;
-  margin-right: 12px;
   border-radius: 50%;
 }
 
@@ -141,7 +141,7 @@
   background: #ecf0f3;
   border-radius: 10px;
   box-shadow: -3px -3px 7px #ffffff, 3px 3px 5px #ceced1;
-  min-width: 500px;
+  max-width: 500px;
   display: flex;
 }
 
@@ -185,7 +185,7 @@
   background: #fff;
   box-shadow: 0 1px 6px rgba(43,42,51,.1);
   max-width: 25rem;
-  top: calc(100% + 4px);
+  top: calc(100% + 12px);
   width: max-content;
   z-index: 500;
   transition: all .2s ease;
@@ -230,5 +230,30 @@ nav li {
   cursor: pointer;
 }
 
+@media screen and (max-width: 992px) {
+  .cabinet-auth span {
+    display: none;
+  }
 
+  .header-main > * {
+     max-width: none;
+     width: fit-content;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header-main {
+    flex-wrap: wrap;
+  }
+
+  .header-main .search-model {
+    order: 1;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .navigation {
+    display: none;
+  }
+}
 </style>

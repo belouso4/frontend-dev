@@ -25,14 +25,6 @@ export default {
   created() {
 
   },
-  watch: {
-    '$store.state.toaster.toaster': function (val, val2) {
-      console.log(val, val2)
-      // if (!val) {
-      //   this.showAnimate = false
-      // }
-    }
-  },
   methods: {
     onAfterEnter(el) {
       this.showAnimate = true

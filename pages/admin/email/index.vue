@@ -61,10 +61,10 @@
                   <input v-model="form.subject" class="form-control" placeholder="Subject:">
                 </form-group>
                 <form-group :validator="$v.form.message">
-                  <text-editor v-model="form.message" />
-<!--                    <textarea  id="compose-textarea" class="form-control" style="height: 300px">-->
 
-<!--                    </textarea>-->
+                    <client-only>
+                      <text-editor v-model="form.message" />
+                    </client-only>
 
                 </form-group>
                 <form-group :validator="$v.form.attachment">
@@ -103,7 +103,7 @@
 
 <script>
 import { required, minLength, maxLength, email, requiredIf} from 'vuelidate/lib/validators'
-import textEditor from "../../../components/admin/mail/TextEditor";
+import TextEditor from "../../../components/admin/mail/TextEditor.vue";
 
 const filSize = (files) => {
   let size = true
@@ -119,7 +119,7 @@ const filSize = (files) => {
 
 export default {
   name: "compose",
-  components: {textEditor},
+  components: {TextEditor},
 
   layout: 'Admin',
   data() {
@@ -178,7 +178,6 @@ export default {
         this.loading = true
 
         let email = await this.$api.adminMail.send(this.formData(this.form))
-        console.log('email', email)
         await this.$nuxt.refresh()
 
         this.$v.$reset()

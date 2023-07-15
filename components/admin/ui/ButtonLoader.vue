@@ -1,9 +1,9 @@
 <template>
-  <button @click="fetch" :disabled="loading" type="submit" class="btn btn-block btn-secondary btn-with-loader ml-auto">
-    <span v-if="!loading">
+  <button @click="fetch" :disabled="loading" type="submit" class="btn btn-secondary float-right btn-with-loader">
+    <span :class="[{'opacity': loading}]">
       <slot/>
     </span>
-    <Loader width="20px" v-else/>
+    <Loader width="20px" v-if="loading"/>
   </button>
 </template>
 
@@ -24,5 +24,8 @@ export default {
 </script>
 
 <style scoped>
+.opacity {
+  opacity: 0;
+}
 
 </style>

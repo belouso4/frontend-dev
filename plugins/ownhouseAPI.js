@@ -16,6 +16,7 @@ import AdminGeneralAPI from "../api/admin/general.js";
 import AdminMailAPI from "../api/admin/mail.js";
 import AdminCategoriesAPI from "../api/admin/categories.js";
 import AdminOtherAPI from "../api/admin/other.js";
+import AdminMainAPI from "../api/admin/main.js";
 
 export default function( { $axios }, inject ){
 
@@ -40,6 +41,7 @@ export default function( { $axios }, inject ){
     adminMail: AdminMailAPI( $axios ),
     adminCategories: AdminCategoriesAPI( $axios ),
     adminOther: AdminOtherAPI( $axios ),
+    adminMain: AdminMainAPI( $axios ),
   }
 
   inject('api', api);

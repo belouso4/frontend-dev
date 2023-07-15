@@ -27,9 +27,6 @@ import Modal from "../global/Modal";
 export default {
   name: "WarningModal",
   components: {Modal},
-  created() {
-    console.log(this.show)
-  },
   props: {
     show: Boolean,
     action: Function,

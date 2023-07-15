@@ -4,6 +4,10 @@ export default $axios => ({
       return await $axios.$get('/v1/category/' + id +'/articles?page='+page);
   },
 
+  async articles(page = null) {
+    return await $axios.$get('/v1/articles', {params: {page}});
+  },
+
   // async index(page) {
   //     return await $axios.$get('/v1/posts?page='+page);
   // },

@@ -70,9 +70,17 @@
 <style>
 #pagetop {
   position: fixed;
-  color: #000;
+  color: #8f8f8f;
   font-size: 20px;
   bottom: 50px;
+  border-color: #cecece;
   right: 50px;
+  border-radius: 50%;
+  /* padding: 20px; */
+  text-align: center;
+  line-height: 14px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
 }
 </style>

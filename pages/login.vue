@@ -1,7 +1,7 @@
 <template>
   <section class="main-section auth-section">
     <div class="container">
-      <form action="" class="form-auth" @submit.prevent="login">
+      <form class="form-auth" @submit.prevent="login">
         <h1>Авторизация</h1>
         <p v-if="typeof errorMsg === 'string'">{{ errorMsg }}</p>
         <p v-else v-for="error in errorMsg">{{ error[0] }}</p>
@@ -18,10 +18,7 @@
 
         <div class="form-auth_footer d-flex align-items-center">
           <nuxt-link to="/forgot-password">Забыли пароль?</nuxt-link>
-          <button>
-            <span v-if="!loading">Войти</span>
-            <Loader style="display: inline-block;" v-else width="20px"/>
-          </button>
+          <button-loader :loading="loading">Войти</button-loader>
         </div>
 
       </form>
@@ -31,10 +28,12 @@
 
 <script>
 import {email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
+import ButtonLoader from "../components/Ui/ButtonLoader.vue";
 
 export default {
   middleware: 'guest',
   layout: 'AppMain',
+  components: {ButtonLoader},
   data(){
     return {
       loading: false,

@@ -145,7 +145,7 @@
 
           <li class="nav-item">
             <nuxt-link to="/admin/other" class="nav-link">
-<!--              <i class="nav-icon far fa-envelope"></i>-->
+              <i class="nav-icon fa-solid fa-box-archive"></i>
               <p>
                 Другое
               </p>

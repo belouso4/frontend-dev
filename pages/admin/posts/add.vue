@@ -224,7 +224,6 @@ export default {
 
   methods: {
     async sendBtn(e) {
-      console.log('qwfqf')
       this.$v.$touch()
 
       if (!this.$v.$invalid) {

@@ -37,8 +37,8 @@
             </div>
           </div>
 
-          <div class="card-body p-0">
-            <table  class="table projects">
+          <div class="card-body table-responsive p-0">
+            <table  class="table table-head-fixed text-nowrap projects">
               <thead>
               <tr>
                 <th style="width: 1%">
@@ -102,7 +102,7 @@
             </table>
           </div>
           <!-- /.card-body -->
-          <div class="card-footer note-float d-flex align-items-center justify-content-between">
+          <div class="card-footer note-float d-flex align-items-center justify-content-between flex-wrap">
             <div v-can="'post.delete'">
               <button v-if="checkbox.length" @click="deleteAllPost()"  class="btn btn-outline-dark">
                 <i class="fas fa-trash"></i>
@@ -166,10 +166,6 @@ export default {
     }
   },
 
-  created() {
-    console.log(this.posts)
-  },
-
   methods: {
     async getResults(page) {
       this.loading = true
@@ -207,7 +203,6 @@ export default {
 
           this.debounce = setTimeout( () => {
             this.$api.adminPosts.search({search: this.search}).then(response => {
-              console.log(response)
               this.posts = response
             }).catch(() => {
               console.warn('Oh. Something went wrong')
@@ -264,5 +259,22 @@ tr {
   -webkit-line-clamp: 1; /* number of lines to show */
   line-clamp: 1;
   -webkit-box-orient: vertical;
+}
+
+/*320px-576px*/
+@media screen and (max-width: 576px) {
+
+.pagination {
+  order: -1;
+  width: 100%;
+  margin-bottom: 20px!important;
+  /* margin: 0 auto; */
+  display: flex;
+  justify-content: center;
+}
+
+  .card-header .card-title {
+    margin-bottom: 15px;
+  }
 }
 </style>

@@ -48,10 +48,6 @@
       // layout: 'App',
       props: ['error'],
       layout: (context) => context.route.path.split('/').includes('admin') ? 'Admin' : 'AppMain',
-      created() {
-// console.log(this.$route.path.indexOf('/admin') > -1)
-
-      }
 
     }
 </script>

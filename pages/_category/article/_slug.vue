@@ -1,14 +1,13 @@
 <template>
-  <div class="wrapper-post">
+  <div class="wrapper-post single-page">
     <h1>{{ post.title }}</h1>
     <span>Опубликовано: October 11, 2021</span>
-    <img height="560" :src="post.img" alt="">
+    <img :src="post.img" class="img-preview">
     <!--          <p v-if="post.excerpt != 'null'">{{ post.excerpt }}</p>-->
     <div class="news-item-area_desc" v-html="post.desc"></div>
     <!--          <client-only>-->
     <Comments :comments="comments"/>
     <!--          </client-only>-->
-
   </div>
 </template>
 

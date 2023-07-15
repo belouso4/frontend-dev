@@ -39,8 +39,6 @@
 
 .news-item,
 .news-item img,
-.news-item-area,
-.news-item-area_elem a,
 .section-playlist,
 .wrapper-best-films {
   background: #ecf0f3;
@@ -49,10 +47,10 @@
   3px 3px 5px #ceced1;
 }
 
-.news-item-area_elem a:hover,
 .best-films-item,
 .author-section .social-icon a:hover,
 .wrapper-mymusic,
+.tags > a,
 .search button:hover {
   box-shadow: inset -3px -3px 7px #ffffff,
   inset 3px 3px 5px #ceced1;
@@ -84,21 +82,23 @@
 
 .news-item-area_desc {
   line-height: 24px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .news-item-area_elem {
-  /*display: flex;*/
-  /*align-items: center;*/
+  display: flex;
+  align-items: center;
   position: absolute;
   bottom: 18px;
   right: 20px;
   width: 100%;
   left: 0;
   padding: 0 30px;
-  display: grid;
-  gap: 20px;
-  grid-template-columns: auto 30px 30px;
-  align-items: center;
+  justify-content: flex-end;
 }
 
 .news-item-area_elem a {
@@ -107,6 +107,15 @@
   text-align: center;
   line-height: 30px;
   display: block;
+}
+
+.news-item-area_elem a:hover {
+  color: var(--text-red);
+  text-decoration: none;
+}
+
+.news-item-area_elem a.like.active:hover {
+  color: #000;
 }
 
 .news-item-area_elem p {
@@ -274,7 +283,6 @@ footer {
 
 .author-section .social-icon a {
   background: #ecf0f3;
-  border-radius: 10px;
   box-shadow: -3px -3px 7px #ffffff,
   3px 3px 5px #ceced1;
   border-radius: 50%;
@@ -316,7 +324,7 @@ aside {
   padding: 5px;
   margin-bottom: 10px;
   margin-right: 10px;
-  font-size: 13px;
+  font-size: 11px;
   background: #ecf0f3;
   border-radius: 10px;
   box-shadow: -3px -3px 7px #ffffff,
@@ -388,7 +396,6 @@ aside {
 
 .search input {
   background: transparent;
-  border: 1px solid #cecece;
   width: 100%;
   padding: 0 10px;
   border: none;
@@ -530,7 +537,6 @@ aside {
 }
 
 .form-auth input {
-  width: 100%;
   background: transparent;
   width: 100%;
   padding: 7px 20px 7px 10px;
@@ -650,24 +656,87 @@ i.fa-eye-slash.fas {
  color: #2a5885;
 }
 
+.news-item {
+  height: 260px;
+}
+
+.news-item img {
+  height: 100%;
+  object-fit: cover;
+  object-position: left;
+}
+
+.img-preview {
+  width: 100%;
+  margin: 40px 0;
+}
+
+.single-page > h1 {
+  margin-bottom: 15px;
+}
+
+/*verify*/
+
+
+.verify img {
+  max-width: 300px;
+  width: 100%;
+  margin: 40px auto;
+}
+
+.skeleton-verify span {
+  border-radius: 7px;
+  background: #cecece;
+  display: block;
+}
+
+.skeleton-verify div {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: #cecece;
+  margin: 40px auto;
+}
+
+.skeleton-verify span:first-child {
+  height: 30px;
+  width: 70%;
+}
+
+.skeleton-verify span:last-child {
+  height: 23px;
+  width: 55%;
+}
+
+
 /* 992px-1140px */
 @media screen and (max-width: 1140px) {
 
-  .flex-position .news-item {
-    padding: 30px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-  }
+  /*.flex-position .news-item {*/
+  /*  padding: 30px;*/
+  /*  display: flex;*/
+  /*  align-items: center;*/
+  /*  flex-direction: column;*/
+  /*}*/
 
   .flex-position .news-item-area {
     width: 100%;
     margin-top: 20px;
+    padding: 0 0 60px 0;
+  }
+
+  .news-item-area {
+    padding: 0 0 60px 0;
   }
 
   .flex-position .img-news {
     width: 70%;
   }
+
+  aside {
+    margin-right: 30px;
+  }
+
 
 }
 
@@ -702,6 +771,25 @@ i.fa-eye-slash.fas {
     grid-template-columns: repeat(auto-fit, minmax(calc(33% - 20px), 1fr));
   }
 
+  .news-item {
+     height: auto;
+  }
+
+  .news-item > img {
+    width: 100%;
+  }
+
+  .news-item img {
+    height: 250px;
+  }
+
+  .flex-position .news-item-area {
+    padding: 0;
+  }
+
+  .news-item-area_elem {
+    position: unset;
+  }
 }
 
 /* 576px-768px */
@@ -745,7 +833,7 @@ i.fa-eye-slash.fas {
   }
 
   aside {
-    margin-bottom: 13px;
+    margin-bottom: 38px;
   }
 }
 
@@ -797,7 +885,7 @@ i.fa-eye-slash.fas {
   }
 
   .news-item-area_elem {
-    padding: 0px 15px;
+    padding: 0 15px;
   }
 
   .flex-position .news-item {
@@ -817,6 +905,10 @@ i.fa-eye-slash.fas {
 
   .flex-position .wrapper-mymusic {
     padding: 29px 15px;
+  }
+
+  .news-item img {
+    object-position: unset;
   }
 
 

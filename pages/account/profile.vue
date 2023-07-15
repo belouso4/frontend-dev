@@ -1,12 +1,14 @@
 <template>
   <div class="right-content">
 
-    <form action="" @submit.prevent="sendForm">
+    <form @submit.prevent="sendForm">
       <div class="user-avatar" @click="$refs.file.click()">
         <img :src="imgShow" alt="">
         <input @change="onFileChange" ref="file" type="file" style="display: none">
         <div class="overlay-avatar"><i class="fa-solid fa-camera"></i></div>
       </div>
+      <form-group :validator="$v.form.avatar">
+      </form-group>
       <form-group :validator="$v.form.name" label="Изменить имя">
         <input type="text" placeholder="Введите Имя" v-model="form.name">
       </form-group>
@@ -24,10 +26,7 @@
         <input type="text" placeholder="Введите пароль повторно" v-model="form.confirm_password">
       </form-group>
       <div class="form-group">
-        <button type="submit">
-          <span v-if="!loading">Сохранить</span>
-          <Loader width="20px" v-else/>
-        </button>
+        <button-loader :loading="loading">Сохранить</button-loader>
       </div>
     </form>
   </div>
@@ -37,6 +36,7 @@
 import zxcvbn from 'zxcvbn'
 import {mapMutations} from "vuex";
 import {required, minLength, maxLength, helpers, email, sameAs} from 'vuelidate/lib/validators'
+import ButtonLoader from "~/components/Ui/ButtonLoader.vue";
 
 let allowedExtension = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
@@ -51,6 +51,7 @@ const filSize = (value) => {
 }
 export default {
   name: "profile",
+  components: {ButtonLoader},
 
   data(){
     return {

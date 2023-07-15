@@ -10,7 +10,6 @@ export default class UploadAdapter {
     return this.loader.file
       .then( file => new Promise( ( resolve, reject ) => {
         const data = new FormData();
-        console.log(file)
         data.append( 'img', file );
 
         window.$nuxt.$api.adminPosts.upload(data).then(response => {

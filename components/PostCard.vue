@@ -10,12 +10,11 @@
       <p class="news-item-area_desc">
         {{post.excerpt}}
       </p>
-      <div class="tags">
-        <a v-if="post.tags.length" v-for="tag in post.tags">{{ tag.tag }}</a>
+      <div class="tags" v-if="post.tags.length">
+        <nuxt-link v-for="tag in post.tags" :key="'tag-'+tag.slug" :to="'/tag/'+tag.slug">{{ tag.tag }}</nuxt-link>
       </div>
       <div class="news-item-area_elem">
         <p>{{ post.post_view_count }} <i class="far fa-eye"></i></p>
-        <a href=""><i class="fas fa-share"></i></a>
         <a href="" @click.prevent="like(post.id)" :class="[{ active: post.like_my }, 'like']">
           <i class="far fa-heart"></i>
           <span class="like-count">
@@ -53,18 +52,14 @@ export default {
 </script>
 
 <style>
-.news-item {
-  height: 260px;
+
+.tags::-webkit-scrollbar {
+  display: none;
 }
 
-.news-item img {
-  height: 100%;
-  object-fit: cover;
-  object-position: left;
-}
-
-.news-item .tags a:hover {
-  box-shadow: -3px -3px 7px #ffffff,
-  3px 3px 5px #ceced1;
+/* Hide scrollbar for IE, Edge and Firefox */
+.tags {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 </style>

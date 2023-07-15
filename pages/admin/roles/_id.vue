@@ -47,7 +47,7 @@
 
                   </div>
                 </div>
-                <div class="card-footer"><div class="form-group mt-3">
+                <div class="card-footer"><div class="form-group mt-3 button-indent">
                   <button class="btn btn-outline-dark mr-2" @click="modals.userAdd.show = true">Создать нового пользователя</button>
                   <button class="btn btn-outline-dark" @click="modals.usersList.show = true">Добавить существующего</button>
                 </div></div>
@@ -233,7 +233,6 @@ export default {
           delete val.added
         })
       }
-      console.log('data', data)
 
       return data
     },
@@ -283,7 +282,6 @@ export default {
 
       var index = this.deletedUsers.indexOf(id);
       if (index === -1) {
-        console.log(id, added, this.deletedUsers)
         this.deletedUsers.push(id);
       } else {
         this.deletedUsers.splice(index, 1);
@@ -302,8 +300,6 @@ export default {
   },
 
   beforeRouteLeave (to, from , next) {
-    console.log(this.users ,'===', this.copyUsers)
-    console.log(this.form ,'===', this.copyRole)
     if ((this.form.name !== this.copyRole.name
       || this.form.desc !== this.copyRole.desc
       || this.users.length !== this.copyUsers.length)
@@ -364,6 +360,12 @@ textarea {
 .users-roles li button i {
   margin: 0;
   font-size: 15px;
+}
+
+.button-indent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 </style>

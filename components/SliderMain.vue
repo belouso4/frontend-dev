@@ -1,34 +1,41 @@
 <template>
-    <client-only  placeholder="Loading...">
+    <agile v-if="sliders.length" :infinite="true">
+      <div v-for="slider in sliders"
+           :key="'slider-'+slider.id"
+           class="main-slider slide"
+      >
+        <div class="wrap-slide">
+          <div class="image-container">
+            <img :src="slider.img">
+          </div>
+          <div class="blur-overlay slide-description">
+            <h3>
+              {{ slider.title }}
+            </h3>
+            <p>
+              {{ slider.excerpt }}
+            </p>
 
-          <agile :infinite="true">
-<!--            <div class="slide">1</div>-->
-<!--            <div class="slide">1</div>-->
-<!--            <div class="slide">1</div>-->
-<!--            <div class="slide">1</div>-->
-                <div v-for="slider in sliders"
-                    :key="slider.id"
-                    @click="hello"
-                    class="news-item slide"
-                  >
-                  <div class="wrap-slide">
-                    <div class="img-news">
-                      <img :src="slider.img" alt="">
-                    </div>
-                    <div class="news-item-area">
-                      <h3 class="news-item-area_title">
-                        {{ slider.title }}
-                      </h3>
-                      <p class="news-item-area_desc">
-                        {{slider.excerpt}}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-            <template slot="prevButton"><i class="fas fa-chevron-left"></i></template>
-            <template slot="nextButton"> <i class="fas fa-chevron-right"></i> </template>
-          </agile>
-    </client-only>
+          </div>
+          <div class="blur-overlay slide-published">
+            published about 1 hour ago
+          </div>
+        </div>
+      </div>
+
+      <template slot="prevButton"><i class="fas fa-chevron-left"></i></template>
+      <template slot="nextButton"> <i class="fas fa-chevron-right"></i> </template>
+    </agile>
+
+    <div v-else class="slider-skeleton">
+      <div class="published-skeleton"><span class="skeleton"></span></div>
+      <div class="desc-skeleton">
+        <span class="skeleton"></span>
+        <span class="skeleton"></span>
+        <span class="skeleton"></span>
+        <span class="skeleton"></span>
+      </div>
+    </div>
 
 
 </template>
@@ -46,42 +53,69 @@ export default {
 
     }
   },
-  created() {
-    console.log(this.sliders)
-  },
-
-  methods: {
-    hello($event) {
-      console.log(`hello index: ${$event}`)
-    },
-  },
 
 }
 </script>
 
 <style scoped>
-.news-item {
-  height: auto;
-  margin-bottom: 0px;
+.main-slider {
+  border-radius: 7px;
+  overflow: hidden;
+}
+.wrap-slide {
+  position: relative;
 }
 
-.img-news {
+.image-container {
+  width: 100%;
+}
+
+.wrap-slide img {
+  width: 100%;
   height: 345px;
+  object-fit: cover;
+}
+
+.blur-overlay {
+  border-radius: 7px;
+  position: absolute;
+  color: #fff;
+  backdrop-filter: blur(10px); /* Размытие */
+  background-color: rgb(0 0 0 / 50%); /* Прозрачный фон */
+}
+
+.slide-description{
+  right: 11px;
+  bottom: 11px;
+  padding: 20px;
+  width: 70%;
+}
+
+.slide-published{
+  position: absolute;
+  left: 11px;
+  top: 11px;
+  padding: 20px;
+}
+
+.blur-overlay h3 {
+  margin-bottom: 11px;
+}
+
+.blur-overlay p {
+  line-height: 20px;
 }
 
 .slider-wrapper {
   position: relative;
 }
+
 </style>
 
 <style>
 
-.agile {
-
-}
-
 .agile .wrap-slide {
-display: flex;
+  display: flex;
 }
 .agile .agile__nav-button {
   background: transparent;
@@ -107,6 +141,34 @@ display: flex;
 
 .agile .agile__nav-button--next {
   right: 0
+}
+
+@media screen  and (max-width: 992px) {
+  .main-slider .slide-description {
+    width: 100%;
+    bottom: 0;
+    right: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 15px;
+  }
+
+  .main-slider .slide-description p {
+    font-size: 13px;
+
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .main-slider .slide-published {
+    font-size: 12px;
+    top: 0;
+    padding: 15px;
+    left: 0;
+  }
 }
 
 </style>
