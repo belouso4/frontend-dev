@@ -40,8 +40,8 @@ export default {
       showPass: false,
       errorMsg: '',
       form: {
-        email: '',
-        password: ''
+        email: 'jhon@deo.com',
+        password: 'secret'
       },
     }
   },

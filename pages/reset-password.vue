@@ -18,10 +18,7 @@
         </form-group>
 
         <div class="form-auth_footer d-flex">
-          <button type="submit">
-            <span v-if="!loading">Изменить данные</span>
-            <Loader width="20px" v-else/>
-          </button>
+          <button-loader :loading="loading">Изменить данные</button-loader>
         </div>
 
       </form>
@@ -32,9 +29,11 @@
 <script>
 import zxcvbn from "zxcvbn";
 import {email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
+import ButtonLoader from "../components/Ui/ButtonLoader.vue";
 
 export default {
   middleware: 'guest',
+  components: {ButtonLoader},
   layout: 'AppMain',
   data(){
     return {

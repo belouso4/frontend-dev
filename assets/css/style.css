@@ -605,12 +605,8 @@ aside {
   background: rgba(0, 130, 0, 0.48);
 }
 
-i.fa-eye-slash.fas {
-  right: 10px;
-}
-
 .form-auth label:not(:last-child) {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .form-auth button {
@@ -706,6 +702,26 @@ i.fa-eye-slash.fas {
 .skeleton-verify span:last-child {
   height: 23px;
   width: 55%;
+}
+
+.form-group input + i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  right: 10px;
+}
+
+.form-group div {
+  position: relative;
+}
+
+.form-group input {
+  margin: 0;
+}
+
+.form-group:not(:last-child) {
+  margin-bottom: 20px;
 }
 
 

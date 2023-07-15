@@ -1,6 +1,6 @@
 <template>
   <div class="right-content verify">
-    <div v-if="verifyingEmail" class="w-1/2 flex flex-col items-center skeleton-verify">
+    <div v-if="verifyingEmail" class="flex flex-col items-center skeleton-verify">
       <span class="skeleton"></span>
       <div class="skeleton"></div>
       <span class="skeleton"></span>
@@ -11,12 +11,12 @@
           <h3>Ваша электронная почта подтверждена!</h3>
         </div>
         <img src="/img/ui/verified-account.svg"/>
-        <nuxt-link to="/search" class="cursor-pointer text-center rounded bg-primaryGreen font-sans-montserrat py-3 px-8 text-white text-base uppercase">
+        <nuxt-link to="/" class="cursor-pointer text-center">
           Перейти на главную страницу
         </nuxt-link>
       </div>
       <div v-if="$auth.user.email_verified_at == null" class="flex flex-col items-center">
-        <div class="text-secondaryBlack text-xl font-sans-lato font-bold text-center">
+        <div class="text-center">
           <h3>Вы не подтвердили свой адрес электронной почты.</h3>
         </div>
         <img class="my-4 pointer-events-none" src="/img/ui/non-verified-account.svg"/>

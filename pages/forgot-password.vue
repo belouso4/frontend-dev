@@ -8,10 +8,7 @@
           <input v-model="form.email" type="text" placeholder="Введите email">
         </form-group>
         <div class="form-auth_footer d-flex">
-          <button type="submit">
-            <span v-if="!loading">Отправить инструкции по сбросу</span>
-            <Loader width="20px" v-else/>
-          </button>
+          <button-loader :loading="loading">Сбросить пароль</button-loader>
         </div>
 
       </form>
@@ -21,10 +18,12 @@
 
 <script>
 import {email, maxLength, required} from "vuelidate/lib/validators";
+import ButtonLoader from "../components/Ui/ButtonLoader.vue";
 
 export default {
   middleware: 'guest',
   layout: 'AppMain',
+  components: {ButtonLoader},
   data(){
     return {
       msg: null,

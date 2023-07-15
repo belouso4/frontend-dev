@@ -27,10 +27,7 @@
 
         <div class="form-auth_footer d-flex align-items-center">
           <nuxt-link to="/login">Уже есть аккаунт?</nuxt-link>
-          <button>
-            <span v-if="!loading">Зарегистрироваться</span>
-            <Loader style="display: inline-block;" v-else width="20px"/>
-          </button>
+          <button-loader :loading="loading">Зарегистрироваться</button-loader>
         </div>
       </form>
     </div>
@@ -41,10 +38,11 @@
 import zxcvbn from 'zxcvbn'
 import Meter from "../components/Meter";
 import {email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
+import ButtonLoader from "../components/Ui/ButtonLoader.vue";
 
 export default {
   middleware: 'guest',
-  components: {Meter},
+  components: {Meter, ButtonLoader},
   layout: 'AppMain',
   data(){
       return {
