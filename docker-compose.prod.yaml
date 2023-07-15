@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: _docker/app/Dockerfile
+    image: frontend
+    container_name: nuxt-app
+    restart: always
+    tty: true
+    volumes:
+      - .:/app
+      - /app/node_modules
+    expose:
+      - 3000
+    networks:
+      - client-network
+
+networks:
+  client-network:
+    name: client-network
+    driver: bridge
