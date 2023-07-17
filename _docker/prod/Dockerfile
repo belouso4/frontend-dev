@@ -9,7 +9,8 @@ RUN apk update && apk upgrade && apk add git
 COPY package.json /app
 
 #RUN npm rebuild
-RUN npm install
+RUN rm -rf node_modules
+RUN npm install && npm cache clean --force
 
 COPY . /app
 RUN npm build
@@ -19,7 +20,7 @@ ENV NUXT_PORT=3000
 #
 #ENV NODE_ENV=production
 
-CMD [ "npm", "start" ]
+#CMD [ "npm", "start" ]
 
 
 
