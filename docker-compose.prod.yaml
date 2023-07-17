@@ -4,14 +4,12 @@ services:
   app:
     build:
       context: .
-      dockerfile: _docker/app/Dockerfile
-    image: frontend
+      dockerfile: _docker/prod/Dockerfile
     container_name: nuxt-app
     restart: always
     tty: true
     volumes:
       - .:/app
-      - /app/node_modules
     expose:
       - 3000
     networks:
