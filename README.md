@@ -1,10 +1,11 @@
+- [api Laravel](https://github.com/belouso4K/backend-dev)
 # frontend
 
 ## Build Setup
 
 ```bash
 # install dependencies
-$ npm install
+$ docker-compose up -d --build
 
 # serve with hot reload at localhost:3000
 $ npm run dev
