@@ -90,7 +90,7 @@
               </div>
               <!-- /.card-body -->
               <div class="card-footer">
-                <button-loader :fetch="sendBtn" :loading="loading">
+                <button-loader @fetch="sendBtn" :loading="loading">
                   Сохранить
                 </button-loader>
               </div>

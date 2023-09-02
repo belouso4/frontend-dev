@@ -1,5 +1,5 @@
 <template>
-  <button @click="fetch" :disabled="loading" type="submit" class="btn-with-loader">
+  <button @click="$emit('fetch', $event)" :disabled="loading" type="submit" class="btn-with-loader">
     <span :class="[{'opacity': loading}]">
       <slot/>
     </span>

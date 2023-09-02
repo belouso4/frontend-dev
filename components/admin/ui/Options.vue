@@ -7,7 +7,7 @@
 
     <div v-show="show" class="option-cust">
       <div v-if="inputShow" class="select2-search select2-search--dropdown">
-        <input placeholder="Поиск..." @keyup="fetch" type="search" autocomplete="off" autocorrect="off" v-model="search">
+        <input placeholder="Поиск..." @keyup="$emit('fetch', $event)" type="search" autocomplete="off" autocorrect="off" v-model="search">
       </div>
       <div class="select2-results">
         <ul v-if="inputShow ? search && search.length >= 2 : true" class="select2-results__options">
@@ -68,7 +68,7 @@ export default {
       }
     },
     eventClick(e) {
-      if (!this.show) this.fetch(e)
+      if (!this.show) this.$emit('fetch', e)
       this.show = !this.show
     }
   }

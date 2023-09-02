@@ -45,7 +45,7 @@
                     <input v-else-if="form.select === 1" class="form-control" disabled placeholder="To: all">
                     <Options :list.sync="list_emails"
                              :name.sync="form.to"
-                             :fetch="searchEmail"
+                             @fetch="searchEmail"
                              :status="!!list_emails.length"
                              v-else>
                       <li v-for="user in list_emails"
@@ -84,7 +84,7 @@
               <!-- /.card-body -->
               <div class="card-footer">
 
-                <button-loader :fetch="sendMessage" :loading="loading">
+                <button-loader @fetch="sendMessage" :loading="loading">
                   Отправить
                 </button-loader>
               </div>

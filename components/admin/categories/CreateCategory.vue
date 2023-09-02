@@ -38,7 +38,7 @@
             <Options :inputShow="false"
                      :list.sync="categories"
                      :name.sync="categoryName"
-                     :fetch="fetchCategories"
+                     @fetch="fetchCategories"
                      :status="!!categories.length">
               <li v-for="category in categories"
                   @click="setCategory(category)"

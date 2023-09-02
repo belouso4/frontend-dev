@@ -90,7 +90,7 @@
                     <Options :inputShow="false"
                              :list.sync="categories"
                              :name.sync="categoryName"
-                             :fetch="fetchCategories"
+                             @fetch="fetchCategories"
                              :status="!!categories.length">
                       <li v-for="category in categories"
                           @click="setCategory(category)"
@@ -120,7 +120,7 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button-loader :fetch="sendBtn" :loading="loading">
+                  <button-loader @fetch="sendBtn" :loading="loading">
                     Сохранить
                   </button-loader>
                 </div>

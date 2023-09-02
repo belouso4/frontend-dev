@@ -32,9 +32,9 @@
         <button @click="reset()" class="btn btn-default delete-btn">
           Сбросить изменения
         </button>
-        <ButtonLoader :fetch="updateCategories" :disabled="checkChanges()">
+        <button-loader @fetch="updateCategories" :disabled="checkChanges()">
           Cохранить
-        </ButtonLoader>
+        </button-loader>
       </div>
     </div>
     <modal-category :show.sync="show"/>
